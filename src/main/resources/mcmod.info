@@ -1,0 +1,16 @@
+[
+{
+  "modid": "simplybackpacks",
+  "name": "Simply Backpacks",
+  "description": "",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Flanks255"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

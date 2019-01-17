@@ -1,0 +1,33 @@
+{
+  "result":{
+    "item":"simplybackpacks:uncommonbackpack",
+    "count":1
+  },
+  "pattern":[
+    "a a",
+    "ebe",
+    "cdc"
+  ],
+  "type":"simplybackpacks:copyBackpack",
+  "key":{
+    "a":{
+      "type":"forge:ore_dict",
+      "ore":"ingotGold"
+    },
+    "b":{
+      "item":"simplybackpacks:commonbackpack"
+    },
+    "c":{
+      "type":"forge:ore_dict",
+      "ore":"chest"
+    },
+    "d":{
+      "type":"forge:ore_dict",
+      "ore":"blockGold"
+    },
+    "e":{
+      "type":"forge:ore_dict",
+      "ore":"dyeYellow"
+    }
+  }
+}

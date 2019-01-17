@@ -1,0 +1,5 @@
+{
+  "recipes": {
+    "copyBackpack": "com.flanks255.simplybackpacks.recipes.CopyBackpackRecipeFactory"
+  }
+}

@@ -1,0 +1,10 @@
+*.ipr
+*.iml
+*.iws
+build/
+out/
+run/
+.idea/
+.gradle/
+gradle/
+gradle.properties

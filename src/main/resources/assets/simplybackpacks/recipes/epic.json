@@ -1,0 +1,32 @@
+{
+  "result":{
+    "item":"simplybackpacks:epicbackpack",
+    "count":1
+  },
+  "pattern":[
+    "a a",
+    "ebe",
+    "cdc"
+  ],
+  "type":"simplybackpacks:copyBackpack",
+  "key":{
+    "a":{
+      "type":"forge:ore_dict",
+      "ore":"dyeMagenta"
+    },
+    "b":{
+      "item":"simplybackpacks:rarebackpack"
+    },
+    "c":{
+      "type":"forge:ore_dict",
+      "ore":"chest"
+    },
+    "d":{
+      "type":"forge:ore_dict",
+      "ore":"netherStar"
+    },
+    "e":{
+      "item":"minecraft:iron_bars"
+    }
+  }
+}
