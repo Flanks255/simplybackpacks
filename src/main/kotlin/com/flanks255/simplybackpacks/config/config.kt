@@ -9,5 +9,14 @@ import net.minecraftforge.common.config.Config
 @JvmField
 var ConfigBackpackItemBlacklist : Array<String> = arrayOf(
         "rftools:storage_module_tablet",
-        "thermalexpansion:satchel"
+        "thermalexpansion:satchel",
+        "actuallyadditions:item_bag",
+        "appliedenergistics2:storage_cell_1k",
+        "appliedenergistics2:storage_cell_4k",
+        "appliedenergistics2:storage_cell_16k",
+        "appliedenergistics2:storage_cell_64k",
+        "appliedenergistics2:fluid_storage_cell_1k",
+        "appliedenergistics2:fluid_storage_cell_4k",
+        "appliedenergistics2:fluid_storage_cell_16k",
+        "appliedenergistics2:fluid_storage_cell_64k"
 )
