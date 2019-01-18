@@ -1,0 +1,22 @@
+simplybackpacks.shift=Нажмите <§6§oShift§r> для информации.
+
+
+item.simplybackpacks.commonbackpack.name=Обычный рюкзак
+item.simplybackpacks.commonbackpack.info=Самый простой рюкзак.
+item.simplybackpacks.commonbackpack.info2=§fСодержит 18 стаков§r
+
+item.simplybackpacks.uncommonbackpack.name=Необычный рюкзак
+item.simplybackpacks.uncommonbackpack.info=Немного лучший рюкзак.
+item.simplybackpacks.uncommonbackpack.info2=§eСодержит 33 стака§r
+
+item.simplybackpacks.rarebackpack.name=Редкий рюкзак
+item.simplybackpacks.rarebackpack.info=Довольно хороший рюкзак.
+item.simplybackpacks.rarebackpack.info2=§bСодержит 66 стака§r
+
+item.simplybackpacks.epicbackpack.name=Эпический рюкзак
+item.simplybackpacks.epicbackpack.info=Максимальный рюкзак.
+item.simplybackpacks.epicbackpack.info2=§dСодержит 99 стаков§r
+
+key.simplybackpacks.category=Simply Backpacks
+key.simplybackpacks.backpackpickup.desc=Переключить авто-поднятие
+key.simplybackpacks.backpackopen.desc=Открыть рюкзак
