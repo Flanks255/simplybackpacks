@@ -29,7 +29,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
 import net.minecraftforge.items.*
 import org.lwjgl.input.Keyboard
 
-//@Optional.Interface(iface="baubles.api.IBauble.class", modid = "baubles", striprefs = true)
+@Optional.Interface(iface="baubles.api.IBauble", modid = "baubles")
 class ItemBackpackBase(val name: String, val size: Int,private val rarity: EnumRarity): Item(), IBackpackData, IBauble {
     init {
         super.setUnlocalizedName(simplybackpacks.MODID+"."+name)
@@ -85,6 +85,7 @@ class ItemBackpackBase(val name: String, val size: Int,private val rarity: EnumR
         return super.onItemRightClick(worldIn, playerIn, handIn)
     }
 
+    @Optional.Method(modid = "baubles")
     override fun getBaubleType(itemstack: ItemStack?): BaubleType {
         return BaubleType.BODY
     }
@@ -96,11 +97,11 @@ class ItemBackpackBase(val name: String, val size: Int,private val rarity: EnumR
             if (nbt.hasKey("Pickup"))
             {
                 nbt.setBoolean("Pickup", !nbt.getBoolean("Pickup"))
-                player.sendStatusMessage(TextComponentString("Auto-Pickup "+if (nbt.getBoolean("Pickup")) "§aEnabled§r" else "§cDisabled§r"), true)
+                player.sendStatusMessage(TextComponentString(I18n.format(if(nbt.getBoolean("Pickup")) "simplybackpacks.autopickupenabled" else "simplybackpacks.autopickupdisabled")), true)
             }
             else {
                 nbt.setBoolean("Pickup", true)
-                player.sendStatusMessage(TextComponentString("Auto-Pickup §aEnabled§r"),true)
+                player.sendStatusMessage(TextComponentString(I18n.format("simplybackpacks.autopickupenabled")),true)
             }
             item.tagCompound = nbt
         }
@@ -181,7 +182,7 @@ class ItemBackpackBase(val name: String, val size: Int,private val rarity: EnumR
                 if (nbt != null){
                     if (nbt.hasKey("Pickup")){
                         if (nbt.getBoolean("Pickup")){
-                            tooltip.add("Auto-Pickup: §aEnabled§r")
+                            tooltip.add(I18n.format("simplybackpacks.autopickupenabled"))
                         }
                     }
                 }

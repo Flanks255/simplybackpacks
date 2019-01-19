@@ -11,8 +11,9 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext
 class ToggleHandler: IMessageHandler<ToggleMessage, IMessage> {
     override fun onMessage(message: ToggleMessage?, ctx: MessageContext?): IMessage? {
         val player: EntityPlayerMP? = ctx?.serverHandler?.player
-        var wasHotbar = false
+
         player?.serverWorld?.addScheduledTask {
+            var wasHotbar = false
             if (player.heldItemMainhand.item is ItemBackpackBase)
                 (player.heldItemMainhand.item as ItemBackpackBase).togglePickup(player, player.heldItemMainhand)
             else {
@@ -46,9 +47,11 @@ class OpenHandler: IMessageHandler<OpenMessage, IMessage> {
                     player.openGui(simplybackpacks, 1, player.serverWorld, player.position.x, player.position.y, player.position.z )
                 }
                 else {
-                    stack = simplybackpacks.findBackpackBauble(player)
-                    if (stack != null)
-                        player.openGui(simplybackpacks, 2, player.serverWorld, player.position.x, player.position.y, player.position.z )
+                    if (simplybackpacks.isBaubles) {
+                        stack = simplybackpacks.findBackpackBauble(player)
+                        if (stack != null)
+                            player.openGui(simplybackpacks, 2, player.serverWorld, player.position.x, player.position.y, player.position.z)
+                    }
                 }
 
             }

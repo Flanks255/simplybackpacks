@@ -32,8 +32,7 @@ import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 
 @Suppress("OverridingDeprecatedMember")
-
-@Mod(modid=simplybackpacks.MODID, name=simplybackpacks.NAME, version=simplybackpacks.VERSION, modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter", dependencies = "required-after:baubles@[1.5.2,]")
+@Mod(modid=simplybackpacks.MODID, name=simplybackpacks.NAME, version=simplybackpacks.VERSION, modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter", dependencies = "")
 object simplybackpacks {
     const val MODID = "simplybackpacks"
     const val NAME = "Simply Backpacks"
@@ -65,6 +64,8 @@ object simplybackpacks {
         if (stack != null)
             (stack.item as ItemBackpackBase).togglePickup(player, stack)
     }
+
+    //finds the first backpack in the hotbar.
     data class Result (val stack: ItemStack?, val slotID: Int)
     fun findBackpackHotbar(player: EntityPlayer): Result {
         val playerInv: InventoryPlayer = player.inventory
@@ -76,6 +77,7 @@ object simplybackpacks {
         return Result(null, -1)
     }
 
+    //finds the backpack in bauble slots
     fun findBackpackBauble(player: EntityPlayer): ItemStack? {
         if (player.hasCapability(BaublesCapabilities.CAPABILITY_BAUBLES, null)) {
             val baubleInv:IBaublesItemHandler? = player.getCapability(BaublesCapabilities.CAPABILITY_BAUBLES, null)
@@ -89,6 +91,15 @@ object simplybackpacks {
             }
         }
         return null
+    }
+    private fun checkBaubles(player: EntityPlayer, event: EntityItemPickupEvent) {
+        val stack: ItemStack? = findBackpackBauble(player)
+        if (stack != null) {
+            if ((stack.item as ItemBackpackBase).pickupEvent(event, stack)) {
+                event.result = Event.Result.ALLOW
+                return
+            }
+        }
     }
 
     @Mod.EventBusSubscriber(modid=simplybackpacks.MODID)
@@ -116,7 +127,7 @@ object simplybackpacks {
         @JvmStatic
         @SubscribeEvent
         fun itemPickupEvent(event: EntityItemPickupEvent) {
-            if (event.entityPlayer.openContainer is BackpackContainer)
+            if (event.entityPlayer.openContainer is BackpackContainer || event.entityPlayer.isSneaking)
                 return
             val playerinv: InventoryPlayer = event.entityPlayer.inventory
 
@@ -130,16 +141,6 @@ object simplybackpacks {
 
             if (isBaubles){
                 checkBaubles(event.entityPlayer, event)
-            }
-        }
-
-        private fun checkBaubles(player: EntityPlayer, event: EntityItemPickupEvent) {
-            val stack: ItemStack? = findBackpackBauble(player)
-            if (stack != null) {
-                if ((stack.item as ItemBackpackBase).pickupEvent(event, stack)) {
-                    event.result = Event.Result.ALLOW
-                    return
-                }
             }
         }
 
