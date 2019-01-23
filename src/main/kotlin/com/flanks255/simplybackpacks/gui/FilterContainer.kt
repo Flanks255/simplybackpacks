@@ -1,4 +1,4 @@
-package com.flanks255.simplybackpacks
+package com.flanks255.simplybackpacks.gui
 
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.InventoryPlayer
@@ -12,7 +12,7 @@ import net.minecraftforge.items.SlotItemHandler
 
 
 
-class BackpackContainer(item: ItemStack, playerInventory: InventoryPlayer, mySlotIn: Int): Container() {
+class FilterContainer(item: ItemStack, playerInventory: InventoryPlayer, mySlotIn: Int): Container() {
 
     var slotcount: Int = 0
     var itemHandler: IItemHandler? = null

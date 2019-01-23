@@ -1,6 +1,5 @@
 package com.flanks255.simplybackpacks.gui
 
-import com.flanks255.simplybackpacks.BackpackContainer
 import com.flanks255.simplybackpacks.items.ItemBackpackBase
 import com.flanks255.simplybackpacks.simplybackpacks
 import net.minecraft.entity.player.EntityPlayer

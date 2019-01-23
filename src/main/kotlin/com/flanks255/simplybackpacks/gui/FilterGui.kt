@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
 
-class BackpackGui(container: BackpackContainer): GuiContainer(container) {
+class FilterGui(container: BackpackContainer): GuiContainer(container) {
 
     private val background: ResourceLocation = when(container.slotcount) {
         18 -> ResourceLocation(simplybackpacks.MODID, "textures/gui/common_gui.png")
@@ -16,17 +16,9 @@ class BackpackGui(container: BackpackContainer): GuiContainer(container) {
         else -> ResourceLocation(simplybackpacks.MODID, "textures/gui/epic_gui.png")
     }
     init {
-        val size: Size = when(container.slotcount) {
-            18 -> Size(176, 130)
-            33 -> Size(212, 148)
-            66 -> Size(212, 202)
-            else -> Size(212, 256)
-        }
-        xSize = size.width
-        ySize = size.height
+        xSize = 176
+        ySize = 166
     }
-
-    private data class Size(val width: Int, val height: Int)
 
     fun drawTexturedQuadFit(x: Int, y: Int, width: Int, height: Int, z: Float) {
         val tessellator: Tessellator = Tessellator.getInstance()

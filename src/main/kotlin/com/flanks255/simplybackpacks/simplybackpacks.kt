@@ -2,6 +2,7 @@ package com.flanks255.simplybackpacks
 
 import baubles.api.cap.BaublesCapabilities
 import baubles.api.cap.IBaublesItemHandler
+import com.flanks255.simplybackpacks.gui.BackpackContainer
 import com.flanks255.simplybackpacks.gui.GuiHandler
 import com.flanks255.simplybackpacks.items.ItemBackpackBase
 import com.flanks255.simplybackpacks.network.NetworkWrapper
