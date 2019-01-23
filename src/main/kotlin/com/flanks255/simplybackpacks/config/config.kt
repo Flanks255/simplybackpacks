@@ -18,5 +18,6 @@ var ConfigBackpackItemBlacklist : Array<String> = arrayOf(
         "appliedenergistics2:fluid_storage_cell_1k",
         "appliedenergistics2:fluid_storage_cell_4k",
         "appliedenergistics2:fluid_storage_cell_16k",
-        "appliedenergistics2:fluid_storage_cell_64k"
+        "appliedenergistics2:fluid_storage_cell_64k",
+        "extrautils2:bagofholding"
 )

@@ -30,7 +30,7 @@ import net.minecraftforge.items.*
 import org.lwjgl.input.Keyboard
 
 @Optional.Interface(iface="baubles.api.IBauble", modid = "baubles")
-class ItemBackpackBase(val name: String, val size: Int,private val rarity: EnumRarity): Item(), IBackpackData, IBauble {
+class ItemBackpackBase(val name: String, val size: Int, private val rarity: EnumRarity): Item(), IBackpackData, IBauble {
     init {
         super.setUnlocalizedName(simplybackpacks.MODID+"."+name)
         setRegistryName(name)
