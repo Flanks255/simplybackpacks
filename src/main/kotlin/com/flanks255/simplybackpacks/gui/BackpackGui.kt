@@ -1,6 +1,7 @@
 package com.flanks255.simplybackpacks.gui
 
 import com.flanks255.simplybackpacks.BackpackContainer
+import com.flanks255.simplybackpacks.proxy.ClientProxy
 import com.flanks255.simplybackpacks.simplybackpacks
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.BufferBuilder
@@ -52,5 +53,12 @@ class BackpackGui(container: BackpackContainer): GuiContainer(container) {
         this.drawDefaultBackground()
         super.drawScreen(mouseX, mouseY, partialTicks)
         this.renderHoveredToolTip(mouseX,mouseY)
+    }
+
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        super.keyTyped(typedChar, keyCode)
+        val key = simplybackpacks.proxy?.getKeyBindCode("key.simplybackpacks.backpackopen.desc")
+        if (simplybackpacks.proxy is ClientProxy && keyCode == key)
+            this.mc.player.closeScreen()
     }
 }

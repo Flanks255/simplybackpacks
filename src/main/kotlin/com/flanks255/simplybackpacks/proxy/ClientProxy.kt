@@ -17,10 +17,19 @@ class ClientProxy :IProxy{
         )
     }
 
+
     override fun registerKeyBinds() {
         for (n in keybindings) {
             ClientRegistry.registerKeyBinding(n)
         }
+    }
+
+    override fun getKeyBindCode(key: String): Int {
+        for (n in keybindings) {
+            if (n.keyDescription == key)
+                return n.keyCode
+        }
+        return 0
     }
 
     override fun registerItemRenderer(item: Item, meta: Int, id: String){
