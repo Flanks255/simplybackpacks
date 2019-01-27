@@ -39,9 +39,6 @@ class BackpackContainer(item: ItemStack, playerInventory: InventoryPlayer, mySlo
 
     //don't move it...
     override fun slotClick(slotId: Int, dragType: Int, clickTypeIn: ClickType, player: EntityPlayer): ItemStack {
-       /* if (slotId >= 0 && getSlot(slotId).stack == player.heldItemMainhand)
-            return ItemStack.EMPTY
-        */
         if (slotId >= 0){
             if (mySlot == -2) {
                 if (getSlot(slotId).stack == player.heldItemMainhand) return ItemStack.EMPTY
