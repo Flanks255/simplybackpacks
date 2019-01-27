@@ -23,3 +23,7 @@ key.simplybackpacks.backpackopen.desc=Open Backpack
 
 simplybackpacks.autopickupenabled=Auto-Pickup: §aEnabled§r
 simplybackpacks.autopickupdisabled=Auto-Pickup: §cDisabled§r
+
+simplybackpacks.whitelist=Whitelist
+simplybackpacks.metadata=Metadata
+simplybackpacks.nbtdata=NBT Tags

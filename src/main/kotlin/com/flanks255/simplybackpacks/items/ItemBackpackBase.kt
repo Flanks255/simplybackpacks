@@ -3,17 +3,23 @@ package com.flanks255.simplybackpacks.items
 import baubles.api.BaubleType
 import baubles.api.IBauble
 import com.flanks255.simplybackpacks.BackpackItemStackHandler
+import com.flanks255.simplybackpacks.FilterItemStackHandler
+import com.flanks255.simplybackpacks.network.NetworkWrapper
+import com.flanks255.simplybackpacks.network.ToggleMessageMessage
 import com.flanks255.simplybackpacks.recipes.IBackpackData
 import com.flanks255.simplybackpacks.simplybackpacks
 import net.minecraft.client.resources.I18n
 import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.player.EntityPlayerMP
+import net.minecraft.inventory.ItemStackHelper
 import net.minecraft.item.EnumRarity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.NBTTagList
 import net.minecraft.util.ActionResult
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
@@ -27,6 +33,7 @@ import net.minecraftforge.fml.common.Optional
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import net.minecraftforge.items.*
+import net.minecraftforge.oredict.OreDictionary
 import org.lwjgl.input.Keyboard
 
 @Optional.Interface(iface="baubles.api.IBauble", modid = "baubles")
@@ -65,6 +72,10 @@ class ItemBackpackBase(val name: String, val size: Int, private val rarity: Enum
         val handler: IItemHandler? = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
         if (handler == null)
             return false
+
+        if(!filterItem(event.item.item, stack))
+            return false
+
         val pickedup: ItemStack = event.item.item
         for (i in 0 until handler.slots) {
             val slot: ItemStack = handler.getStackInSlot(i)
@@ -80,9 +91,49 @@ class ItemBackpackBase(val name: String, val size: Int, private val rarity: Enum
 
     override fun onItemRightClick(worldIn: World, playerIn: EntityPlayer, handIn: EnumHand): ActionResult<ItemStack> {
         if (!worldIn.isRemote) {
-            playerIn.openGui(simplybackpacks, 0, worldIn, playerIn.position.x, playerIn.position.y, playerIn.position.z )
+            if (playerIn.isSneaking) //Filter
+                playerIn.openGui(simplybackpacks, 8, worldIn, playerIn.position.x, playerIn.position.y, playerIn.position.z )
+            else //Inventory
+                playerIn.openGui(simplybackpacks, 0, worldIn, playerIn.position.x, playerIn.position.y, playerIn.position.z )
         }
         return super.onItemRightClick(worldIn, playerIn, handIn)
+    }
+
+    fun filterItem(item: ItemStack, packItem: ItemStack): Boolean {
+        val handler: IItemHandler? = packItem.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
+        if (handler == null)
+            return false
+        if (handler !is BackpackItemStackHandler)
+            return false
+
+        val filterOpts: Int = if (packItem.hasTagCompound()) packItem.tagCompound?.getInteger("Filter")?:0 else 0
+        val whitelist: Boolean = filterOpts and  1 > 0
+        val metaMatch: Boolean = filterOpts and 2 > 0
+        val nbtMatch: Boolean = filterOpts and 4 > 0
+
+        val filter: FilterItemStackHandler = handler.filter as FilterItemStackHandler
+
+        for (i in 0..15) {
+            val fStack = filter.getStackInSlot(i)
+            if (!fStack.isEmpty) {
+                if (fStack.item == item.item) {
+                    if (metaMatch) {
+                        if (fStack.metadata == item.metadata)
+                            if (nbtMatch)
+                                return if (ItemStack.areItemStackTagsEqual(fStack, item)) whitelist else !whitelist
+                            else
+                                return whitelist
+                    } else {
+                        if (nbtMatch)
+                            return if (ItemStack.areItemStackTagsEqual(fStack, item)) whitelist else !whitelist
+                        else
+                            return whitelist
+                    }
+                }
+            }
+        }
+
+        return !whitelist
     }
 
     @Optional.Method(modid = "baubles")
@@ -97,11 +148,19 @@ class ItemBackpackBase(val name: String, val size: Int, private val rarity: Enum
             if (nbt.hasKey("Pickup"))
             {
                 nbt.setBoolean("Pickup", !nbt.getBoolean("Pickup"))
-                player.sendStatusMessage(TextComponentString(I18n.format(if(nbt.getBoolean("Pickup")) "simplybackpacks.autopickupenabled" else "simplybackpacks.autopickupdisabled")), true)
+                if (simplybackpacks?.proxy?.isClient()?:false)
+                    player.sendStatusMessage(TextComponentString(I18n.format(if(nbt.getBoolean("Pickup")) "simplybackpacks.autopickupenabled" else "simplybackpacks.autopickupdisabled")), true)
+                else
+                    if (player is EntityPlayerMP)
+                        NetworkWrapper.wrapper.sendTo(ToggleMessageMessage(nbt.getBoolean("Pickup")), player)
             }
             else {
                 nbt.setBoolean("Pickup", true)
-                player.sendStatusMessage(TextComponentString(I18n.format("simplybackpacks.autopickupenabled")),true)
+                if (simplybackpacks?.proxy?.isClient()?:false)
+                    player.sendStatusMessage(TextComponentString(I18n.format("simplybackpacks.autopickupenabled")),true)
+                else
+                    if (player is EntityPlayerMP)
+                        NetworkWrapper.wrapper.sendTo(ToggleMessageMessage(true), player)
             }
             item.tagCompound = nbt
         }
@@ -126,6 +185,10 @@ class ItemBackpackBase(val name: String, val size: Int, private val rarity: Enum
                 nbt.setTag("inv", handler.serializeNBT())
             }
 
+            if (handler is BackpackItemStackHandler) {
+                nbt.setTag("filter", handler.filter.serializeNBT())
+            }
+
             return nbt
         }
 
@@ -145,6 +208,13 @@ class ItemBackpackBase(val name: String, val size: Int, private val rarity: Enum
                     handler.deserializeNBT(nbt.getCompoundTag("inv"))
                 }
             }
+            if (nbt.hasKey("filter")) {
+                val handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
+
+                if (handler is BackpackItemStackHandler) {
+                    handler.filter.deserializeNBT(nbt.getCompoundTag("filter"))
+                }
+            }
         }
     }
     class BackpackCaps(val size: Int): ICapabilitySerializable<NBTBase> {
@@ -160,14 +230,22 @@ class ItemBackpackBase(val name: String, val size: Int, private val rarity: Enum
         }
 
         override fun serializeNBT(): NBTBase? {
-            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(inventory, null)
+            val nbt = NBTTagCompound()
+            nbt.setTag("Inventory", CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(inventory, null)?:NBTTagList())
+            nbt.setTag("Filter", CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT((inventory as BackpackItemStackHandler).filter, null)?:NBTTagList())
+            return nbt
         }
 
         override fun deserializeNBT(nbt: NBTBase?) {
-            CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(inventory, null, nbt)
+            if (nbt is NBTTagCompound) {
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(inventory, null, nbt.getTag("Inventory"))
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT((inventory as BackpackItemStackHandler).filter, null, nbt.getTag("Filter"))
+            }
+            else
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(inventory, null, nbt)
         }
     }
-    private fun hasTranslation(key :String): Boolean{
+    private fun hasTranslation(key :String): Boolean {
         return I18n.format(key) != key
     }
 

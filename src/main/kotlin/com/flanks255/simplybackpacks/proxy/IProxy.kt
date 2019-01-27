@@ -6,4 +6,5 @@ interface IProxy {
     fun registerItemRenderer(item: Item, meta: Int, id: String)
     fun registerKeyBinds()
     fun getKeyBindCode(key: String): Int
+    fun isClient(): Boolean
 }

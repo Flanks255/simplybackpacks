@@ -9,4 +9,5 @@ class ServerProxy: IProxy {
 
     override fun registerKeyBinds() {}
     override fun getKeyBindCode(key: String): Int { return 0 }
+    override fun isClient(): Boolean = false
 }

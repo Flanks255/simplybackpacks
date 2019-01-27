@@ -17,6 +17,8 @@ object GuiHandler: IGuiHandler {
         } else if (ID == 2) { //Bauble Held Backpack
             val stack: ItemStack? = simplybackpacks.findBackpackBauble(player)
             return if (stack != null) BackpackGui(BackpackContainer(stack, player.inventory, -1)) else null
+        } else if (ID == 8) { //Filter(Mainhand only)
+            return if (player.heldItemMainhand.item is ItemBackpackBase) FilterGui(FilterContainer(player.heldItemMainhand, player.inventory)) else null
         }
         return null
     }
@@ -30,6 +32,8 @@ object GuiHandler: IGuiHandler {
         } else if (ID == 2) { //Bauble Held Backpack
             val stack: ItemStack? = simplybackpacks.findBackpackBauble(player)
             return if (stack != null) BackpackContainer(stack, player.inventory, -1) else null
+        } else if (ID == 8) { //Filter(Mainhand only)
+            return if (player.heldItemMainhand.item is ItemBackpackBase) FilterContainer(player.heldItemMainhand, player.inventory) else null
         }
         return null
     }

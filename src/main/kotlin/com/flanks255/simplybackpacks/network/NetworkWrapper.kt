@@ -13,5 +13,7 @@ object NetworkWrapper {
         var id = 0
         wrapper.registerMessage(ToggleHandler::class.java, ToggleMessage::class.java, id++, Side.SERVER)
         wrapper.registerMessage(OpenHandler::class.java, OpenMessage::class.java, id++, Side.SERVER)
+        wrapper.registerMessage(FilterHandler::class.java, FilterMessage::class.java, id++, Side.SERVER)
+        wrapper.registerMessage(ToggleMessageHandler::class.java, ToggleMessageMessage::class.java, id++, Side.CLIENT)
     }
 }

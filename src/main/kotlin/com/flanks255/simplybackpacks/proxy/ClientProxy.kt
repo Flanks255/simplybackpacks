@@ -35,4 +35,6 @@ class ClientProxy :IProxy{
     override fun registerItemRenderer(item: Item, meta: Int, id: String){
         ModelLoader.setCustomModelResourceLocation(item, meta, ModelResourceLocation( simplybackpacks.MODID+":"+id, "inventory"))
     }
+
+    override fun isClient(): Boolean = true
 }

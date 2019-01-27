@@ -1,9 +1,14 @@
 package com.flanks255.simplybackpacks.network
 
+import com.flanks255.simplybackpacks.gui.FilterContainer
 import com.flanks255.simplybackpacks.items.ItemBackpackBase
 import com.flanks255.simplybackpacks.simplybackpacks
+import net.minecraft.client.Minecraft
+import net.minecraft.client.resources.I18n
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.item.ItemStack
+import net.minecraft.util.text.TextComponentString
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext
@@ -57,6 +62,28 @@ class OpenHandler: IMessageHandler<OpenMessage, IMessage> {
             }
         }
 
+        return null
+    }
+}
+
+class FilterHandler: IMessageHandler<FilterMessage, IMessage> {
+    override fun onMessage(message: FilterMessage?, ctx: MessageContext?): IMessage? {
+        val player: EntityPlayerMP? = ctx?.serverHandler?.player
+
+        player?.serverWorld?.addScheduledTask {
+            if (player.openContainer is FilterContainer)
+                (player.openContainer as FilterContainer).saveFilter(message?.filterOpts?:0)
+        }
+        return null
+    }
+}
+
+class ToggleMessageHandler: IMessageHandler<ToggleMessageMessage, IMessage> {
+    override fun onMessage(message: ToggleMessageMessage?, ctx: MessageContext?): IMessage? {
+        if (ctx?.side?.isClient?:true)
+            Minecraft.getMinecraft().addScheduledTask {
+                Minecraft.getMinecraft().player.sendStatusMessage(TextComponentString(I18n.format("simplybackpacks.autopickup"+ if (message?.enabled?:false) "enabled" else "disabled")),true)
+            }
         return null
     }
 }
