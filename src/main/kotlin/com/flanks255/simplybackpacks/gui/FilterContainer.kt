@@ -53,12 +53,19 @@ class FilterContainer(val item: ItemStack, playerInventory: InventoryPlayer): Co
     }
 
     fun setFilterOpts(new: Int) {
-        val nbt: NBTTagCompound = if (item.hasTagCompound()) item?.tagCompound?: NBTTagCompound() else NBTTagCompound()
+        val nbt: NBTTagCompound = if (item.hasTagCompound()) item.tagCompound?: NBTTagCompound() else NBTTagCompound()
         nbt.setInteger("Filter", new)
         item.tagCompound = nbt
-        if (simplybackpacks.proxy?.isClient()?:false)
+        if (simplybackpacks.proxy!!.isClient())
             NetworkWrapper.wrapper.sendToServer(FilterMessage(new))
     }
+
+    fun saveFilter(filterIn: Int) {
+        val nbt: NBTTagCompound = if (item.hasTagCompound()) item.tagCompound?: NBTTagCompound() else NBTTagCompound()
+        nbt.setInteger("Filter", filterIn)
+        item.tagCompound = nbt
+    }
+
 
     fun addPlayerSlots(playerInventory: InventoryPlayer) {
 
@@ -90,11 +97,6 @@ class FilterContainer(val item: ItemStack, playerInventory: InventoryPlayer): Co
             (filterHandler as FilterItemStackHandler).setItem(id, fakeitem)
         }
         return true
-    }
-
-    fun saveFilter(filterIn: Int) {
-        val nbt: NBTTagCompound = if (item.hasTagCompound()) item?.tagCompound?: NBTTagCompound() else NBTTagCompound()
-        nbt.setInteger("Filter", filterIn)
     }
 
     fun addFilterSlots(item: ItemStack) {
