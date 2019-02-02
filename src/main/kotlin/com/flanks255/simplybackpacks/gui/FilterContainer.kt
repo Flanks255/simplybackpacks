@@ -56,7 +56,7 @@ class FilterContainer(val item: ItemStack, playerInventory: InventoryPlayer): Co
         val nbt: NBTTagCompound = if (item.hasTagCompound()) item.tagCompound?: NBTTagCompound() else NBTTagCompound()
         nbt.setInteger("Filter", new)
         item.tagCompound = nbt
-        if (simplybackpacks.proxy!!.isClient())
+        if (simplybackpacks.proxy?.isClient()?:false)
             NetworkWrapper.wrapper.sendToServer(FilterMessage(new))
     }
 
