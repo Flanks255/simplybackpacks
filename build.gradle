@@ -37,6 +37,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile group: "net.shadowfacts", name: "Forgelin", version: "1.7.3"
     deobfCompile "com.github.azanor:Baubles:${baubles_version}"
+    compile "inventory-tweaks:InventoryTweaks:1.64+dev.146:api"
 }
 
 processResources {
@@ -63,6 +64,10 @@ repositories {
     jcenter()
     maven { url "http://maven.shadowfacts.net/" }
     maven { url 'https://jitpack.io' }
+    maven {
+        name = "CurseForge"
+        url = "https://minecraft.curseforge.com/api/maven/"
+    }
 }
 
 compileKotlin {

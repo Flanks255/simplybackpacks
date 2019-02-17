@@ -1,17 +1,22 @@
 package com.flanks255.simplybackpacks.gui
 
+import invtweaks.api.container.ChestContainer
+import invtweaks.api.container.ContainerSection
+import invtweaks.api.container.ContainerSectionCallback
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.InventoryPlayer
 import net.minecraft.inventory.ClickType
 import net.minecraft.inventory.Container
 import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
+import net.minecraftforge.fml.common.Optional
 import net.minecraftforge.items.CapabilityItemHandler
 import net.minecraftforge.items.IItemHandler
 import net.minecraftforge.items.SlotItemHandler
 
 
-
+@ChestContainer
 class BackpackContainer(item: ItemStack, playerInventory: InventoryPlayer, mySlotIn: Int): Container() {
 
     var slotcount: Int = 0
@@ -115,5 +120,25 @@ fun addMySlots(item: ItemStack) {
             if (itemstack1.isEmpty) slot.putStack(ItemStack.EMPTY) else slot.onSlotChanged()
         }
         return itemstack
+    }
+
+    @ContainerSectionCallback
+    @Optional.Method(modid = "inventorytweaks")
+    fun getContainerSections(): Map<ContainerSection, List<Slot>> {
+        val slots: MutableMap<ContainerSection, List<Slot>> = Object2ObjectOpenHashMap<ContainerSection, List<Slot>>()
+
+
+        slots[ContainerSection.CHEST] = inventorySlots.subList(0, slotcount)
+        slots[ContainerSection.INVENTORY] = inventorySlots.subList(slotcount, slotcount + 36)
+        slots[ContainerSection.INVENTORY_NOT_HOTBAR] = inventorySlots.subList(slotcount, slotcount + 27)
+        slots[ContainerSection.INVENTORY_HOTBAR] = inventorySlots.subList(slotcount + 27, slotcount + 36)
+
+        return slots
+    }
+
+    @ChestContainer.RowSizeCallback
+    @Optional.Method(modid = "inventorytweaks")
+    fun getRowSize(): Int {
+        return if (slotcount == 18) 9 else 11
     }
 }
