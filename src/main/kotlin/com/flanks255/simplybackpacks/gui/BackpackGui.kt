@@ -6,9 +6,11 @@ import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
+import org.lwjgl.opengl.GL11
 
-class BackpackGui(container: BackpackContainer): GuiContainer(container) {
+class BackpackGui(val container: BackpackContainer): GuiContainer(container) {
 
     private val background: ResourceLocation = when(container.slotcount) {
         18 -> ResourceLocation(simplybackpacks.MODID, "textures/gui/common_gui.png")
@@ -18,10 +20,10 @@ class BackpackGui(container: BackpackContainer): GuiContainer(container) {
     }
     init {
         val size: Size = when(container.slotcount) {
-            18 -> Size(176, 130)
-            33 -> Size(212, 148)
-            66 -> Size(212, 202)
-            else -> Size(212, 256)
+            18 -> Size(176, 140)
+            33 -> Size(212, 158)
+            66 -> Size(212, 212)
+            else -> Size(212, 266)
         }
         xSize = size.width
         ySize = size.height
@@ -46,6 +48,16 @@ class BackpackGui(container: BackpackContainer): GuiContainer(container) {
         mc.textureManager.bindTexture(background)
         //drawTexturedModalRect(guiLeft, guiTop, 0,0, xSize,ySize)
         drawTexturedQuadFit(guiLeft, guiTop, xSize,ySize, this.zLevel)
+    }
+
+    override fun drawGuiContainerForegroundLayer(mouseX: Int, mouseY: Int) {
+        GL11.glPushMatrix()
+        GL11.glColor4f(0.25f,0.25f,0.25f,1.0f)
+        fontRenderer.drawString(I18n.format(container.itemKey), 7, 6, 0x404040)
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F)
+        GL11.glPopMatrix()
+
+        super.drawGuiContainerForegroundLayer(mouseX, mouseY)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {

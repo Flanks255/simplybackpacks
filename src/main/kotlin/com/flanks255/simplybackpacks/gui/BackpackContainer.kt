@@ -22,6 +22,8 @@ class BackpackContainer(item: ItemStack, playerInventory: InventoryPlayer, mySlo
     var slotcount: Int = 0
     var itemHandler: IItemHandler? = null
     var mySlot: Int = -1
+    var itemKey: String = item.unlocalizedName + ".name"
+
     init {
         mySlot = mySlotIn
         itemHandler = item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
@@ -63,10 +65,10 @@ class BackpackContainer(item: ItemStack, playerInventory: InventoryPlayer, mySlo
             else -> 25
         }
         val originY: Int = when(slotcount) {
-            18 -> 47
-            33 -> 65
-            66 -> 119
-            else -> 173
+            18 -> 57
+            33 -> 75
+            66 -> 129
+            else -> 183
         }
         //Player Inventory
         for (row in 0..2) {
@@ -94,7 +96,7 @@ fun addMySlots(item: ItemStack) {
     for (row in 0 until rows) {
         for (col in 0 until cols) {
             val x = 7 + col * 18
-            val y = 7 + row * 18
+            val y = 17 + row * 18
             this.addSlotToContainer(SlotItemHandler(itemHandler, slotIndex, x + 1, y + 1))
             slotIndex++
             if (slotIndex >= slotcount)
