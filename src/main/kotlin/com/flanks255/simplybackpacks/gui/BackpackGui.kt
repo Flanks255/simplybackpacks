@@ -46,7 +46,6 @@ class BackpackGui(val container: BackpackContainer): GuiContainer(container) {
 
     override fun drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int) {
         mc.textureManager.bindTexture(background)
-        //drawTexturedModalRect(guiLeft, guiTop, 0,0, xSize,ySize)
         drawTexturedQuadFit(guiLeft, guiTop, xSize,ySize, this.zLevel)
     }
 

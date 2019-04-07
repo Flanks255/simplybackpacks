@@ -27,10 +27,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.Event
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.InputEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.network.NetworkRegistry
-import net.minecraftforge.fml.relauncher.Side
-import net.minecraftforge.fml.relauncher.SideOnly
 
 @Suppress("OverridingDeprecatedMember")
 @Mod(modid=simplybackpacks.MODID, name=simplybackpacks.NAME, version=simplybackpacks.VERSION, modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter", dependencies = "")
@@ -144,16 +142,13 @@ object simplybackpacks {
                 checkBaubles(event.entityPlayer, event)
             }
         }
-
-        @SideOnly(Side.CLIENT)
         @JvmStatic
         @SubscribeEvent
-        fun keyEvent(event: InputEvent.KeyInputEvent) {
+        fun clientTickEvent(event: TickEvent.ClientTickEvent) {
             val binds: Array<KeyBinding> = ClientProxy.keybindings
 
-            if (binds[0].isPressed) {
+            if (binds[0].isPressed)
                 NetworkWrapper.wrapper.sendToServer(ToggleMessage())
-            }
             if (binds[1].isPressed)
                 NetworkWrapper.wrapper.sendToServer(OpenMessage())
         }
