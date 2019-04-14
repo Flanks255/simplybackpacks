@@ -172,35 +172,24 @@ class ItemBackpackBase(val name: String, val size: Int, private val rarity: Enum
     }
 
     override fun getNBTShareTag(stack: ItemStack): NBTTagCompound? {
-        val handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
-
-        if (handler is ItemStackHandler || stack.hasTagCompound()) {
-            val nbt = NBTTagCompound()
-
-            if (stack.tagCompound != null) {
-                nbt.setTag("nbt", stack.tagCompound)
-            }
-
+        if (simplybackpacks.proxy?.isClient()?:false == false) {
+            val handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
+            val nbt = stack.tagCompound?:NBTTagCompound()
             if (handler is ItemStackHandler) {
                 nbt.setTag("inv", handler.serializeNBT())
-            }
 
-            if (handler is BackpackItemStackHandler) {
-                nbt.setTag("filter", handler.filter.serializeNBT())
-            }
+                if (handler is BackpackItemStackHandler) {
+                    nbt.setTag("filter", handler.filter.serializeNBT())
+                }
 
-            return nbt
+                return nbt
+            }
         }
-
-        return null
+        return stack.tagCompound
     }
     override fun readNBTShareTag(stack: ItemStack, nbt: NBTTagCompound?) {
-        stack.tagCompound = null
+        stack.tagCompound = nbt
         if (nbt != null) {
-            if (nbt.hasKey("nbt")) {
-                stack.tagCompound = nbt.getCompoundTag("nbt")
-            }
-
             if (nbt.hasKey("inv")) {
                 val handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
 
@@ -238,8 +227,8 @@ class ItemBackpackBase(val name: String, val size: Int, private val rarity: Enum
 
         override fun deserializeNBT(nbt: NBTBase?) {
             if (nbt is NBTTagCompound) {
-                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(inventory, null, nbt.getTag("Inventory"))
-                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT((inventory as BackpackItemStackHandler).filter, null, nbt.getTag("Filter"))
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(inventory, null, nbt.getTag("Inventory")?:NBTTagList())
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT((inventory as BackpackItemStackHandler).filter, null, nbt.getTag("Filter")?:NBTTagList())
             }
             else
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(inventory, null, nbt)
