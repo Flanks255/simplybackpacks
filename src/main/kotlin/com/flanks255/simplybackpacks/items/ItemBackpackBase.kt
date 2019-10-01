@@ -13,7 +13,6 @@ import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
-import net.minecraft.inventory.ItemStackHelper
 import net.minecraft.item.EnumRarity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -29,11 +28,11 @@ import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.ICapabilityProvider
 import net.minecraftforge.common.capabilities.ICapabilitySerializable
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent
+import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.Optional
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import net.minecraftforge.items.*
-import net.minecraftforge.oredict.OreDictionary
 import org.lwjgl.input.Keyboard
 
 @Optional.Interface(iface="baubles.api.IBauble", modid = "baubles")
@@ -168,11 +167,12 @@ class ItemBackpackBase(val name: String, val size: Int, private val rarity: Enum
     }
 
     override fun initCapabilities(stack: ItemStack, nbt: NBTTagCompound?): ICapabilityProvider? {
-        return BackpackCaps(size)
+        return BackpackCaps(size, stack)
     }
 
     override fun getNBTShareTag(stack: ItemStack): NBTTagCompound? {
-        if (simplybackpacks.proxy?.isClient()?:false == false) {
+        //if (simplybackpacks.proxy?.isClient()?:false == false) {
+        if(FMLCommonHandler.instance().effectiveSide == Side.SERVER){
             val handler = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
             val nbt = stack.tagCompound?:NBTTagCompound()
             if (handler is ItemStackHandler) {
@@ -206,7 +206,7 @@ class ItemBackpackBase(val name: String, val size: Int, private val rarity: Enum
             }
         }
     }
-    class BackpackCaps(val size: Int): ICapabilitySerializable<NBTBase> {
+    class BackpackCaps(val size: Int, val stack: ItemStack): ICapabilitySerializable<NBTBase> {
 
         val inventory: IItemHandler = BackpackItemStackHandler(size)
 
@@ -219,6 +219,11 @@ class ItemBackpackBase(val name: String, val size: Int, private val rarity: Enum
         }
 
         override fun serializeNBT(): NBTBase? {
+            val sNBT = stack.tagCompound?: NBTTagCompound()
+            sNBT.setTag("inv", (inventory as BackpackItemStackHandler).serializeNBT())
+            sNBT.setTag("filter", inventory.filter.serializeNBT())
+            stack.tagCompound = sNBT
+
             val nbt = NBTTagCompound()
             nbt.setTag("Inventory", CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(inventory, null)?:NBTTagList())
             nbt.setTag("Filter", CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT((inventory as BackpackItemStackHandler).filter, null)?:NBTTagList())
