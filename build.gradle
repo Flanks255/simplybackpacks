@@ -13,6 +13,19 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.wynprice.cursemaven:CurseMaven:1.2.+"
+    }
+}
+
+apply plugin: "com.wynprice.cursemaven"
+
 repositories {
     maven { // TOP
         name 'tterrag maven'
@@ -103,6 +116,10 @@ dependencies {
 
     compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
     runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
+
+    compile fg.deobf(curse.resolve("nbtedit",2799777))
+    compile fg.deobf(curse.resolve("simply-light",2795157))
+    compile fg.deobf(curse.resolve("building-gadgets",2820989))
 
 
     // You may put jars on which you depend on in ./libs or you may define them like so..

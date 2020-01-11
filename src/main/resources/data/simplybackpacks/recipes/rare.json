@@ -1,0 +1,29 @@
+{
+  "type": "simplybackpacks:backpack_upgrade",
+  "pattern":[
+    "a a",
+    "dbd",
+    "cec"
+  ],
+  "key":{
+    "a":{
+      "tag":"forge:gems/diamond"
+    },
+    "b":{
+      "item":"simplybackpacks:uncommonbackpack"
+    },
+    "c":{
+      "tag":"forge:chests"
+    },
+    "d":{
+      "tag":"forge:dyes/blue"
+    },
+    "e":{
+      "tag":"forge:storage_blocks/diamond"
+    }
+  },
+  "result":{
+    "item":"simplybackpacks:rarebackpack",
+    "count":1
+  }
+}
