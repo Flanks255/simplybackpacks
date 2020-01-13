@@ -111,7 +111,7 @@ public class SBContainer extends Container {
                 int x = originX + col * 18;
                 int y = originY + row * 18;
                 int index = (col + row * 9) + 9;
-                this.addSlot(new SBContainerSlot(playerInventory, index, x+1, y+1, index == slotID));
+                this.addSlot(new Slot(playerInventory, index, x+1, y+1));
             }
         }
 
@@ -119,7 +119,7 @@ public class SBContainer extends Container {
         for (int col = 0; col < 9; col++) {
             int x = originX + col * 18;
             int y = originY + 58;
-            this.addSlot(new SBContainerSlot(playerInventory, col, x+1, y+1, col == slotID));
+            this.addSlot(new Slot(playerInventory, col, x+1, y+1));
         }
     }
 

@@ -7,7 +7,7 @@
   "simplybackpacks.autopickupenabled":"Auto-Pickup: §aEnabled§r",
   "simplybackpacks.autopickupdisabled":"Auto-Pickup: §cDisabled§r",
 
-  "simplybackpacks.metadata":"Metadata",
+  "simplybackpacks.whitelist":"Whitelist",
   "simplybackpacks.nbtdata":"NBT Tags",
 
   "item.simplybackpacks.commonbackpack": "Common Backpack",

@@ -36,6 +36,11 @@ public class SBNetwork {
                 .encoder(ToggleMessageMessage::encode)
                 .consumer(ToggleMessageMessage::handle)
                 .add();
+        network.messageBuilder(FilterMessage.class, 4)
+                .decoder(FilterMessage::decode)
+                .encoder(FilterMessage::encode)
+                .consumer(FilterMessage::handle)
+                .add();
 
         return network;
     }

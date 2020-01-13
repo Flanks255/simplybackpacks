@@ -1,6 +1,8 @@
 package com.flanks255.simplybackpacks;
 
 
+import com.flanks255.simplybackpacks.gui.FilterContainer;
+import com.flanks255.simplybackpacks.gui.FilterGui;
 import com.flanks255.simplybackpacks.gui.SBContainer;
 import com.flanks255.simplybackpacks.gui.SBGui;
 import com.flanks255.simplybackpacks.items.ItemBackpackBase;
@@ -99,6 +101,7 @@ public class SimplyBackpacks {
 
     private void clientStuff(final FMLClientSetupEvent event) {
         ScreenManager.registerFactory(SBContainer.type, SBGui::new);
+        ScreenManager.registerFactory(FilterContainer.type, FilterGui::new);
 
         keyBinds.add(0, new KeyBinding("key.simplybackpacks.backpackpickup.desc", -1, "key.simplybackpacks.category"));
         keyBinds.add(1, new KeyBinding("key.simplybackpacks.backpackopen.desc", -1, "key.simplybackpacks.category"));
@@ -117,6 +120,7 @@ public class SimplyBackpacks {
         @SubscribeEvent
         public static void onContainerRegistry(final RegistryEvent.Register<ContainerType<?>> containerRegistryEvent) {
             containerRegistryEvent.getRegistry().register(SBContainer.type);
+            containerRegistryEvent.getRegistry().register(FilterContainer.type);
         }
         @SubscribeEvent
         public static void onRecipeRegistry(final RegistryEvent.Register<IRecipeSerializer<?>> event) {

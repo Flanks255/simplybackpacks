@@ -2,6 +2,7 @@ package com.flanks255.simplybackpacks.items;
 
 import com.flanks255.simplybackpacks.BackpackItemHandler;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
+import com.flanks255.simplybackpacks.gui.FilterContainer;
 import com.flanks255.simplybackpacks.gui.SBContainer;
 import com.flanks255.simplybackpacks.network.ToggleMessageMessage;
 import net.minecraft.client.gui.screen.Screen;
@@ -10,6 +11,7 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
@@ -67,18 +69,35 @@ public class ItemBackpackBase extends Item {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         if (!worldIn.isRemote) {
-            playerIn.openContainer(new INamedContainerProvider() {
-                @Override
-                public ITextComponent getDisplayName() {
-                    return new StringTextComponent("");
-                }
+            if (playerIn.isSneaking()) {
+                //filter
+                playerIn.openContainer(new INamedContainerProvider() {
+                    @Override
+                    public ITextComponent getDisplayName() {
+                        return new StringTextComponent("Backpack Filter");
+                    }
 
-                @Nullable
-                @Override
-                public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
-                    return new SBContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getPosition(), p_createMenu_2_, p_createMenu_3_);
-                }
-            });
+                    @Nullable
+                    @Override
+                    public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
+                        return new FilterContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getPosition(), p_createMenu_2_, p_createMenu_3_);
+                    }
+                });
+            } else {
+                //open
+                playerIn.openContainer(new INamedContainerProvider() {
+                    @Override
+                    public ITextComponent getDisplayName() {
+                        return new StringTextComponent("Backpack");
+                    }
+
+                    @Nullable
+                    @Override
+                    public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
+                        return new SBContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getPosition(), p_createMenu_2_, p_createMenu_3_);
+                    }
+                });
+            }
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);
     }
@@ -125,6 +144,33 @@ public class ItemBackpackBase extends Item {
 
     }
 
+
+    public boolean filterItem(ItemStack item, ItemStack packItem) {
+        IItemHandler tmp = packItem.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+        if (tmp == null || !(tmp instanceof BackpackItemHandler))
+            return false;
+
+        int filterOpts = packItem.getOrCreateTag().getInt("Filter-OPT");
+        boolean whitelist = (filterOpts & 1) > 0;
+        boolean nbtMatch = (filterOpts & 2) > 0;
+
+        BackpackItemHandler handler = (BackpackItemHandler) tmp;
+
+        for (int i = 0; i < 16; i++) {
+            ItemStack fStack = handler.filter.getStackInSlot(i);
+            if (!fStack.isEmpty()) {
+                if (fStack.isItemEqual(item)) {
+                    if (nbtMatch)
+                        return ItemStack.areItemStackTagsEqual(fStack, item) == whitelist;
+                    else
+                        return whitelist;
+                }
+            }
+        }
+
+        return !whitelist;
+    }
+
     public boolean pickupEvent(EntityItemPickupEvent event, ItemStack stack) {
         CompoundNBT nbt = stack.getTag();
         if (nbt == null)
@@ -141,6 +187,9 @@ public class ItemBackpackBase extends Item {
         if (handler == null)
             return false;
 
+
+        if (!filterItem(event.getItem().getItem(), stack))
+            return false;
 
         ItemStack pickedUp = event.getItem().getItem();
         for (int i = 0; i < handler.getSlots(); i++) {

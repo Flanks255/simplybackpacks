@@ -1,5 +1,6 @@
 package com.flanks255.simplybackpacks;
 
+import com.flanks255.simplybackpacks.items.ItemBackpackBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -17,6 +18,8 @@ public class BackpackItemHandler extends ItemStackHandler {
     }
         private ItemStack itemStack;
         private int size;
+
+        public FilterItemHandler filter = new FilterItemHandler();
 
     @Nonnull
     @Override
@@ -43,11 +46,14 @@ public class BackpackItemHandler extends ItemStackHandler {
     public void load(@Nonnull CompoundNBT nbt) {
         if (nbt.contains("Inventory"))
             deserializeNBT(nbt.getCompound("Inventory"));
+        if (nbt.contains("Filter"))
+            filter.deserializeNBT(nbt.getCompound("Filter"));
     }
 
     public void save() {
         CompoundNBT nbt = itemStack.getOrCreateTag();
         nbt.put("Inventory", serializeNBT());
+        nbt.put("Filter", filter.serializeNBT());
     }
 
     @Override
@@ -66,5 +72,33 @@ public class BackpackItemHandler extends ItemStackHandler {
             }
         }
         onLoad();
+    }
+
+    public class FilterItemHandler extends ItemStackHandler {
+        public FilterItemHandler() {
+            super(16);
+        }
+
+        public void removeItem(int slot) {
+            this.setStackInSlot(slot, ItemStack.EMPTY);
+            save();
+        }
+
+        public void setItem(int slot, ItemStack item) {
+            if (item.getItem() instanceof ItemBackpackBase || item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent())
+                return;
+            else
+                this.setStackInSlot(slot, item);
+            save();
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+            if (stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent() || stack.getItem() instanceof ItemBackpackBase)
+                return stack;
+
+            return super.insertItem(slot, stack, simulate);
+        }
     }
 }
