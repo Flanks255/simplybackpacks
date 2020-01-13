@@ -52,17 +52,17 @@ public class SBGui extends ContainerScreen<SBContainer> {
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         GlStateManager.color4f(1.0f, 1.0f, 1.0f ,1.0f);
         this.getMinecraft().textureManager.bindTexture(GUI);
-        drawTexturedQuad(guiLeft, guiTop, xSize, ySize, 0D, 0D, 1D, 1D, 0);
+        drawTexturedQuad(guiLeft, guiTop, xSize, ySize, 0, 0, 1, 1, 0);
     }
-    private void drawTexturedQuad(int x, int y, int width, int height, double tx, double ty, double tw, double th, float z) {
+    private void drawTexturedQuad(int x, int y, int width, int height, float tx, float ty, float tw, float th, float z) {
         Tessellator tess = Tessellator.getInstance();
         BufferBuilder buffer = tess.getBuffer();
 
         buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        buffer.pos((double)x + 0, (double) y + height, (double) z).tex(tx,ty + th).endVertex();
-        buffer.pos((double) x + width,(double) y + height, (double) z).tex(tx + tw,ty + th).endVertex();
-        buffer.pos((double) x + width, (double) y + 0, (double) z).tex(tx + tw,ty).endVertex();
-        buffer.pos((double) x + 0, (double) y + 0, (double) z).tex(tx,ty).endVertex();
+        buffer.vertex((double)x + 0, (double) y + height, (double) z).texture(tx,ty + th).endVertex();
+        buffer.vertex((double) x + width,(double) y + height, (double) z).texture(tx + tw,ty + th).endVertex();
+        buffer.vertex((double) x + width, (double) y + 0, (double) z).texture(tx + tw,ty).endVertex();
+        buffer.vertex((double) x + 0, (double) y + 0, (double) z).texture(tx,ty).endVertex();
 
         tess.draw();
     }
@@ -71,9 +71,9 @@ public class SBGui extends ContainerScreen<SBContainer> {
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
         GlStateManager.pushMatrix();
-        GlStateManager.color3f(0.25f, 0.25f, 0.25f);
+        GlStateManager.color4f(0.25f, 0.25f, 0.25f, 1.0f);
         Minecraft.getInstance().fontRenderer.drawString(I18n.format(container.itemKey), 7,6,0x404040);
-        GlStateManager.color3f(1f, 1f, 1f);
+        GlStateManager.color4f(1f, 1f, 1f, 1.0f);
         GlStateManager.popMatrix();
     }
 

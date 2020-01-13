@@ -2,6 +2,7 @@ package com.flanks255.simplybackpacks.gui;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -66,17 +67,17 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         GlStateManager.color4f(1.0f, 1.0f, 1.0f ,1.0f);
         this.getMinecraft().textureManager.bindTexture(GUI);
-        drawTexturedQuad(guiLeft, guiTop, xSize, ySize, 0D, 0D, 1D, 1D, 0);
+        drawTexturedQuad(guiLeft, guiTop, xSize, ySize, 0, 0, 1, 1, 0);
     }
-    private void drawTexturedQuad(int x, int y, int width, int height, double tx, double ty, double tw, double th, float z) {
+    private void drawTexturedQuad(int x, int y, int width, int height, float tx, float ty, float tw, float th, float z) {
         Tessellator tess = Tessellator.getInstance();
         BufferBuilder buffer = tess.getBuffer();
 
         buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        buffer.pos((double)x + 0, (double) y + height, (double) z).tex(tx,ty + th).endVertex();
-        buffer.pos((double) x + width,(double) y + height, (double) z).tex(tx + tw,ty + th).endVertex();
-        buffer.pos((double) x + width, (double) y + 0, (double) z).tex(tx + tw,ty).endVertex();
-        buffer.pos((double) x + 0, (double) y + 0, (double) z).tex(tx,ty).endVertex();
+        buffer.vertex((double)x + 0, (double) y + height, (double) z).texture(tx,ty + th).endVertex();
+        buffer.vertex((double) x + width,(double) y + height, (double) z).texture(tx + tw,ty + th).endVertex();
+        buffer.vertex((double) x + width, (double) y + 0, (double) z).texture(tx + tw,ty).endVertex();
+        buffer.vertex((double) x + 0, (double) y + 0, (double) z).texture(tx,ty).endVertex();
 
         tess.draw();
     }
@@ -103,20 +104,21 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
         @Override
         public void renderButton(int mouseX, int mouseY, float partialTicks) {
             GlStateManager.pushMatrix();
-            GlStateManager.color3f(1.0f,1.0f,1.0f);
+            GlStateManager.color4f(1.0f,1.0f,1.0f,1.0f);
             FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
 
             boolean hovered = mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
 
             GlStateManager.enableBlend();
-            GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+            GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA.field_225655_p_, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.field_225654_o_, GlStateManager.SourceFactor.ONE.field_225655_p_, GlStateManager.DestFactor.ZERO.field_225654_o_);
+            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA.field_225655_p_, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.field_225654_o_);
 
             if (container.itemHandler.filter != null && !container.itemHandler.filter.getStackInSlot(slot).isEmpty()) {
                 ItemStack tmp = container.itemHandler.filter.getStackInSlot(slot);
                     itemRenderer.zLevel = 100F;
                     GlStateManager.enableDepthTest();
-                    RenderHelper.enableGUIStandardItemLighting();
+                    //RenderHelper.enableGUIStandardItemLighting();
+                    RenderHelper.enableGuiDepthLighting();
                     itemRenderer.renderItemAndEffectIntoGUI(tmp, x, y);
                     itemRenderer.renderItemOverlayIntoGUI(fontRenderer, tmp, x, y, "");
                     itemRenderer.zLevel = 0F;
