@@ -1,7 +1,7 @@
 package com.flanks255.simplybackpacks.gui;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -50,7 +50,7 @@ public class SBGui extends ContainerScreen<SBContainer> {
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f ,1.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f ,1.0f);
         this.getMinecraft().textureManager.bindTexture(GUI);
         drawTexturedQuad(guiLeft, guiTop, xSize, ySize, 0, 0, 1, 1, 0);
     }
@@ -70,11 +70,11 @@ public class SBGui extends ContainerScreen<SBContainer> {
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-        GlStateManager.pushMatrix();
-        GlStateManager.color4f(0.25f, 0.25f, 0.25f, 1.0f);
+        RenderSystem.pushMatrix();
+        RenderSystem.color4f(0.25f, 0.25f, 0.25f, 1.0f);
         Minecraft.getInstance().fontRenderer.drawString(I18n.format(container.itemKey), 7,6,0x404040);
-        GlStateManager.color4f(1f, 1f, 1f, 1.0f);
-        GlStateManager.popMatrix();
+        RenderSystem.color4f(1f, 1f, 1f, 1.0f);
+        RenderSystem.popMatrix();
     }
 
     @Override

@@ -65,7 +65,7 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        GlStateManager.color4f(1.0f, 1.0f, 1.0f ,1.0f);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f ,1.0f);
         this.getMinecraft().textureManager.bindTexture(GUI);
         drawTexturedQuad(guiLeft, guiTop, xSize, ySize, 0, 0, 1, 1, 0);
     }
@@ -103,21 +103,21 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
 
         @Override
         public void renderButton(int mouseX, int mouseY, float partialTicks) {
-            GlStateManager.pushMatrix();
-            GlStateManager.color4f(1.0f,1.0f,1.0f,1.0f);
+            RenderSystem.pushMatrix();
+            RenderSystem.color4f(1.0f,1.0f,1.0f,1.0f);
             FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
 
             boolean hovered = mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
 
-            GlStateManager.enableBlend();
-            GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA.field_225655_p_, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.field_225654_o_, GlStateManager.SourceFactor.ONE.field_225655_p_, GlStateManager.DestFactor.ZERO.field_225654_o_);
-            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA.field_225655_p_, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.field_225654_o_);
+            RenderSystem.enableBlend();
+            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA.field_225655_p_, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.field_225654_o_, GlStateManager.SourceFactor.ONE.field_225655_p_, GlStateManager.DestFactor.ZERO.field_225654_o_);
+            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA.field_225655_p_, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.field_225654_o_);
 
             if (container.itemHandler.filter != null && !container.itemHandler.filter.getStackInSlot(slot).isEmpty()) {
                 ItemStack tmp = container.itemHandler.filter.getStackInSlot(slot);
                     itemRenderer.zLevel = 100F;
-                    GlStateManager.enableDepthTest();
                     //RenderHelper.enableGUIStandardItemLighting();
+                    RenderSystem.enableDepthTest();
                     RenderHelper.enableGuiDepthLighting();
                     itemRenderer.renderItemAndEffectIntoGUI(tmp, x, y);
                     itemRenderer.renderItemOverlayIntoGUI(fontRenderer, tmp, x, y, "");
@@ -127,7 +127,7 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
             if (hovered)
                 fill(x,y,x+width, y+height, -2130706433);
 
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
         }
     }
 
