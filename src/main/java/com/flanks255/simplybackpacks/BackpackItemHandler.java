@@ -18,6 +18,7 @@ public class BackpackItemHandler extends ItemStackHandler {
     }
         private ItemStack itemStack;
         private int size;
+        private boolean dirty = false;
 
         public FilterItemHandler filter = new FilterItemHandler();
 
@@ -26,21 +27,33 @@ public class BackpackItemHandler extends ItemStackHandler {
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
         if (stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent())
             return stack;
-
+        dirty = true;
         return super.insertItem(slot, stack, simulate);
+    }
+
+    @Nonnull
+    @Override
+    public ItemStack extractItem(int slot, int amount, boolean simulate) {
+        dirty = true;
+        return super.extractItem(slot, amount, simulate);
+    }
+
+    @Override
+    public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
+        validateSlotIndex(slot);
+        if (!ItemStack.areItemStackTagsEqual(stack, stacks.get(slot))) {
+            onContentsChanged(slot);
+        }
+        this.stacks.set(slot, stack);
     }
 
     @Override
     protected void onContentsChanged(int slot) {
         super.onContentsChanged(slot);
-        save();
+        dirty = true;
     }
 
     public void load() {
-        /*
-        if(itemStack.hasTag())
-            load(itemStack.getTag());
-            */
         load(itemStack.getOrCreateTag());
     }
     public void load(@Nonnull CompoundNBT nbt) {
@@ -51,9 +64,11 @@ public class BackpackItemHandler extends ItemStackHandler {
     }
 
     public void save() {
-        CompoundNBT nbt = itemStack.getOrCreateTag();
-        nbt.put("Inventory", serializeNBT());
-        nbt.put("Filter", filter.serializeNBT());
+        if (dirty) {
+            CompoundNBT nbt = itemStack.getOrCreateTag();
+            nbt.put("Inventory", serializeNBT());
+            nbt.put("Filter", filter.serializeNBT());
+        }
     }
 
     @Override

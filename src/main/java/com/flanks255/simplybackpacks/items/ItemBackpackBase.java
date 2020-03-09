@@ -19,6 +19,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -29,6 +30,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -105,13 +107,12 @@ public class ItemBackpackBase extends Item {
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-        return new BackpackCaps(stack, size);
+        return new BackpackCaps(stack, size, nbt);
     }
 
-    class BackpackCaps implements ICapabilityProvider {
-        public BackpackCaps(ItemStack stack, int size) {
+    class BackpackCaps implements ICapabilitySerializable {
+        public BackpackCaps(ItemStack stack, int size, CompoundNBT nbtIn) {
             itemStack = stack;
-
             this.size = size;
             inventory = new BackpackItemHandler(itemStack, size);
             stupid = LazyOptional.of(() -> inventory);
@@ -129,6 +130,17 @@ public class ItemBackpackBase extends Item {
             }
             else
                 return LazyOptional.empty();
+        }
+
+        @Override
+        public INBT serializeNBT() {
+            inventory.save();
+            return new CompoundNBT();
+        }
+
+        @Override
+        public void deserializeNBT(INBT nbt) {
+
         }
     }
     public void togglePickup(PlayerEntity playerEntity, ItemStack stack) {

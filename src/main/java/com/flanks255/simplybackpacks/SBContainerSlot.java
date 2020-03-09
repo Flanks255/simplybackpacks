@@ -1,27 +1,24 @@
 package com.flanks255.simplybackpacks;
 
-import com.flanks255.simplybackpacks.items.ItemBackpackBase;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.Slot;
+
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.SlotItemHandler;
 
-public class SBContainerSlot extends Slot {
-    public SBContainerSlot(IInventory inventoryIn, int index, int xPosition, int yPosition, boolean locked) {
-        super(inventoryIn, index, xPosition, yPosition);
-        isLocked = locked;
-    }
-    public boolean isLocked;
-    /*
-    @Override
-    public boolean canTakeStack(PlayerEntity playerIn) {
-        return !isLocked && super.canTakeStack(playerIn);
+import javax.annotation.Nonnull;
+
+public class SBContainerSlot extends SlotItemHandler {
+    public SBContainerSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
+        super(itemHandler, index, xPosition, yPosition);
     }
 
     @Override
-    public boolean isItemValid(ItemStack stack) {
-        if (stack.getItem() instanceof ItemBackpackBase)
-            return false;
-        return super.isItemValid(stack);
-    }*/
+    public int getItemStackLimit(@Nonnull ItemStack stack) {
+        return super.getSlotStackLimit();
+    }
+
+    @Override
+    public boolean isItemValid(@Nonnull ItemStack stack) {
+        return true;
+    }
 }

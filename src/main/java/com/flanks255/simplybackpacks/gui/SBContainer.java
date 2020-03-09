@@ -1,6 +1,8 @@
 package com.flanks255.simplybackpacks.gui;
 
 import com.flanks255.simplybackpacks.BackpackItemHandler;
+import com.flanks255.simplybackpacks.SBContainerSlot;
+import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.items.ItemBackpackBase;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -13,7 +15,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
 
 public class SBContainer extends Container {
     public SBContainer(final int windowId, final PlayerInventory playerInventory) {
@@ -132,7 +133,7 @@ public class SBContainer extends Container {
                 int x = 7 + col * 18;
                 int y = 17 + row * 18;
 
-                this.addSlot(new SlotItemHandler(handler, slotindex, x + 1, y + 1));
+                this.addSlot(new SBContainerSlot(handler, slotindex, x + 1, y + 1));
                 slotindex++;
                 if (slotindex >= slotcount)
                     break;

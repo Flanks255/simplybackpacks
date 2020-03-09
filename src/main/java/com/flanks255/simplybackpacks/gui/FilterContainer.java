@@ -50,7 +50,6 @@ public class FilterContainer  extends Container {
 
         if (tmp instanceof BackpackItemHandler) {
             itemHandler = (BackpackItemHandler)tmp;
-            itemHandler.load();
             player = playerEntity;
         } else {
             playerEntity.closeScreen();
