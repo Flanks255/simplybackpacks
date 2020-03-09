@@ -68,6 +68,7 @@ public class BackpackItemHandler extends ItemStackHandler {
             CompoundNBT nbt = itemStack.getOrCreateTag();
             nbt.put("Inventory", serializeNBT());
             nbt.put("Filter", filter.serializeNBT());
+            dirty = false;
         }
     }
 

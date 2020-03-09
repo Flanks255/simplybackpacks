@@ -148,7 +148,7 @@ public class FilterContainer  extends Container {
 
     @Override
     public boolean enchantItem(PlayerEntity playerIn, int id) {
-        SimplyBackpacks.LOGGER.info("EnchantPacket: " + id);
+        //SimplyBackpacks.LOGGER.info("EnchantPacket: " + id);
         if (playerIn.inventory.getItemStack().isEmpty())
             itemHandler.filter.removeItem(id);
         else {
