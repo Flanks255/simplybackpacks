@@ -140,7 +140,7 @@ public class ItemBackpackBase extends Item {
 
         @Override
         public void deserializeNBT(INBT nbt) {
-
+            inventory.load();
         }
     }
     public void togglePickup(PlayerEntity playerEntity, ItemStack stack) {

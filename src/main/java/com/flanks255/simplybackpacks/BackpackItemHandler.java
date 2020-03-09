@@ -96,15 +96,18 @@ public class BackpackItemHandler extends ItemStackHandler {
 
         public void removeItem(int slot) {
             this.setStackInSlot(slot, ItemStack.EMPTY);
+            dirty = true;
             save();
         }
 
         public void setItem(int slot, ItemStack item) {
             if (item.getItem() instanceof ItemBackpackBase || item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent())
                 return;
-            else
+            else {
                 this.setStackInSlot(slot, item);
-            save();
+                dirty = true;
+                save();
+            }
         }
 
         @Nonnull
