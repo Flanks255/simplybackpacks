@@ -65,6 +65,8 @@ public class SBContainer extends Container {
 
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
+        if (slotID == -106)
+            return true; //offhand, cant move it anyway...
         return !playerIn.inventory.getStackInSlot(slotID).isEmpty();
     }
 
@@ -175,13 +177,8 @@ public class SBContainer extends Container {
                 }
             }
         } else if (playerEntity.getHeldItemOffhand().getItem() instanceof ItemBackpackBase) {
-            for (int i = 0; i <= 35; i++) {
-                ItemStack stack = inv.getStackInSlot(i);
-                if (stack == playerEntity.getHeldItemOffhand()) {
-                    slotID = i;
-                    return stack;
-                }
-            }
+            slotID = -106;
+            return playerEntity.getHeldItemOffhand();
         }
         else {
             for (int i = 0; i <= 35; i++) {
