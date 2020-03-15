@@ -72,7 +72,7 @@ public class SBGui extends ContainerScreen<SBContainer> {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
         RenderSystem.pushMatrix();
         RenderSystem.color4f(0.25f, 0.25f, 0.25f, 1.0f);
-        Minecraft.getInstance().fontRenderer.drawString(I18n.format(container.itemKey), 7,6,0x404040);
+        Minecraft.getInstance().fontRenderer.drawString(this.title.getString(), 7,6,0x404040);
         RenderSystem.color4f(1f, 1f, 1f, 1.0f);
         RenderSystem.popMatrix();
     }

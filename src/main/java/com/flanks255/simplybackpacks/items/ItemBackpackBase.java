@@ -90,7 +90,8 @@ public class ItemBackpackBase extends Item {
                 playerIn.openContainer(new INamedContainerProvider() {
                     @Override
                     public ITextComponent getDisplayName() {
-                        return new StringTextComponent("Backpack");
+                        return playerIn.getHeldItem(handIn).getDisplayName();
+
                     }
 
                     @Nullable
