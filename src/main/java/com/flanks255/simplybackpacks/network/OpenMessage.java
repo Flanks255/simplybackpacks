@@ -1,5 +1,6 @@
 package com.flanks255.simplybackpacks.network;
 
+import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.gui.SBContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -28,7 +29,7 @@ public class OpenMessage {
             player.openContainer(new INamedContainerProvider() {
                 @Override
                 public ITextComponent getDisplayName() {
-                    return new StringTextComponent("");
+                    return SimplyBackpacks.findBackpack(player).getDisplayName();
                 }
 
                 @Nullable

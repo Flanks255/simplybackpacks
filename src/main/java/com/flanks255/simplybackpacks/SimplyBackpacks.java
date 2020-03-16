@@ -77,7 +77,7 @@ public class SimplyBackpacks {
         }
     }
 
-    public ItemStack findBackpack(PlayerEntity player) {
+    public static ItemStack findBackpack(PlayerEntity player) {
          if (player.getHeldItemMainhand().getItem() instanceof ItemBackpackBase)
              return player.getHeldItemMainhand();
          if (player.getHeldItemOffhand().getItem() instanceof ItemBackpackBase)
