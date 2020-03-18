@@ -11,7 +11,6 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
@@ -33,13 +32,10 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.fml.network.PacketDispatcher;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -116,18 +112,18 @@ public class ItemBackpackBase extends Item {
             itemStack = stack;
             this.size = size;
             inventory = new BackpackItemHandler(itemStack, size);
-            stupid = LazyOptional.of(() -> inventory);
+            optional = LazyOptional.of(() -> inventory);
         }
         private int size;
         private ItemStack itemStack;
         private BackpackItemHandler inventory;
-        private LazyOptional<IItemHandler> stupid;
+        private LazyOptional<IItemHandler> optional;
 
         @Nonnull
         @Override
         public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
             if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-                return stupid.cast();
+                return optional.cast();
             }
             else
                 return LazyOptional.empty();

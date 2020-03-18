@@ -25,6 +25,11 @@ public class BackpackItemHandler extends ItemStackHandler {
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+        if (stack.hasTag()) {
+            CompoundNBT tag = stack.getTag();
+            if (tag.contains("Items") || tag.contains("BlockEntityTag") || tag.contains("Inventory"))
+                return stack;
+        }
         if (stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent())
             return stack;
         dirty = true;
@@ -102,6 +107,11 @@ public class BackpackItemHandler extends ItemStackHandler {
         }
 
         public void setItem(int slot, ItemStack item) {
+            if (item.hasTag()) {
+                CompoundNBT tag = item.getTag();
+                if (tag.contains("Items") || tag.contains("BlockEntityTag") || tag.contains("Inventory"))
+                    return;
+            }
             if (item.getItem() instanceof ItemBackpackBase || item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent())
                 return;
             else {
