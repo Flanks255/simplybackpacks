@@ -52,6 +52,10 @@ public class BackpackItemHandler extends ItemStackHandler {
         this.stacks.set(slot, stack);
     }
 
+    public void setDirty() {
+        this.dirty = true;
+    }
+
     @Override
     protected void onContentsChanged(int slot) {
         super.onContentsChanged(slot);
