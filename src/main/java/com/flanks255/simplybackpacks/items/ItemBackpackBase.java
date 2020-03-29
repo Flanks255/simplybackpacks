@@ -140,6 +140,7 @@ public class ItemBackpackBase extends Item {
             inventory.load();
         }
     }
+
     public void togglePickup(PlayerEntity playerEntity, ItemStack stack) {
         CompoundNBT nbt = stack.getOrCreateTag();
 
@@ -233,6 +234,8 @@ public class ItemBackpackBase extends Item {
         boolean pickupEnabled = stack.getOrCreateTag().getBoolean("Pickup");
         if (pickupEnabled)
             tooltip.add(new StringTextComponent(I18n.format("simplybackpacks.autopickupenabled")));
+        else
+            tooltip.add(new StringTextComponent(I18n.format("simplybackpacks.autopickupdisabled")));
 
         if (Screen.hasShiftDown()) {
             tooltip.add(new StringTextComponent( I18n.format( translationKey + ".info") ));

@@ -4,6 +4,7 @@ import com.flanks255.simplybackpacks.BackpackItemHandler;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.items.ItemBackpackBase;
 import com.flanks255.simplybackpacks.network.FilterMessage;
+import com.flanks255.simplybackpacks.network.ToggleMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ClickType;
@@ -107,6 +108,21 @@ public class FilterContainer  extends Container {
 
     public int getFilterOpts() {
         return item.getOrCreateTag().getInt("Filter-OPT");
+    }
+
+    public boolean getPickup() {
+        return item.getOrCreateTag().getBoolean("Pickup");
+    }
+
+    public boolean togglePickup() {
+        CompoundNBT nbt = item.getOrCreateTag();
+
+        boolean Pickup = !nbt.getBoolean("Pickup");
+        nbt.putBoolean("Pickup",Pickup);
+
+        if (player.getEntityWorld().isRemote)
+            SimplyBackpacks.network.sendToServer(new ToggleMessage());
+        return Pickup;
     }
 
     public int setFilterOpts(int newOpts) {

@@ -50,6 +50,7 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
 
         addButton(new switchButton(guiLeft + 80, guiTop + 8, "simplybackpacks.whitelist", ((container.getFilterOpts() & 1) > 0) , (button)-> ((switchButton)button).state = (container.setFilterOpts(container.getFilterOpts() ^ 1) & 1) > 0));
         addButton(new switchButton(guiLeft + 80, guiTop + 8 + 18, "simplybackpacks.nbtdata", ((container.getFilterOpts() & 2) > 0) , (button)-> ((switchButton)button).state = (container.setFilterOpts(container.getFilterOpts() ^ 2) & 2) > 0));
+        addButton(new switchButton(guiLeft + 80, guiTop + 8 + 54, "simplybackpacks.autopickup", container.getPickup() , (button)-> ((switchButton)button).state = container.togglePickup()));
 
     }
 
