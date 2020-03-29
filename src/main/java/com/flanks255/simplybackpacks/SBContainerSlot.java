@@ -21,8 +21,6 @@ public class SBContainerSlot extends SlotItemHandler {
 
     @Override
     public boolean isItemValid(@Nonnull ItemStack stack) {
-        if (stack.hasTag())
-            SimplyBackpacks.LOGGER.info(stack.getTag().toString());
         if (stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent())
             return false;
         if (stack.hasTag()) {
