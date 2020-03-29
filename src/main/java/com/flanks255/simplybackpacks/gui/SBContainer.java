@@ -90,19 +90,19 @@ public class SBContainer extends Container {
         switch(slotcount) {
             case 18:
                 originX = 7;
-                originY = 57;
+                originY = 67;
                 break;
             case 33:
                 originX = 25;
-                originY = 75;
+                originY = 85;
                 break;
             case 66:
                 originX = 25;
-                originY = 129;
+                originY = 139;
                 break;
             default:
                 originX = 25;
-                originY = 183;
+                originY = 193;
         }
 
         //Player Inventory
