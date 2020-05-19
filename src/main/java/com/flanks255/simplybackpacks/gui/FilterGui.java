@@ -33,8 +33,8 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
         Button.IPressable slotClick = new Button.IPressable() {
             @Override
             public void onPress(Button button) {
-                Minecraft.getInstance().playerController.sendEnchantPacket(container.windowId, ((slotButton)button).slot);
-                container.enchantItem(playerInventory.player, ((slotButton)button).slot);
+                Minecraft.getInstance().playerController.sendEnchantPacket(container.windowId, ((SlotButton)button).slot);
+                container.enchantItem(playerInventory.player, ((SlotButton)button).slot);
             }
         };
 
@@ -44,14 +44,14 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
                 int x = guiLeft + 7 + col * 18;
                 int y = guiTop + 7 + row * 18;
 
-                addButton(new slotButton(x+1, y+1,18 ,18, slot, slotClick));
+                addButton(new SlotButton(x+1, y+1,18 ,18, slot, slotClick));
                 slot++;
             }
         }
 
-        addButton(new switchButton(guiLeft + 80, guiTop + 8, "simplybackpacks.whitelist", ((container.getFilterOpts() & 1) > 0) , (button)-> ((switchButton)button).state = (container.setFilterOpts(container.getFilterOpts() ^ 1) & 1) > 0));
-        addButton(new switchButton(guiLeft + 80, guiTop + 8 + 18, "simplybackpacks.nbtdata", ((container.getFilterOpts() & 2) > 0) , (button)-> ((switchButton)button).state = (container.setFilterOpts(container.getFilterOpts() ^ 2) & 2) > 0));
-        addButton(new switchButton(guiLeft + 80, guiTop + 8 + 54, "simplybackpacks.autopickup", container.getPickup() , (button)-> ((switchButton)button).state = container.togglePickup()));
+        addButton(new SwitchButton(guiLeft + 80, guiTop + 8, "simplybackpacks.whitelist", ((container.getFilterOpts() & 1) > 0) , (button)-> ((SwitchButton)button).state = (container.setFilterOpts(container.getFilterOpts() ^ 1) & 1) > 0));
+        addButton(new SwitchButton(guiLeft + 80, guiTop + 8 + 18, "simplybackpacks.nbtdata", ((container.getFilterOpts() & 2) > 0) , (button)-> ((SwitchButton)button).state = (container.setFilterOpts(container.getFilterOpts() ^ 2) & 2) > 0));
+        addButton(new SwitchButton(guiLeft + 80, guiTop + 8 + 54, "simplybackpacks.autopickup", container.getPickup() , (button)-> ((SwitchButton)button).state = container.togglePickup()));
 
     }
 
@@ -88,14 +88,14 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
         super.renderHoveredToolTip(x, y);
 
         for(Widget button : buttons) {
-            if (button.isMouseOver(x,y) && button instanceof slotButton)
-                if (!container.itemHandler.filter.getStackInSlot(((slotButton)button).slot).isEmpty())
-                    renderTooltip(container.itemHandler.filter.getStackInSlot(((slotButton)button).slot), x, y);
+            if (button.isMouseOver(x,y) && button instanceof SlotButton)
+                if (!container.itemHandler.filter.getStackInSlot(((SlotButton)button).slot).isEmpty())
+                    renderTooltip(container.itemHandler.filter.getStackInSlot(((SlotButton)button).slot), x, y);
         }
     }
 
-    class slotButton extends Button {
-        public slotButton(int x, int y, int width, int height, int slotIn, IPressable pressable) {
+    class SlotButton extends Button {
+        public SlotButton(int x, int y, int width, int height, int slotIn, IPressable pressable) {
             super(x,y,width,height,"", pressable);
 
             this.slot = slotIn;
@@ -133,8 +133,8 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
     }
 
 
-    class switchButton extends Button {
-        public switchButton(int x, int y, String text,boolean initial, IPressable pressable) {
+    class SwitchButton extends Button {
+        public SwitchButton(int x, int y, String text, boolean initial, IPressable pressable) {
             super(x,y,32,16,"", pressable);
             textKey = text;
             state = initial;
