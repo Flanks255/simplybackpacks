@@ -114,7 +114,7 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA.field_225655_p_, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.field_225654_o_, GlStateManager.SourceFactor.ONE.field_225655_p_, GlStateManager.DestFactor.ZERO.field_225654_o_);
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA.field_225655_p_, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA.field_225654_o_);
 
-            if (container.itemHandler.filter != null && !container.itemHandler.filter.getStackInSlot(slot).isEmpty()) {
+            if (container.itemHandler.filter != null && container.itemHandler.filter.getStackInSlot(slot) != null && !container.itemHandler.filter.getStackInSlot(slot).isEmpty()) {
                 ItemStack tmp = container.itemHandler.filter.getStackInSlot(slot);
                     itemRenderer.zLevel = 100F;
                     //RenderHelper.enableGUIStandardItemLighting();
