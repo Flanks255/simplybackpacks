@@ -17,7 +17,7 @@ import net.minecraftforge.items.IItemHandler;
 
 public class SBContainer extends Container {
     public SBContainer(final int windowId, final PlayerInventory playerInventory) {
-        this(windowId, playerInventory.player.world, playerInventory.player.getPosition(), playerInventory, playerInventory.player);
+        this(windowId, playerInventory.player.world, playerInventory.player.getBlockPos(), playerInventory, playerInventory.player);
     }
 
     public SBContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {

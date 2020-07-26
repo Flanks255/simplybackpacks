@@ -1,6 +1,7 @@
 package com.flanks255.simplybackpacks.gui;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -17,6 +18,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 public class FilterGui extends ContainerScreen<FilterContainer> {
     public FilterGui(FilterContainer container, PlayerInventory playerInventory, ITextComponent name) {
@@ -58,14 +60,14 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
     private ResourceLocation GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/filter_gui.png");;
 
     @Override
-    public void render(int p_render_1_, int p_render_2_, float p_render_3_) {
-        this.renderBackground();
-        super.render(p_render_1_, p_render_2_, p_render_3_);
-        this.renderHoveredToolTip(p_render_1_, p_render_2_);
+    public void render(MatrixStack p_230430_1_, int p_render_1_, int p_render_2_, float p_render_3_) {
+        this.renderBackground(p_230430_1_);
+        super.render(p_230430_1_,p_render_1_, p_render_2_, p_render_3_);
+        this.drawMouseoverTooltip(p_230430_1_, p_render_1_, p_render_2_);
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+    protected void drawBackground(MatrixStack p_230450_1_, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f ,1.0f);
         this.getMinecraft().textureManager.bindTexture(GUI);
         drawTexturedQuad(guiLeft, guiTop, xSize, ySize, 0, 0, 1, 1, 0);
@@ -84,26 +86,31 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
     }
 
     @Override
-    protected void renderHoveredToolTip(int x, int y) {
-        super.renderHoveredToolTip(x, y);
+    protected void drawForeground(MatrixStack p_230451_1_, int p_230451_2_, int p_230451_3_) {
+        //dont draw nothin...
+    }
+
+    @Override
+    protected void drawMouseoverTooltip(MatrixStack p_230459_1_, int x, int y) {
+        super.drawMouseoverTooltip(p_230459_1_, x, y);
 
         for(Widget button : buttons) {
             if (button.isMouseOver(x,y) && button instanceof SlotButton)
                 if (!container.itemHandler.filter.getStackInSlot(((SlotButton)button).slot).isEmpty())
-                    renderTooltip(container.itemHandler.filter.getStackInSlot(((SlotButton)button).slot), x, y);
+                    renderTooltip(p_230459_1_, container.itemHandler.filter.getStackInSlot(((SlotButton)button).slot), x, y);
         }
     }
 
     class SlotButton extends Button {
         public SlotButton(int x, int y, int width, int height, int slotIn, IPressable pressable) {
-            super(x,y,width,height,"", pressable);
+            super(x,y,width,height,new StringTextComponent(""), pressable);
 
             this.slot = slotIn;
         }
         public int slot;
 
         @Override
-        public void renderButton(int mouseX, int mouseY, float partialTicks) {
+        public void renderButton(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
             RenderSystem.pushMatrix();
             RenderSystem.color4f(1.0f,1.0f,1.0f,1.0f);
             FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
@@ -126,7 +133,7 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
             }
 
             if (hovered)
-                fill(x,y,x+width, y+height, -2130706433);
+                fill(stack, x,y,x+width, y+height, -2130706433);
 
             RenderSystem.popMatrix();
         }
@@ -135,7 +142,7 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
 
     class SwitchButton extends Button {
         public SwitchButton(int x, int y, String text, boolean initial, IPressable pressable) {
-            super(x,y,32,16,"", pressable);
+            super(x,y,32,16,new StringTextComponent(""), pressable);
             textKey = text;
             state = initial;
         }
@@ -147,10 +154,10 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
         private FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
 
         @Override
-        public void renderButton(int p_renderButton_1_, int p_renderButton_2_, float p_renderButton_3_) {
-            minecraft.getTextureManager().bindTexture(state?on:off);
+        public void renderButton(MatrixStack stack, int p_renderButton_1_, int p_renderButton_2_, float p_renderButton_3_) {
+            getMinecraft().getTextureManager().bindTexture(state?on:off);
             drawTexturedQuad(x,y,width,height,0,0,1,1, 100F);
-            fontRenderer.drawString(I18n.format(textKey), x + 34, y + 4, 0x404040);
+            fontRenderer.draw(stack, I18n.format(textKey), x + 34, y + 4, 0x404040);
         }
     }
 }

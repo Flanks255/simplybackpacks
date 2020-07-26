@@ -32,7 +32,7 @@ public class FilterContainer  extends Container {
     public static final ContainerType type = new ContainerType<>(FilterContainer::new).setRegistryName("sb_filter_container");
 
     public FilterContainer(final int windowId, final PlayerInventory playerInventory) {
-        this(windowId, playerInventory.player.world, playerInventory.player.getPosition(), playerInventory, playerInventory.player);
+        this(windowId, playerInventory.player.world, playerInventory.player.getBlockPos(), playerInventory, playerInventory.player);
     }
 
     public FilterContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {

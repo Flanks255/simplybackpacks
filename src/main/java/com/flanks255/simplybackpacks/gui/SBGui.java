@@ -1,6 +1,7 @@
 package com.flanks255.simplybackpacks.gui;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -49,7 +50,7 @@ public class SBGui extends ContainerScreen<SBContainer> {
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+    protected void drawBackground(MatrixStack p_230450_1_, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f ,1.0f);
         this.getMinecraft().textureManager.bindTexture(GUI);
         drawTexturedQuad(guiLeft, guiTop, xSize, ySize, 0, 0, 1, 1, 0);
@@ -68,20 +69,15 @@ public class SBGui extends ContainerScreen<SBContainer> {
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-        RenderSystem.pushMatrix();
-        RenderSystem.color4f(0.25f, 0.25f, 0.25f, 1.0f);
-        Minecraft.getInstance().fontRenderer.drawString(this.title.getString(), 7,6,0x404040);
-        RenderSystem.color4f(1f, 1f, 1f, 1.0f);
-        RenderSystem.popMatrix();
+    protected void drawForeground(MatrixStack p_230451_1_, int mouseX, int mouseY) {
+       this.textRenderer.draw(p_230451_1_, this.title.getString(), 7,6,0x404040);
     }
 
     @Override
-    public void render(int p_render_1_, int p_render_2_, float p_render_3_) {
-        this.renderBackground();
-        super.render(p_render_1_, p_render_2_, p_render_3_);
-        this.renderHoveredToolTip(p_render_1_, p_render_2_);
+    public void render(MatrixStack p_230430_1_, int p_render_1_, int p_render_2_, float p_render_3_) {
+        this.renderBackground(p_230430_1_);
+        super.render(p_230430_1_,p_render_1_, p_render_2_, p_render_3_);
+        this.drawMouseoverTooltip(p_230430_1_, p_render_1_, p_render_2_);
     }
 
     @Override
