@@ -65,7 +65,7 @@ public class SimplyBackpacks {
     }
 
     private void pickupEvent(EntityItemPickupEvent event) {
-        if (event.getPlayer().openContainer instanceof SBContainer || event.getPlayer().isSneaking())
+        if (event.getPlayer().openContainer instanceof SBContainer || event.getPlayer().isSneaking() || event.getItem().getItem().getItem() instanceof ItemBackpackBase)
             return;
         PlayerInventory playerInv = event.getPlayer().inventory;
         for (int i = 0; i <= 8; i++) {
