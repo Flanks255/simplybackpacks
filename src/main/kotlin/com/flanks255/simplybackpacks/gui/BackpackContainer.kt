@@ -65,10 +65,10 @@ class BackpackContainer(item: ItemStack, playerInventory: InventoryPlayer, mySlo
             else -> 25
         }
         val originY: Int = when(slotcount) {
-            18 -> 57
-            33 -> 75
-            66 -> 129
-            else -> 183
+            18 -> 67
+            33 -> 85
+            66 -> 139
+            else -> 193
         }
         //Player Inventory
         for (row in 0..2) {

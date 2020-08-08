@@ -20,10 +20,10 @@ class BackpackGui(val container: BackpackContainer): GuiContainer(container) {
     }
     init {
         val size: Size = when(container.slotcount) {
-            18 -> Size(176, 140)
-            33 -> Size(212, 158)
-            66 -> Size(212, 212)
-            else -> Size(212, 266)
+            18 -> Size(176, 150)
+            33 -> Size(212, 168)
+            66 -> Size(212, 222)
+            else -> Size(212, 276)
         }
         xSize = size.width
         ySize = size.height
