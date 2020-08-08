@@ -7,7 +7,6 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -21,22 +20,22 @@ public class SBGui extends ContainerScreen<SBContainer> {
             case 18:
                 GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/common_gui.png");
                 xSize = 176;
-                ySize = 140;
+                ySize = 150;
                 break;
             case 33:
                 GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/uncommon_gui.png");
                 xSize = 212;
-                ySize = 158;
+                ySize = 168;
                 break;
             case 66:
                 GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/rare_gui.png");
                 xSize = 212;
-                ySize = 212;
+                ySize = 222;
                 break;
             default:
                 GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/epic_gui.png");
                 xSize = 212;
-                ySize = 266;
+                ySize = 276;
                 break;
         }
     }
