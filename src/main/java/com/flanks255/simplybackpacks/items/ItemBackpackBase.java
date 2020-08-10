@@ -98,7 +98,7 @@ public class ItemBackpackBase extends Item {
                 });
             }
         }
-        return super.onItemRightClick(worldIn, playerIn, handIn);
+        return ActionResult.success(playerIn.getHeldItem(handIn));
     }
 
     @Nullable
