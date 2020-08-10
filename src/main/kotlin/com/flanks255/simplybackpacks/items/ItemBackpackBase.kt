@@ -20,6 +20,7 @@ import net.minecraft.nbt.NBTBase
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagList
 import net.minecraft.util.ActionResult
+import net.minecraft.util.EnumActionResult
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.text.TextComponentString
@@ -95,7 +96,7 @@ class ItemBackpackBase(val name: String, val size: Int, private val rarity: Enum
             else //Inventory
                 playerIn.openGui(simplybackpacks, 0, worldIn, playerIn.position.x, playerIn.position.y, playerIn.position.z )
         }
-        return super.onItemRightClick(worldIn, playerIn, handIn)
+        return ActionResult.newResult(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn))
     }
 
     fun filterItem(item: ItemStack, packItem: ItemStack): Boolean {
