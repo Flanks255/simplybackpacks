@@ -20,6 +20,7 @@ import net.minecraft.item.Rarity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
@@ -98,7 +99,7 @@ public class ItemBackpackBase extends Item {
                 });
             }
         }
-        return super.onItemRightClick(worldIn, playerIn, handIn);
+        return ActionResult.newResult(ActionResultType.SUCCESS ,playerIn.getHeldItem(handIn));
     }
 
     @Nullable
