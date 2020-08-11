@@ -194,12 +194,17 @@ public class ItemBackpackBase extends Item {
             return false;
 
         IItemHandler handler = stupidIdiot.orElse(null);
-        if (handler == null)
+        if (handler == null || !(handler instanceof BackpackItemHandler))
             return false;
-
+        ((BackpackItemHandler) handler).load();
 
         if (!filterItem(event.getItem().getItem(), stack))
             return false;
+
+        SimplyBackpacks.LOGGER.info(stack.getTag().toString());
+        SimplyBackpacks.LOGGER.info("Slots: " + handler.getSlots());
+        SimplyBackpacks.LOGGER.info("Slots: " + handler.getStackInSlot(0).getDisplayName().getString());
+
 
         ItemStack pickedUp = event.getItem().getItem();
         for (int i = 0; i < handler.getSlots(); i++) {
