@@ -51,11 +51,6 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
 
 
     public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<CopyBackpackDataRecipe> {
-
-        private static final Method deserializeKey = ObfuscationReflectionHelper.findMethod(ShapedRecipe.class, "func_192408_a", JsonObject.class);
-        private static final Method shrink = ObfuscationReflectionHelper.findMethod(ShapedRecipe.class, "func_194134_a", String[].class);
-        private static final Method patternFromJson = ObfuscationReflectionHelper.findMethod(ShapedRecipe.class, "func_192407_a", JsonArray.class);
-        private static final Method deserializeIngredients = ObfuscationReflectionHelper.findMethod(ShapedRecipe.class, "func_192402_a", String[].class, Map.class, int.class, int.class);
         @Nullable
         @Override
         public CopyBackpackDataRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
@@ -75,20 +70,15 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
 
         @Override
         public CopyBackpackDataRecipe read(ResourceLocation recipeId, JsonObject json) {
-            try {
                 String group = JSONUtils.getString(json, "group", "");
-                Map<String, Ingredient> map = (Map<String, Ingredient>)deserializeKey.invoke(null, JSONUtils.getJsonObject(json, "key"));
-                String[] pattern = (String[])shrink.invoke(null, patternFromJson.invoke(null, JSONUtils.getJsonArray(json, "pattern")));
+                Map<String, Ingredient> map = ShapedRecipe.deserializeKey(JSONUtils.getJsonObject(json, "key"));
+                String[] pattern = ShapedRecipe.shrink(ShapedRecipe.patternFromJson(JSONUtils.getJsonArray(json, "pattern")));
                 int width = pattern[0].length();
                 int height = pattern.length;
-                NonNullList<Ingredient> ingredients = (NonNullList<Ingredient>) deserializeIngredients.invoke(null, pattern, map, width, height);
+                NonNullList<Ingredient> ingredients = ShapedRecipe.deserializeIngredients(pattern, map, width, height);
                 ItemStack result = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
 
                 return new CopyBackpackDataRecipe(recipeId, group,width, height,ingredients,result);
-            }
-            catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException("Failed to parse backpack upgrade recipe");
-            }
         }
 
         @Override
