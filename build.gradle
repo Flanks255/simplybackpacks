@@ -53,7 +53,7 @@ minecraft {
     mappings channel: 'snapshot', version: '20200813-mixed-1.16.2'
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     
-    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -116,14 +116,15 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     //minecraft 'net.minecraftforge:forge:1.15.2-31.1.1'
     //minecraft 'net.minecraftforge:forge:1.16.1-32.0.106'
-    minecraft 'net.minecraftforge:forge:1.16.2-33.0.2'
+    minecraft 'net.minecraftforge:forge:1.16.2-33.0.5'
 
-    //compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
-    //runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
+    runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
 
     //compile fg.deobf(curse.resolve("nbtedit",2799777))
     //compile fg.deobf(curse.resolve("simply-light",2795157))
     //compile fg.deobf(curse.resolve("building-gadgets",2820989))
+    //compile fg.deobf(curse.resolve("mining-gadgets",2933766))
 
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
