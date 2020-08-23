@@ -26,18 +26,20 @@ public class OpenMessage {
     public static void handle(final OpenMessage message, final Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(()-> {
             ServerPlayerEntity player = ctx.get().getSender();
-            player.openContainer(new INamedContainerProvider() {
-                @Override
-                public ITextComponent getDisplayName() {
-                    return SimplyBackpacks.findBackpack(player).getDisplayName();
-                }
+            if (!SimplyBackpacks.findBackpack(player).isEmpty()) {
+                player.openContainer(new INamedContainerProvider() {
+                    @Override
+                    public ITextComponent getDisplayName() {
+                        return SimplyBackpacks.findBackpack(player).getDisplayName();
+                    }
 
-                @Nullable
-                @Override
-                public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
-                    return new SBContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getPosition(), p_createMenu_2_, p_createMenu_3_);
-                }
-            });
+                    @Nullable
+                    @Override
+                    public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
+                        return new SBContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getPosition(), p_createMenu_2_, p_createMenu_3_);
+                    }
+                });
+            }
         });
         ctx.get().setPacketHandled(true);
     }
