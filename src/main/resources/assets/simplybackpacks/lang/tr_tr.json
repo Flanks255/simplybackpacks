@@ -1,0 +1,29 @@
+{
+  "simplybackpacks.shift":"Bilgi için <§6§oShift§r>.",
+  "key.simplybackpacks.category":"Simply Backpacks",
+  "key.simplybackpacks.backpackpickup.desc":"Oto-Toplamayı Kapa-Aç",
+  "key.simplybackpacks.backpackopen.desc":"Sırt Çantasını Aç",
+
+  "simplybackpacks.autopickup":"Oto-Toplama",
+  "simplybackpacks.autopickupenabled":"Oto-Toplama: §aEtkin§r",
+  "simplybackpacks.autopickupdisabled":"Oto-Toplama: §cDevre Dışı§r",
+
+  "simplybackpacks.whitelist":"Beyaz Liste",
+  "simplybackpacks.nbtdata":"NBT Etiketleri",
+
+  "item.simplybackpacks.commonbackpack": "Sıradan Çanta",
+  "item.simplybackpacks.commonbackpack.info":"En basit çanta.",
+  "item.simplybackpacks.commonbackpack.info2":"§f18 Yığın Depolar§r",
+
+  "item.simplybackpacks.uncommonbackpack":"İyi Çanta",
+  "item.simplybackpacks.uncommonbackpack.info":"Daha gelişmiş çanta.",
+  "item.simplybackpacks.uncommonbackpack.info2":"§e33 Yığın Depolar§r",
+
+  "item.simplybackpacks.rarebackpack":"Nadir Çanta",
+  "item.simplybackpacks.rarebackpack.info":"Gerçekten iyi bir çanta.",
+  "item.simplybackpacks.rarebackpack.info2":"§b66 Yığın Depolar§r",
+
+  "item.simplybackpacks.epicbackpack":"Epik Çanta",
+  "item.simplybackpacks.epicbackpack.info":"Esas çanta karşınızda.",
+  "item.simplybackpacks.epicbackpack.info2":"§d99 Yığın Depolar§r"
+}
