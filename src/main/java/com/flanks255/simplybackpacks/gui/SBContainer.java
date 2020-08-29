@@ -65,7 +65,7 @@ public class SBContainer extends Container {
     public boolean canInteractWith(PlayerEntity playerIn) {
         if (slotID == -106)
             return playerIn.getHeldItemOffhand().getItem() instanceof ItemBackpackBase; //whoops guess you can...
-        return !playerIn.inventory.getStackInSlot(slotID).isEmpty();
+        return playerIn.inventory.getStackInSlot(slotID).getItem() instanceof ItemBackpackBase;
     }
 
 

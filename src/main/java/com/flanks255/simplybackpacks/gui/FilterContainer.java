@@ -21,7 +21,9 @@ import net.minecraftforge.items.IItemHandler;
 public class FilterContainer  extends Container {
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
-        return !playerIn.getHeldItemMainhand().isEmpty();
+        if (slotID == -106)
+            return playerIn.getHeldItemOffhand().getItem() instanceof ItemBackpackBase; //whoops guess you can...
+        return playerIn.inventory.getStackInSlot(slotID).getItem() instanceof ItemBackpackBase;
     }
 
     public BackpackItemHandler itemHandler;
@@ -73,13 +75,8 @@ public class FilterContainer  extends Container {
                 }
             }
         } else if (playerEntity.getHeldItemOffhand().getItem() instanceof ItemBackpackBase) {
-            for (int i = 0; i <= 35; i++) {
-                ItemStack stack = inv.getStackInSlot(i);
-                if (stack == playerEntity.getHeldItemOffhand()) {
-                    slotID = i;
-                    return stack;
-                }
-            }
+            slotID = -106;
+            return playerEntity.getHeldItemOffhand();
         }
         else {
             for (int i = 0; i <= 35; i++) {
