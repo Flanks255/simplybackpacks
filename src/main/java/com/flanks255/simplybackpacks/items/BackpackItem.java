@@ -8,6 +8,7 @@ import com.flanks255.simplybackpacks.network.ToggleMessageMessage;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
@@ -34,6 +35,10 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.CuriosCapability;
+import top.theillusivec4.curios.api.type.capability.ICurio;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -128,7 +133,6 @@ public class BackpackItem extends Item {
 
     }
 
-
     public boolean filterItem(ItemStack item, ItemStack packItem) {
         IItemHandler tmp = packItem.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
         if (tmp == null || !(tmp instanceof BackpackItemHandler))
@@ -156,14 +160,10 @@ public class BackpackItem extends Item {
     }
 
     public boolean pickupEvent(EntityItemPickupEvent event, ItemStack stack) {
-        CompoundNBT nbt = stack.getTag();
-        if (nbt == null)
+        if (!backpack.getOrCreateTag().getBoolean("Pickup"))
             return false;
 
-        if (!nbt.getBoolean("Pickup"))
-                return false;
-
-        return stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        return backpack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
                 .map(handler -> {
                     if (!(handler instanceof BackpackItemHandler))
                         return false;
@@ -240,6 +240,14 @@ public class BackpackItem extends Item {
             return player.getHeldItemOffhand();
         }
 
+        if (SimplyBackpacks.curiosLoaded) {
+            ItemStack stack = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, player)
+                    .map(ImmutableTriple::getRight).orElse(ItemStack.EMPTY);
+
+            if (!stack.isEmpty())
+                return stack;
+        }
+
         for (int i = 0; i < (justHotbar ? 9 : player.inventory.mainInventory.size()); i++) {
             if (isBackpack(player.inventory.getStackInSlot(i))) {
                 return player.inventory.getStackInSlot(i);
@@ -252,4 +260,6 @@ public class BackpackItem extends Item {
     public static boolean isBackpack(ItemStack stack) {
         return stack.getItem() instanceof BackpackItem;
     }
+
+
 }

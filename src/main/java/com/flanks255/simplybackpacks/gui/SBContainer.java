@@ -14,6 +14,8 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import top.theillusivec4.curios.api.CuriosApi;
 
 import javax.annotation.Nonnull;
 
@@ -151,19 +153,33 @@ public class SBContainer extends Container {
                     return stack;
                 }
             }
-        } else if (playerEntity.getHeldItemOffhand().getItem() instanceof BackpackItem) {
+        }
+
+        if (playerEntity.getHeldItemOffhand().getItem() instanceof BackpackItem) {
             slotID = -106;
             return playerEntity.getHeldItemOffhand();
         }
-        else {
-            for (int i = 0; i <= 35; i++) {
-                ItemStack stack = inv.getStackInSlot(i);
-                if (stack.getItem() instanceof BackpackItem) {
-                    slotID = i;
-                    return stack;
-                }
+
+        // Before a full inventory, check the players curios if loaded
+        if (SimplyBackpacks.curiosLoaded) {
+            ItemStack stack = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, playerEntity)
+                    .map(e -> {
+                        slotID = e.getMiddle();
+                        return e.getRight();
+                    }).orElse(ItemStack.EMPTY);
+
+            if (!stack.isEmpty())
+                return stack;
+        }
+
+        for (int i = 0; i <= 35; i++) {
+            ItemStack stack = inv.getStackInSlot(i);
+            if (stack.getItem() instanceof BackpackItem) {
+                slotID = i;
+                return stack;
             }
         }
+
         return ItemStack.EMPTY;
     }
 }

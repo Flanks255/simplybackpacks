@@ -12,12 +12,10 @@ import com.flanks255.simplybackpacks.network.SBNetwork;
 import com.flanks255.simplybackpacks.network.ToggleMessage;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.MinecraftForge;
@@ -26,17 +24,24 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.SlotTypeMessage;
+import top.theillusivec4.curios.api.SlotTypePreset;
+import top.theillusivec4.curios.api.type.util.ICuriosHelper;
 
 @Mod("simplybackpacks")
 public class SimplyBackpacks {
@@ -63,6 +68,8 @@ public class SimplyBackpacks {
 
     private final NonNullList<KeyBinding> keyBinds = NonNullList.create();
 
+    public static boolean curiosLoaded;
+
     public SimplyBackpacks() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         ITEMS.register(bus);
@@ -71,9 +78,12 @@ public class SimplyBackpacks {
 
         bus.addListener(this::setup);
         bus.addListener(this::clientStuff);
+        bus.addListener(this::onEnqueueIMC);
 
         MinecraftForge.EVENT_BUS.addListener(this::pickupEvent);
         MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
+
+        curiosLoaded = ModList.get().isLoaded("curios");
     }
 
     public void setup(final FMLCommonSetupEvent event) {
@@ -84,10 +94,27 @@ public class SimplyBackpacks {
         if (event.getPlayer().openContainer instanceof SBContainer || event.getPlayer().isSneaking() || BackpackItem.isBackpack(event.getItem().getItem()))
             return;
 
+        // Use curios first if it can
+        if (curiosLoaded) {
+            boolean handled = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, event.getPlayer()).map((data) -> {
+                // A cast here should be safe...
+                if (((BackpackItem) data.getRight().getItem()).pickupEvent(event.getItem().getItem(), data.getRight())) {
+                    event.setResult(Event.Result.ALLOW);
+                    return true;
+                }
+
+                return false;
+            }).orElse(false);
+
+            if (handled) {
+                return;
+            }
+        }
+
         PlayerInventory playerInv = event.getPlayer().inventory;
         for (int i = 0; i <= 8; i++) {
             ItemStack stack = playerInv.getStackInSlot(i);
-            if (BackpackItem.isBackpack(stack) && ((BackpackItem) stack.getItem()).pickupEvent(event, stack)) {
+            if (BackpackItem.isBackpack(stack) && ((BackpackItem) stack.getItem()).pickupEvent(event.getItem().getItem(), stack)) {
                 event.setResult(Event.Result.ALLOW);
                 return;
             }
@@ -111,5 +138,11 @@ public class SimplyBackpacks {
 
         ClientRegistry.registerKeyBinding(keyBinds.get(0));
         ClientRegistry.registerKeyBinding(keyBinds.get(1));
+    }
+
+    private void onEnqueueIMC(InterModEnqueueEvent event) {
+        if (curiosLoaded) {
+            InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, () -> SlotTypePreset.BACK.getMessageBuilder().build());
+        }
     }
 }
