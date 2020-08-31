@@ -9,10 +9,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -41,27 +39,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemBackpackBase extends Item {
-    public ItemBackpackBase(String name, Integer size, Rarity rarity) {
-        super(new Item.Properties().maxStackSize(1).group(ItemGroup.TOOLS));
-        this.name = name;
-        this.size = size;
-        this.rarity = rarity;
-    }
+public class BackpackItem extends Item {
+    public Backpack backpack;
 
-    String name;
-    Integer size;
-    Rarity rarity;
+    public BackpackItem(Backpack backpack) {
+        super(new Item.Properties().maxStackSize(1).group(ItemGroup.TOOLS));
+        this.backpack = backpack;
+    }
 
     @Override
     public Rarity getRarity(ItemStack stack) {
-        return rarity;
-    }
-
-    public ItemBackpackBase setName() {
-        setRegistryName(SimplyBackpacks.MODID, name);
-
-        return this;
+        return this.backpack.rarity;
     }
 
     @Override
@@ -74,33 +62,13 @@ public class ItemBackpackBase extends Item {
         if (!worldIn.isRemote) {
             if (playerIn.isSneaking()) {
                 //filter
-                playerIn.openContainer(new INamedContainerProvider() {
-                    @Override
-                    public ITextComponent getDisplayName() {
-                        return new StringTextComponent("Backpack Filter");
-                    }
+                playerIn.openContainer(new SimpleNamedContainerProvider((windowId, playerInventory, playerEntity) ->
+                        new FilterContainer(windowId, playerInventory, null), new StringTextComponent("Backpack Filter")));
 
-                    @Nullable
-                    @Override
-                    public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
-                        return new FilterContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getBlockPos(), p_createMenu_2_, p_createMenu_3_);
-                    }
-                });
             } else {
                 //open
-                playerIn.openContainer(new INamedContainerProvider() {
-                    @Override
-                    public ITextComponent getDisplayName() {
-                        return playerIn.getHeldItem(handIn).getDisplayName();
-
-                    }
-
-                    @Nullable
-                    @Override
-                    public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
-                        return new SBContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getBlockPos(), p_createMenu_2_, p_createMenu_3_);
-                    }
-                });
+                playerIn.openContainer(new SimpleNamedContainerProvider((windowId, playerInventory, playerEntity) ->
+                        new SBContainer(windowId, playerInventory, null), playerIn.getHeldItem(handIn).getDisplayName()));
             }
         }
         return ActionResult.success(playerIn.getHeldItem(handIn));
@@ -109,7 +77,7 @@ public class ItemBackpackBase extends Item {
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-        return new BackpackCaps(stack, size, nbt);
+        return new BackpackCaps(stack, this.backpack.slots, nbt);
     }
 
     class BackpackCaps implements ICapabilitySerializable {
@@ -119,6 +87,7 @@ public class ItemBackpackBase extends Item {
             inventory = new BackpackItemHandler(itemStack, size);
             optional = LazyOptional.of(() -> inventory);
         }
+
         private int size;
         private ItemStack itemStack;
         private BackpackItemHandler inventory;
@@ -194,30 +163,29 @@ public class ItemBackpackBase extends Item {
         if (!nbt.getBoolean("Pickup"))
                 return false;
 
-        LazyOptional<IItemHandler> stupidIdiot = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-        if (!stupidIdiot.isPresent())
-            return false;
+        return stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+                .map(handler -> {
+                    if (!(handler instanceof BackpackItemHandler))
+                        return false;
 
-        IItemHandler handler = stupidIdiot.orElse(null);
-        if (handler == null || !(handler instanceof BackpackItemHandler))
-            return false;
-        ((BackpackItemHandler) handler).load();
+                    ((BackpackItemHandler) handler).load();
 
-        if (!filterItem(event.getItem().getItem(), stack))
-            return false;
+                    if (!filterItem(event.getItem().getItem(), stack))
+                        return false;
 
+                    ItemStack pickedUp = event.getItem().getItem();
+                    for (int i = 0; i < handler.getSlots(); i++) {
+                        ItemStack slot = handler.getStackInSlot(i);
+                        if (slot.isEmpty() || (ItemHandlerHelper.canItemStacksStack(slot, pickedUp) && slot.getCount() < slot.getMaxStackSize() && slot.getCount() < handler.getSlotLimit(i))) {
+                            int remainder = handler.insertItem(i, pickedUp.copy(), false).getCount();
+                            pickedUp.setCount(remainder);
+                            if (remainder == 0)
+                                break;
+                        }
+                    }
 
-        ItemStack pickedUp = event.getItem().getItem();
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack slot = handler.getStackInSlot(i);
-            if (slot.isEmpty() || (ItemHandlerHelper.canItemStacksStack(slot, pickedUp) && slot.getCount() < slot.getMaxStackSize() && slot.getCount() < handler.getSlotLimit(i))) {
-                int remainder = handler.insertItem(i, pickedUp.copy(), false).getCount();
-                pickedUp.setCount(remainder);
-                if (remainder == 0)
-                    break;
-            }
-        }
-        return pickedUp.isEmpty();
+                    return pickedUp.isEmpty();
+                }).orElse(Boolean.FALSE);
     }
 
 
@@ -253,5 +221,35 @@ public class ItemBackpackBase extends Item {
         else {
             tooltip.add(new StringTextComponent( fallbackString("simplybackpacks.shift", "Press <§6§oShift§r> for info.") ));
         }
+    }
+
+
+    @Nonnull
+    public static ItemStack findBackpack(PlayerEntity player) {
+        return findBackpack(player, false);
+    }
+
+    @Nonnull
+    public static ItemStack findBackpack(PlayerEntity player, boolean justHotbar) {
+        // Search order defined here, first search the players hands
+        if (isBackpack(player.getHeldItemMainhand())) {
+            return player.getHeldItemMainhand();
+        }
+
+        if (isBackpack(player.getHeldItemOffhand())) {
+            return player.getHeldItemOffhand();
+        }
+
+        for (int i = 0; i < (justHotbar ? 9 : player.inventory.mainInventory.size()); i++) {
+            if (isBackpack(player.inventory.getStackInSlot(i))) {
+                return player.inventory.getStackInSlot(i);
+            }
+        }
+
+        return ItemStack.EMPTY;
+    }
+
+    public static boolean isBackpack(ItemStack stack) {
+        return stack.getItem() instanceof BackpackItem;
     }
 }

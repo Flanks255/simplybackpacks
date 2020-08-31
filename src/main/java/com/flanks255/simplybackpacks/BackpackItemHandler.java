@@ -1,6 +1,6 @@
 package com.flanks255.simplybackpacks;
 
-import com.flanks255.simplybackpacks.items.ItemBackpackBase;
+import com.flanks255.simplybackpacks.items.BackpackItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -127,7 +127,7 @@ public class BackpackItemHandler extends ItemStackHandler {
                 if (tag.contains("Items") || tag.contains("BlockEntityTag") || tag.contains("Inventory"))
                     return;
             }
-            if (item.getItem() instanceof ItemBackpackBase || item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent())
+            if (item.getItem() instanceof BackpackItem || item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent())
                 return;
             else {
                 this.setStackInSlot(slot, item);
@@ -139,7 +139,7 @@ public class BackpackItemHandler extends ItemStackHandler {
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            if (stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent() || stack.getItem() instanceof ItemBackpackBase)
+            if (stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent() || stack.getItem() instanceof BackpackItem)
                 return stack;
 
             return super.insertItem(slot, stack, simulate);

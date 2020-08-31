@@ -1,7 +1,6 @@
 package com.flanks255.simplybackpacks.network;
 
-import com.flanks255.simplybackpacks.SimplyBackpacks;
-import com.flanks255.simplybackpacks.items.ItemBackpackBase;
+import com.flanks255.simplybackpacks.items.BackpackItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -18,27 +17,17 @@ public class ToggleMessage {
         buffer.writeByte(0);
     }
     public static void handle(final ToggleMessage message, final Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(
-                ()-> {
-                    PlayerEntity player = ctx.get().getSender();
-                    if (player == null)
-                        return;
-                    if (player.getHeldItemMainhand().getItem() instanceof ItemBackpackBase)
-                        ((ItemBackpackBase) player.getHeldItemMainhand().getItem()).togglePickup(player, player.getHeldItemMainhand());
-                    else if (player.getHeldItemOffhand().getItem() instanceof  ItemBackpackBase)
-                        ((ItemBackpackBase) player.getHeldItemOffhand().getItem()).togglePickup(player, player.getHeldItemOffhand());
-                    else {
-                        //check hotbar
-                        for (int i = 0; i <= 8; i++ ) {
-                            ItemStack stack = player.inventory.getStackInSlot(i);
-                            if (stack.getItem() instanceof  ItemBackpackBase) {
-                                ((ItemBackpackBase) stack.getItem()).togglePickup(player, stack);
-                                break;
-                            }
-                        }
-                    }
-                }
-        );
+        ctx.get().enqueueWork(()-> {
+            PlayerEntity player = ctx.get().getSender();
+            if (player == null)
+                return;
+
+            ItemStack stack = BackpackItem.findBackpack(player, true);
+            if (stack.isEmpty())
+                return;
+
+            ((BackpackItem) stack.getItem()).togglePickup(player, stack);
+        });
         ctx.get().setPacketHandled(true);
     }
 }

@@ -32,21 +32,16 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
     protected void init() {
         super.init();
 
-        Button.IPressable slotClick = new Button.IPressable() {
-            @Override
-            public void onPress(Button button) {
-                Minecraft.getInstance().playerController.sendEnchantPacket(container.windowId, ((SlotButton)button).slot);
-                container.enchantItem(playerInventory.player, ((SlotButton)button).slot);
-            }
-        };
-
         int slot = 0;
         for (int row = 0; row < 4; row ++) {
             for (int col = 0; col < 4; col++) {
                 int x = guiLeft + 7 + col * 18;
                 int y = guiTop + 7 + row * 18;
 
-                addButton(new SlotButton(x+1, y+1,18 ,18, slot, slotClick));
+                addButton(new SlotButton(x+1, y+1,18 ,18, slot, button -> {
+                    Minecraft.getInstance().playerController.sendEnchantPacket(container.windowId, ((SlotButton)button).slot);
+                    container.enchantItem(playerInventory.player, ((SlotButton)button).slot);
+                }));
                 slot++;
             }
         }
@@ -57,47 +52,49 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
 
     }
 
-    private ResourceLocation GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/filter_gui.png");;
+    private final ResourceLocation GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/filter_gui.png");
 
     @Override
-    public void render(MatrixStack p_230430_1_, int p_render_1_, int p_render_2_, float p_render_3_) {
-        this.renderBackground(p_230430_1_);
-        super.render(p_230430_1_,p_render_1_, p_render_2_, p_render_3_);
-        this.drawMouseoverTooltip(p_230430_1_, p_render_1_, p_render_2_);
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(matrixStack);
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
+        this.drawMouseoverTooltip(matrixStack, mouseX, mouseY);
     }
 
     @Override
-    protected void drawBackground(MatrixStack p_230450_1_, float partialTicks, int mouseX, int mouseY) {
+    protected void drawBackground(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f ,1.0f);
+
         this.getMinecraft().textureManager.bindTexture(GUI);
         drawTexturedQuad(guiLeft, guiTop, xSize, ySize, 0, 0, 1, 1, 0);
     }
+
     private void drawTexturedQuad(int x, int y, int width, int height, float tx, float ty, float tw, float th, float z) {
         Tessellator tess = Tessellator.getInstance();
         BufferBuilder buffer = tess.getBuffer();
 
         buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        buffer.vertex((double)x + 0, (double) y + height, (double) z).texture(tx,ty + th).endVertex();
-        buffer.vertex((double) x + width,(double) y + height, (double) z).texture(tx + tw,ty + th).endVertex();
-        buffer.vertex((double) x + width, (double) y + 0, (double) z).texture(tx + tw,ty).endVertex();
-        buffer.vertex((double) x + 0, (double) y + 0, (double) z).texture(tx,ty).endVertex();
+        buffer.vertex((double)x + 0, (double) y + height, z).texture(tx,ty + th).endVertex();
+        buffer.vertex((double) x + width,(double) y + height, z).texture(tx + tw,ty + th).endVertex();
+        buffer.vertex((double) x + width, (double) y + 0, z).texture(tx + tw,ty).endVertex();
+        buffer.vertex((double) x + 0, (double) y + 0, z).texture(tx,ty).endVertex();
 
         tess.draw();
     }
 
     @Override
-    protected void drawForeground(MatrixStack p_230451_1_, int p_230451_2_, int p_230451_3_) {
+    protected void drawForeground(MatrixStack matrixStack, int p_230451_2_, int p_230451_3_) {
         //dont draw nothin...
     }
 
     @Override
-    protected void drawMouseoverTooltip(MatrixStack p_230459_1_, int x, int y) {
-        super.drawMouseoverTooltip(p_230459_1_, x, y);
+    protected void drawMouseoverTooltip(MatrixStack matrixStack, int x, int y) {
+        super.drawMouseoverTooltip(matrixStack, x, y);
 
         for(Widget button : buttons) {
             if (button.isMouseOver(x,y) && button instanceof SlotButton)
                 if (!container.itemHandler.filter.getStackInSlot(((SlotButton)button).slot).isEmpty())
-                    renderTooltip(p_230459_1_, container.itemHandler.filter.getStackInSlot(((SlotButton)button).slot), x, y);
+                    renderTooltip(matrixStack, container.itemHandler.filter.getStackInSlot(((SlotButton)button).slot), x, y);
         }
     }
 
@@ -107,6 +104,7 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
 
             this.slot = slotIn;
         }
+
         public int slot;
 
         @Override
@@ -121,7 +119,7 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-            if (container.itemHandler.filter != null && container.itemHandler.filter.getStackInSlot(slot) != null && !container.itemHandler.filter.getStackInSlot(slot).isEmpty()) {
+            if (container.itemHandler.filter != null && !container.itemHandler.filter.getStackInSlot(slot).isEmpty()) {
                 ItemStack tmp = container.itemHandler.filter.getStackInSlot(slot);
                     itemRenderer.zLevel = 100F;
                     //RenderHelper.enableGUIStandardItemLighting();
@@ -147,17 +145,17 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
             state = initial;
         }
 
-        private ResourceLocation off = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/switch_off.png");
-        private ResourceLocation on = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/switch_on.png");
-        public boolean state = false;
-        private String textKey;
-        private FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+        private final ResourceLocation OFF = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/switch_off.png");
+        private final ResourceLocation ON = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/switch_on.png");
+
+        public boolean state;
+        private final String textKey;
 
         @Override
         public void renderButton(MatrixStack stack, int p_renderButton_1_, int p_renderButton_2_, float p_renderButton_3_) {
-            getMinecraft().getTextureManager().bindTexture(state?on:off);
-            drawTexturedQuad(x,y,width,height,0,0,1,1, 100F);
-            fontRenderer.draw(stack, I18n.format(textKey), x + 34, y + 4, 0x404040);
+            getMinecraft().getTextureManager().bindTexture(state ? ON : OFF);
+            drawTexturedQuad(x, y, width, height,0,0,1,1, 100);
+            Minecraft.getInstance().fontRenderer.draw(stack, I18n.format(textKey), x + 34, y + 4, 0x404040);
         }
     }
 }
