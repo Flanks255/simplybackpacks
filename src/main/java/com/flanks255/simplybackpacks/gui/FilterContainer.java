@@ -1,7 +1,7 @@
 package com.flanks255.simplybackpacks.gui;
 
-import com.flanks255.simplybackpacks.BackpackItemHandler;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
+import com.flanks255.simplybackpacks.capability.BackpackItemHandler;
 import com.flanks255.simplybackpacks.items.BackpackItem;
 import com.flanks255.simplybackpacks.network.FilterMessage;
 import com.flanks255.simplybackpacks.network.ToggleMessage;
@@ -30,20 +30,6 @@ public class FilterContainer  extends Container {
             return;
         }
 
-        LazyOptional<IItemHandler> capability = item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-        capability.ifPresent(cap -> {
-            if (cap instanceof BackpackItemHandler) {
-                itemHandler = (BackpackItemHandler)cap;
-                itemHandler.load();
-                this.player = playerEntity;
-            }
-        });
-
-        if (!capability.isPresent()) {
-            playerEntity.closeScreen();
-            return;
-        }
-
         addPlayerSlots(playerInventory);
     }
 
@@ -52,10 +38,10 @@ public class FilterContainer  extends Container {
         return !playerIn.getHeldItemMainhand().isEmpty();
     }
 
-    public BackpackItemHandler itemHandler;
+//    public BackpackItemHandler itemHandler;
     private int slotID;
     private PlayerEntity player;
-    private ItemStack item;
+    public ItemStack item;
 
     @Nonnull
     private ItemStack findBackpack(PlayerEntity playerEntity) {
@@ -137,7 +123,6 @@ public class FilterContainer  extends Container {
         item.setTag(nbt);
     }
 
-
     public void addPlayerSlots(PlayerInventory playerInventory) {
 
         int originX = 7;
@@ -161,14 +146,18 @@ public class FilterContainer  extends Container {
 
     @Override
     public boolean enchantItem(PlayerEntity playerIn, int id) {
+        item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
+            if (playerIn.inventory.getItemStack().isEmpty())
+                ((BackpackItemHandler) handler).getFilterHandler().extractItem(id, 1, false);
+            else {
+                ItemStack fake = playerIn.inventory.getItemStack().copy();
+                fake.setCount(1);
+
+                ((BackpackItemHandler) handler).getFilterHandler().insertItem(id, fake, false);
+            }
+        });
         //SimplyBackpacks.LOGGER.info("EnchantPacket: " + id);
-        if (playerIn.inventory.getItemStack().isEmpty())
-            itemHandler.filter.removeItem(id);
-        else {
-            ItemStack fake = playerIn.inventory.getItemStack().copy();
-            fake.setCount(1);
-            itemHandler.filter.setItem(id, fake);
-        }
+
         return true;
     }
 

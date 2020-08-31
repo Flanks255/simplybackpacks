@@ -41,7 +41,8 @@ public class SBContainerSlot extends SlotItemHandler {
     @Override
     public void onSlotChanged() {
         super.onSlotChanged();
-        if (getItemHandler() instanceof BackpackItemHandler)
-            ((BackpackItemHandler) getItemHandler()).setDirty();
+
+//        if (getItemHandler() instanceof BackpackItemHandler)
+//            ((BackpackItemHandler) getItemHandler()).setDirty();
     }
 }

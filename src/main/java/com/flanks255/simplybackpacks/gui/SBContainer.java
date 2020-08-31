@@ -1,8 +1,9 @@
 package com.flanks255.simplybackpacks.gui;
 
-import com.flanks255.simplybackpacks.BackpackItemHandler;
 import com.flanks255.simplybackpacks.SBContainerSlot;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
+import com.flanks255.simplybackpacks.capability.BackpackItemHandler;
+import com.flanks255.simplybackpacks.items.Backpack;
 import com.flanks255.simplybackpacks.items.BackpackItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -14,8 +15,8 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
 import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.CuriosCapability;
 
 import javax.annotation.Nonnull;
 
@@ -27,29 +28,31 @@ public class SBContainer extends Container {
         playerInv = playerInventory;
         ItemStack stack = findBackpack(playerInventory.player);
 
-        if (stack.isEmpty()) {
-            playerInventory.player.closeScreen();
-            return;
-        }
+//        if (stack.isEmpty()) {
+//            playerInventory.player.closeScreen();
+//            return;
+//        }
 
         backpackItem = stack;
         LazyOptional<IItemHandler> capability = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
         capability.ifPresent(cap -> {
-            // The cast here is likely redundant
+            System.out.println(cap);
+            // The check here is likely redundant
             if (cap instanceof BackpackItemHandler) {
-                handler = (BackpackItemHandler)cap;
-                handler.load();
+//                handler = (BackpackItemHandler)cap;
+//                handler.load();
                 slotcount = cap.getSlots();
                 itemKey = stack.getTranslationKey();
 
-                addMySlots();
+                addMySlots(cap);
                 addPlayerSlots(playerInv);
             }
         });
 
-        if (!capability.isPresent()) {
-            playerInventory.player.closeScreen();
-        }
+//        if (!capability.isPresent()) {
+//            System.out.println("NOPE");
+//            playerInventory.player.closeScreen();
+//        }
     }
 
     public int slotcount = 0;
@@ -57,13 +60,19 @@ public class SBContainer extends Container {
     private int slotID;
     public String itemKey = "";
     private PlayerInventory playerInv;
-    public BackpackItemHandler handler;
+//    public BackpackItemHandler handler;
 
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
-        if (slotID == -106)
-            return playerIn.getHeldItemOffhand().getItem() instanceof BackpackItem; //whoops guess you can...
-        return !playerIn.inventory.getStackInSlot(slotID).isEmpty();
+//        if (slotID == -106)
+//            return playerIn.getHeldItemOffhand().getItem() instanceof BackpackItem; //whoops guess you can...
+//
+//        if (slotID < 0 && slotID > -106 && SimplyBackpacks.curiosLoaded)
+//            return CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, playerIn).map(e -> !e.getRight().isEmpty()).orElse(false);
+//
+//        System.out.println(playerIn.inventory.getStackInSlot(slotID).isEmpty());
+//        return !playerIn.inventory.getStackInSlot(slotID).isEmpty();
+        return true;
     }
 
     @Override
@@ -101,9 +110,7 @@ public class SBContainer extends Container {
         }
     }
 
-    private void addMySlots() {
-        if (handler == null ) return;
-
+    private void addMySlots(IItemHandler handler) {
         int cols = slotcount == 18? 9:11;
         int rows = slotcount / cols;
         int slotindex = 0;
@@ -164,7 +171,7 @@ public class SBContainer extends Container {
         if (SimplyBackpacks.curiosLoaded) {
             ItemStack stack = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, playerEntity)
                     .map(e -> {
-                        slotID = e.getMiddle();
+                        slotID = e.getMiddle() * -1; // Flip the id for internal reason
                         return e.getRight();
                     }).orElse(ItemStack.EMPTY);
 

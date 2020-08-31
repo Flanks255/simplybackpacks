@@ -1,6 +1,8 @@
 package com.flanks255.simplybackpacks.gui;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
+import com.flanks255.simplybackpacks.capability.BackpackFilterHandler;
+import com.flanks255.simplybackpacks.capability.BackpackItemHandler;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -19,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 public class FilterGui extends ContainerScreen<FilterContainer> {
     public FilterGui(FilterContainer container, PlayerInventory playerInventory, ITextComponent name) {
@@ -92,9 +95,12 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
         super.drawMouseoverTooltip(matrixStack, x, y);
 
         for(Widget button : buttons) {
-            if (button.isMouseOver(x,y) && button instanceof SlotButton)
-                if (!container.itemHandler.filter.getStackInSlot(((SlotButton)button).slot).isEmpty())
-                    renderTooltip(matrixStack, container.itemHandler.filter.getStackInSlot(((SlotButton)button).slot), x, y);
+            if (button.isMouseOver(x,y) && button instanceof SlotButton) {
+                container.item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(cap -> {
+                    if (!((BackpackItemHandler) cap).getFilterHandler().getStackInSlot(((SlotButton)button).slot).isEmpty())
+                        renderTooltip(matrixStack, ((BackpackItemHandler) cap).getFilterHandler().getStackInSlot(((SlotButton)button).slot), x, y);
+                });
+            }
         }
     }
 
@@ -119,16 +125,18 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-            if (container.itemHandler.filter != null && !container.itemHandler.filter.getStackInSlot(slot).isEmpty()) {
-                ItemStack tmp = container.itemHandler.filter.getStackInSlot(slot);
-                    itemRenderer.zLevel = 100F;
-                    //RenderHelper.enableGUIStandardItemLighting();
-                    RenderSystem.enableDepthTest();
-                    RenderHelper.enableGuiDepthLighting();
-                    itemRenderer.renderItemAndEffectIntoGUI(tmp, x, y);
-                    itemRenderer.renderItemOverlayIntoGUI(fontRenderer, tmp, x, y, "");
-                    itemRenderer.zLevel = 0F;
-            }
+            container.item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(cap -> {
+                BackpackFilterHandler filterHandler = ((BackpackItemHandler) cap).getFilterHandler();
+
+                ItemStack tmp = filterHandler.getStackInSlot(slot);
+                itemRenderer.zLevel = 100F;
+                //RenderHelper.enableGUIStandardItemLighting();
+                RenderSystem.enableDepthTest();
+                RenderHelper.enableGuiDepthLighting();
+                itemRenderer.renderItemAndEffectIntoGUI(tmp, x, y);
+                itemRenderer.renderItemOverlayIntoGUI(fontRenderer, tmp, x, y, "");
+                itemRenderer.zLevel = 0F;
+            });
 
             if (hovered)
                 fill(stack, x,y,x+width, y+height, -2130706433);

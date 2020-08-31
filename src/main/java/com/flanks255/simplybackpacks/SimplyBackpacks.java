@@ -94,6 +94,7 @@ public class SimplyBackpacks {
         if (event.getPlayer().openContainer instanceof SBContainer || event.getPlayer().isSneaking() || BackpackItem.isBackpack(event.getItem().getItem()))
             return;
 
+        System.out.println(event.getItem().getItem());
         // Use curios first if it can
         if (curiosLoaded) {
             boolean handled = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, event.getPlayer()).map((data) -> {
