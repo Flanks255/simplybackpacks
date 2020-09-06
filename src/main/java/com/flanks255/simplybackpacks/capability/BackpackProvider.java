@@ -40,7 +40,6 @@ public class BackpackProvider implements ICapabilitySerializable<CompoundNBT> {
     public CompoundNBT serializeNBT() {
         // This is called every tick, not sure why, so we'll cache the result once dirty
         if (backpackItemHandler.dirty) {
-            SimplyBackpacks.LOGGER.debug("DIRTY STATE HANDLED");
             lastWrite = backpackItemHandler.serializeNBT();
             backpackItemHandler.dirty = false;
         }
