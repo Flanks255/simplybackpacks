@@ -1,72 +1,53 @@
 package com.flanks255.simplybackpacks.gui;
 
-import com.flanks255.simplybackpacks.BackpackItemHandler;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
-import com.flanks255.simplybackpacks.items.ItemBackpackBase;
+import com.flanks255.simplybackpacks.capability.BackpackItemHandler;
+import com.flanks255.simplybackpacks.items.BackpackItem;
 import com.flanks255.simplybackpacks.network.FilterMessage;
 import com.flanks255.simplybackpacks.network.ToggleMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
+
+import javax.annotation.Nonnull;
 
 public class FilterContainer  extends Container {
-    @Override
-    public boolean canInteractWith(PlayerEntity playerIn) {
-        if (slotID == -106)
-            return playerIn.getHeldItemOffhand().getItem() instanceof ItemBackpackBase; //whoops guess you can...
-        return playerIn.inventory.getStackInSlot(slotID).getItem() instanceof ItemBackpackBase;
-    }
+    public FilterContainer(int id, PlayerInventory playerInventory, PacketBuffer buffer) {
+        super(SimplyBackpacks.FILTER_CONTAINER.get(), id);
+        player = playerInventory.player;
 
-    public BackpackItemHandler itemHandler;
-    private int slotID;
-    private PlayerEntity player;
-    private ItemStack item;
-
-    public static final ContainerType type = new ContainerType<>(FilterContainer::new).setRegistryName("sb_filter_container");
-
-    public FilterContainer(final int windowId, final PlayerInventory playerInventory) {
-        this(windowId, playerInventory.player.world, playerInventory.player.getBlockPos(), playerInventory, playerInventory.player);
-    }
-
-    public FilterContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        super(type, windowId);
-
-        item = findBackpack(playerEntity);
-
-        if (item == null || item.isEmpty()) {
-            playerEntity.closeScreen();
+        item = findBackpack(player);
+        if (item.isEmpty()) {
+            player.closeScreen();
             return;
         }
-
-        IItemHandler tmp = item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-        if (tmp == null)
-            return;
-
-        if (tmp instanceof BackpackItemHandler) {
-            itemHandler = (BackpackItemHandler)tmp;
-            itemHandler.load();
-            player = playerEntity;
-        } else {
-            playerEntity.closeScreen();
-        }
-
 
         addPlayerSlots(playerInventory);
     }
 
+    @Override
+    public boolean canInteractWith(PlayerEntity playerIn) {
+        if (slotID == -106)
+            return BackpackItem.isBackpack(playerIn.getHeldItemOffhand()); //whoops guess you can...
+
+        return BackpackItem.isBackpack(playerIn.inventory.getStackInSlot(slotID));
+    }
+
+    private int slotID;
+    private PlayerEntity player;
+    public ItemStack item;
+
+    @Nonnull
     private ItemStack findBackpack(PlayerEntity playerEntity) {
         PlayerInventory inv = playerEntity.inventory;
 
-        if (playerEntity.getHeldItemMainhand().getItem() instanceof ItemBackpackBase) {
+        if (BackpackItem.isBackpack(playerEntity.getHeldItemMainhand())) {
             for (int i = 0; i <= 35; i++) {
                 ItemStack stack = inv.getStackInSlot(i);
                 if (stack == playerEntity.getHeldItemMainhand()) {
@@ -74,14 +55,14 @@ public class FilterContainer  extends Container {
                     return stack;
                 }
             }
-        } else if (playerEntity.getHeldItemOffhand().getItem() instanceof ItemBackpackBase) {
+        } else if (BackpackItem.isBackpack(playerEntity.getHeldItemOffhand())) {
             slotID = -106;
             return playerEntity.getHeldItemOffhand();
         }
         else {
             for (int i = 0; i <= 35; i++) {
                 ItemStack stack = inv.getStackInSlot(i);
-                if (stack.getItem() instanceof ItemBackpackBase) {
+                if (BackpackItem.isBackpack(stack)) {
                     slotID = i;
                     return stack;
                 }
@@ -137,7 +118,6 @@ public class FilterContainer  extends Container {
         item.setTag(nbt);
     }
 
-
     public void addPlayerSlots(PlayerInventory playerInventory) {
 
         int originX = 7;
@@ -161,14 +141,18 @@ public class FilterContainer  extends Container {
 
     @Override
     public boolean enchantItem(PlayerEntity playerIn, int id) {
+        item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
+            if (playerIn.inventory.getItemStack().isEmpty())
+                ((BackpackItemHandler) handler).getFilterHandler().extractItem(id, 1, false);
+            else {
+                ItemStack fake = playerIn.inventory.getItemStack().copy();
+                fake.setCount(1);
+
+                ((BackpackItemHandler) handler).getFilterHandler().insertItem(id, fake, false);
+            }
+        });
         //SimplyBackpacks.LOGGER.info("EnchantPacket: " + id);
-        if (playerIn.inventory.getItemStack().isEmpty())
-            itemHandler.filter.removeItem(id);
-        else {
-            ItemStack fake = playerIn.inventory.getItemStack().copy();
-            fake.setCount(1);
-            itemHandler.filter.setItem(id, fake);
-        }
+
         return true;
     }
 

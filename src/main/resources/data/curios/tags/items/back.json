@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "simplybackpacks:commonbackpack",
+    "simplybackpacks:uncommonbackpack",
+    "simplybackpacks:rarebackpack",
+    "simplybackpacks:epicbackpack"
+  ]
+}

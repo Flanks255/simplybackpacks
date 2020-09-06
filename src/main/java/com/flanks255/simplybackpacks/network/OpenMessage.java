@@ -2,11 +2,14 @@ package com.flanks255.simplybackpacks.network;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.gui.SBContainer;
+import com.flanks255.simplybackpacks.items.BackpackItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.inventory.container.SimpleNamedContainerProvider;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -26,19 +29,14 @@ public class OpenMessage {
     public static void handle(final OpenMessage message, final Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(()-> {
             ServerPlayerEntity player = ctx.get().getSender();
-            if (!SimplyBackpacks.findBackpack(player).isEmpty()) {
-                player.openContainer(new INamedContainerProvider() {
-                    @Override
-                    public ITextComponent getDisplayName() {
-                        return SimplyBackpacks.findBackpack(player).getDisplayName();
-                    }
+            if (player == null) {
+                return;
+            }
 
-                    @Nullable
-                    @Override
-                    public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
-                        return new SBContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getBlockPos(), p_createMenu_2_, p_createMenu_3_);
-                    }
-                });
+            ItemStack backpack = BackpackItem.findBackpack(player);
+            if (!backpack.isEmpty()) {
+                player.openContainer(new SimpleNamedContainerProvider((windowId, playerInventory, playerEntity) ->
+                        new SBContainer(windowId, playerInventory, null), backpack.getDisplayName()));
             }
         });
         ctx.get().setPacketHandled(true);

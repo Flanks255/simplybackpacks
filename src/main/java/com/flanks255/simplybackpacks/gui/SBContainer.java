@@ -1,79 +1,87 @@
 package com.flanks255.simplybackpacks.gui;
 
-import com.flanks255.simplybackpacks.BackpackItemHandler;
 import com.flanks255.simplybackpacks.SBContainerSlot;
-import com.flanks255.simplybackpacks.items.ItemBackpackBase;
+import com.flanks255.simplybackpacks.SimplyBackpacks;
+import com.flanks255.simplybackpacks.capability.BackpackItemHandler;
+import com.flanks255.simplybackpacks.items.BackpackItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Pair;
+import top.theillusivec4.curios.api.CuriosApi;
+
+import javax.annotation.Nonnull;
 
 public class SBContainer extends Container {
-    public SBContainer(final int windowId, final PlayerInventory playerInventory) {
-        this(windowId, playerInventory.player.world, playerInventory.player.getBlockPos(), playerInventory, playerInventory.player);
-    }
 
-    public SBContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        super(type, windowId);
+    public SBContainer(int id, PlayerInventory playerInventory, PacketBuffer buffer) {
+        super(SimplyBackpacks.BACKPACK_CONTAINER.get(), id);
 
         playerInv = playerInventory;
-        ItemStack stack = findBackpack(playerEntity);
+        ItemStack stack = findBackpack(playerInventory.player);
 
-        if (stack == null || stack.isEmpty()) {
-            playerEntity.closeScreen();
+        if (stack.isEmpty()) {
+            playerInventory.player.closeScreen();
             return;
         }
 
-        IItemHandler tmp = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+        backpackItem = stack;
+        LazyOptional<IItemHandler> capability = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+        capability.ifPresent(cap -> {
+            // The check here is likely redundant
+            if (cap instanceof BackpackItemHandler) {
+                slotcount = cap.getSlots();
+                itemKey = stack.getTranslationKey();
 
+                addMySlots(cap);
+                addPlayerSlots(playerInv);
+            }
+        });
 
-        if (tmp instanceof BackpackItemHandler) {
-            handler = (BackpackItemHandler)tmp;
-            handler.load();
-            slotcount = tmp.getSlots();
-            itemKey = stack.getTranslationKey();
-
-
-
-            addMySlots(stack);
-            addPlayerSlots(playerInv);
+        if (!capability.isPresent()) {
+            playerInventory.player.closeScreen();
         }
-        else
-            playerEntity.closeScreen();
-    }
-
-    public SBContainer(int openType, int windowId, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        this(windowId, world, pos, playerInventory, playerEntity);
     }
 
     public int slotcount = 0;
-
-    private int slotID;
+    public ItemStack backpackItem;
     public String itemKey = "";
-    public static final ContainerType type = new ContainerType<>(SBContainer::new).setRegistryName("sb_container");
     private PlayerInventory playerInv;
-    public BackpackItemHandler handler;
+
+    // Used to check if the player is still holding the bag
+    private Pair<SlotOwner, Integer> slotLocation;
 
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
-        if (slotID == -106)
-            return playerIn.getHeldItemOffhand().getItem() instanceof ItemBackpackBase; //whoops guess you can...
-        return playerIn.inventory.getStackInSlot(slotID).getItem() instanceof ItemBackpackBase;
+        if (slotLocation.getKey() == SlotOwner.OFFHAND) {
+            return BackpackItem.isBackpack(playerIn.getHeldItemOffhand()); //whoops guess you can...
+        }
+
+        if (slotLocation.getKey() == SlotOwner.CURIOS) {
+            return CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, playerIn)
+                    .map(e -> !e.getRight().isEmpty())
+                    .orElse(false);
+        }
+
+        if (slotLocation.getKey() == SlotOwner.INVENTORY) {
+            return !BackpackItem.isBackpack(playerIn.inventory.getStackInSlot(slotLocation.getRight()));
+        }
+
+        return false;
     }
-
-
 
     @Override
     public ItemStack slotClick(int slot, int dragType, ClickType clickTypeIn, PlayerEntity player) {
         if (slot >= 0) {
-            if (getSlot(slot).getStack().getItem() instanceof ItemBackpackBase)
+            if (getSlot(slot).getStack().getItem() instanceof BackpackItem)
                 return ItemStack.EMPTY;
         }
         if (clickTypeIn == ClickType.SWAP)
@@ -84,25 +92,8 @@ public class SBContainer extends Container {
     }
 
     private void addPlayerSlots(PlayerInventory playerInventory) {
-        int originX = 0;
-        int originY = 0;
-        switch(slotcount) {
-            case 18:
-                originX = 7;
-                originY = 67;
-                break;
-            case 33:
-                originX = 25;
-                originY = 85;
-                break;
-            case 66:
-                originX = 25;
-                originY = 139;
-                break;
-            default:
-                originX = 25;
-                originY = 193;
-        }
+        int originX = ((BackpackItem) backpackItem.getItem()).backpack.slotXOffset;
+        int originY = ((BackpackItem) backpackItem.getItem()).backpack.slotYOffset;
 
         //Player Inventory
         for (int row = 0; row < 3; row++) {
@@ -122,9 +113,7 @@ public class SBContainer extends Container {
         }
     }
 
-    private void addMySlots(ItemStack stack) {
-        if (handler == null ) return;
-
+    private void addMySlots(IItemHandler handler) {
         int cols = slotcount == 18? 9:11;
         int rows = slotcount / cols;
         int slotindex = 0;
@@ -140,53 +129,72 @@ public class SBContainer extends Container {
                     break;
             }
         }
-
     }
 
     @Override
     public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
-            ItemStack itemstack = ItemStack.EMPTY;
-            Slot slot = this.inventorySlots.get(index);
+        ItemStack itemstack = ItemStack.EMPTY;
+        Slot slot = this.inventorySlots.get(index);
 
-            if (slot != null && slot.getHasStack()) {
-                int bagslotcount = inventorySlots.size() - playerIn.inventory.mainInventory.size();
-                ItemStack itemstack1 = slot.getStack();
-                itemstack = itemstack1.copy();
-                if (index < bagslotcount) {
-                    if (!this.mergeItemStack(itemstack1, bagslotcount, this.inventorySlots.size(), true))
-                        return ItemStack.EMPTY;
-                } else if (!this.mergeItemStack(itemstack1, 0, bagslotcount, false)) {
+        if (slot != null && slot.getHasStack()) {
+            int bagslotcount = inventorySlots.size() - playerIn.inventory.mainInventory.size();
+            ItemStack itemstack1 = slot.getStack();
+            itemstack = itemstack1.copy();
+            if (index < bagslotcount) {
+                if (!this.mergeItemStack(itemstack1, bagslotcount, this.inventorySlots.size(), true))
                     return ItemStack.EMPTY;
-                }
-                if (itemstack1.isEmpty()) slot.putStack(ItemStack.EMPTY); else slot.onSlotChanged();
+            } else if (!this.mergeItemStack(itemstack1, 0, bagslotcount, false)) {
+                return ItemStack.EMPTY;
             }
-            return itemstack;
+            if (itemstack1.isEmpty()) slot.putStack(ItemStack.EMPTY); else slot.onSlotChanged();
+        }
+        return itemstack;
     }
 
+    @Nonnull
     private ItemStack findBackpack(PlayerEntity playerEntity) {
         PlayerInventory inv = playerEntity.inventory;
 
-        if (playerEntity.getHeldItemMainhand().getItem() instanceof ItemBackpackBase) {
+        if (playerEntity.getHeldItemMainhand().getItem() instanceof BackpackItem) {
             for (int i = 0; i <= 35; i++) {
                 ItemStack stack = inv.getStackInSlot(i);
                 if (stack == playerEntity.getHeldItemMainhand()) {
-                    slotID = i;
+                    slotLocation = Pair.of(SlotOwner.INVENTORY, i);
                     return stack;
                 }
             }
-        } else if (playerEntity.getHeldItemOffhand().getItem() instanceof ItemBackpackBase) {
-            slotID = -106;
+        }
+
+        if (playerEntity.getHeldItemOffhand().getItem() instanceof BackpackItem) {
+            slotLocation = Pair.of(SlotOwner.OFFHAND, -1); // -1 because we know what slot the offhand is
             return playerEntity.getHeldItemOffhand();
         }
-        else {
-            for (int i = 0; i <= 35; i++) {
-                ItemStack stack = inv.getStackInSlot(i);
-                if (stack.getItem() instanceof ItemBackpackBase) {
-                    slotID = i;
-                    return stack;
-                }
+
+        // Before a full inventory, check the players curios if loaded
+        if (SimplyBackpacks.curiosLoaded) {
+            ItemStack stack = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, playerEntity)
+                    .map(ImmutableTriple::getRight).orElse(ItemStack.EMPTY);
+
+            if (!stack.isEmpty()) {
+                slotLocation = Pair.of(SlotOwner.CURIOS, -1);
+                return stack;
             }
         }
+
+        for (int i = 0; i <= 35; i++) {
+            ItemStack stack = inv.getStackInSlot(i);
+            if (stack.getItem() instanceof BackpackItem) {
+                slotLocation = Pair.of(SlotOwner.INVENTORY, i);
+                return stack;
+            }
+        }
+
         return ItemStack.EMPTY;
+    }
+
+    private enum SlotOwner {
+        CURIOS,
+        OFFHAND,
+        INVENTORY
     }
 }
