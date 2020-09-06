@@ -17,7 +17,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class FilterContainer extends Container {
+public class FilterContainer  extends Container {
     public FilterContainer(int id, PlayerInventory playerInventory, PacketBuffer buffer) {
         super(SimplyBackpacks.FILTER_CONTAINER.get(), id);
         player = playerInventory.player;
@@ -33,10 +33,12 @@ public class FilterContainer extends Container {
 
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
-        return !playerIn.getHeldItemMainhand().isEmpty();
+        if (slotID == -106)
+            return BackpackItem.isBackpack(playerIn.getHeldItemOffhand()); //whoops guess you can...
+
+        return BackpackItem.isBackpack(playerIn.inventory.getStackInSlot(slotID));
     }
 
-//    public BackpackItemHandler itemHandler;
     private int slotID;
     private PlayerEntity player;
     public ItemStack item;
@@ -45,7 +47,7 @@ public class FilterContainer extends Container {
     private ItemStack findBackpack(PlayerEntity playerEntity) {
         PlayerInventory inv = playerEntity.inventory;
 
-        if (playerEntity.getHeldItemMainhand().getItem() instanceof BackpackItem) {
+        if (BackpackItem.isBackpack(playerEntity.getHeldItemMainhand())) {
             for (int i = 0; i <= 35; i++) {
                 ItemStack stack = inv.getStackInSlot(i);
                 if (stack == playerEntity.getHeldItemMainhand()) {
@@ -53,19 +55,14 @@ public class FilterContainer extends Container {
                     return stack;
                 }
             }
-        } else if (playerEntity.getHeldItemOffhand().getItem() instanceof BackpackItem) {
-            for (int i = 0; i <= 35; i++) {
-                ItemStack stack = inv.getStackInSlot(i);
-                if (stack == playerEntity.getHeldItemOffhand()) {
-                    slotID = i;
-                    return stack;
-                }
-            }
+        } else if (BackpackItem.isBackpack(playerEntity.getHeldItemOffhand())) {
+            slotID = -106;
+            return playerEntity.getHeldItemOffhand();
         }
         else {
             for (int i = 0; i <= 35; i++) {
                 ItemStack stack = inv.getStackInSlot(i);
-                if (stack.getItem() instanceof BackpackItem) {
+                if (BackpackItem.isBackpack(stack)) {
                     slotID = i;
                     return stack;
                 }

@@ -62,7 +62,7 @@ public class SBContainer extends Container {
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
         if (slotLocation.getKey() == SlotOwner.OFFHAND) {
-            return playerIn.getHeldItemOffhand().getItem() instanceof BackpackItem; //whoops guess you can...
+            return BackpackItem.isBackpack(playerIn.getHeldItemOffhand()); //whoops guess you can...
         }
 
         if (slotLocation.getKey() == SlotOwner.CURIOS) {
@@ -72,7 +72,7 @@ public class SBContainer extends Container {
         }
 
         if (slotLocation.getKey() == SlotOwner.INVENTORY) {
-            return !playerIn.inventory.getStackInSlot(slotLocation.getRight()).isEmpty();
+            return !BackpackItem.isBackpack(playerIn.inventory.getStackInSlot(slotLocation.getRight()));
         }
 
         return false;
