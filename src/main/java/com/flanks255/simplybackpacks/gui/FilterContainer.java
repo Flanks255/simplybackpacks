@@ -13,20 +13,18 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class FilterContainer  extends Container {
+public class FilterContainer extends Container {
     public FilterContainer(int id, PlayerInventory playerInventory, PacketBuffer buffer) {
         super(SimplyBackpacks.FILTER_CONTAINER.get(), id);
-        PlayerEntity playerEntity = playerInventory.player;
+        player = playerInventory.player;
 
-        item = findBackpack(playerEntity);
+        item = findBackpack(player);
         if (item.isEmpty()) {
-            playerEntity.closeScreen();
+            player.closeScreen();
             return;
         }
 

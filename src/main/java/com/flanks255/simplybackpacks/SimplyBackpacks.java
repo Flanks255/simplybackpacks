@@ -41,7 +41,6 @@ import org.apache.logging.log4j.Logger;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotTypeMessage;
 import top.theillusivec4.curios.api.SlotTypePreset;
-import top.theillusivec4.curios.api.type.util.ICuriosHelper;
 
 @Mod("simplybackpacks")
 public class SimplyBackpacks {
@@ -94,7 +93,6 @@ public class SimplyBackpacks {
         if (event.getPlayer().openContainer instanceof SBContainer || event.getPlayer().isSneaking() || BackpackItem.isBackpack(event.getItem().getItem()))
             return;
 
-        System.out.println(event.getItem().getItem());
         // Use curios first if it can
         if (curiosLoaded) {
             boolean handled = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, event.getPlayer()).map((data) -> {

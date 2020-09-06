@@ -3,7 +3,6 @@ package com.flanks255.simplybackpacks.gui;
 import com.flanks255.simplybackpacks.SBContainerSlot;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.capability.BackpackItemHandler;
-import com.flanks255.simplybackpacks.items.Backpack;
 import com.flanks255.simplybackpacks.items.BackpackItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -15,8 +14,9 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.CuriosCapability;
 
 import javax.annotation.Nonnull;
 
@@ -28,19 +28,16 @@ public class SBContainer extends Container {
         playerInv = playerInventory;
         ItemStack stack = findBackpack(playerInventory.player);
 
-//        if (stack.isEmpty()) {
-//            playerInventory.player.closeScreen();
-//            return;
-//        }
+        if (stack.isEmpty()) {
+            playerInventory.player.closeScreen();
+            return;
+        }
 
         backpackItem = stack;
         LazyOptional<IItemHandler> capability = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
         capability.ifPresent(cap -> {
-            System.out.println(cap);
             // The check here is likely redundant
             if (cap instanceof BackpackItemHandler) {
-//                handler = (BackpackItemHandler)cap;
-//                handler.load();
                 slotcount = cap.getSlots();
                 itemKey = stack.getTranslationKey();
 
@@ -49,30 +46,36 @@ public class SBContainer extends Container {
             }
         });
 
-//        if (!capability.isPresent()) {
-//            System.out.println("NOPE");
-//            playerInventory.player.closeScreen();
-//        }
+        if (!capability.isPresent()) {
+            playerInventory.player.closeScreen();
+        }
     }
 
     public int slotcount = 0;
     public ItemStack backpackItem;
-    private int slotID;
     public String itemKey = "";
     private PlayerInventory playerInv;
-//    public BackpackItemHandler handler;
+
+    // Used to check if the player is still holding the bag
+    private Pair<SlotOwner, Integer> slotLocation;
 
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
-//        if (slotID == -106)
-//            return playerIn.getHeldItemOffhand().getItem() instanceof BackpackItem; //whoops guess you can...
-//
-//        if (slotID < 0 && slotID > -106 && SimplyBackpacks.curiosLoaded)
-//            return CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, playerIn).map(e -> !e.getRight().isEmpty()).orElse(false);
-//
-//        System.out.println(playerIn.inventory.getStackInSlot(slotID).isEmpty());
-//        return !playerIn.inventory.getStackInSlot(slotID).isEmpty();
-        return true;
+        if (slotLocation.getKey() == SlotOwner.OFFHAND) {
+            return playerIn.getHeldItemOffhand().getItem() instanceof BackpackItem; //whoops guess you can...
+        }
+
+        if (slotLocation.getKey() == SlotOwner.CURIOS) {
+            return CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, playerIn)
+                    .map(e -> !e.getRight().isEmpty())
+                    .orElse(false);
+        }
+
+        if (slotLocation.getKey() == SlotOwner.INVENTORY) {
+            return !playerIn.inventory.getStackInSlot(slotLocation.getRight()).isEmpty();
+        }
+
+        return false;
     }
 
     @Override
@@ -130,22 +133,22 @@ public class SBContainer extends Container {
 
     @Override
     public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
-            ItemStack itemstack = ItemStack.EMPTY;
-            Slot slot = this.inventorySlots.get(index);
+        ItemStack itemstack = ItemStack.EMPTY;
+        Slot slot = this.inventorySlots.get(index);
 
-            if (slot != null && slot.getHasStack()) {
-                int bagslotcount = inventorySlots.size() - playerIn.inventory.mainInventory.size();
-                ItemStack itemstack1 = slot.getStack();
-                itemstack = itemstack1.copy();
-                if (index < bagslotcount) {
-                    if (!this.mergeItemStack(itemstack1, bagslotcount, this.inventorySlots.size(), true))
-                        return ItemStack.EMPTY;
-                } else if (!this.mergeItemStack(itemstack1, 0, bagslotcount, false)) {
+        if (slot != null && slot.getHasStack()) {
+            int bagslotcount = inventorySlots.size() - playerIn.inventory.mainInventory.size();
+            ItemStack itemstack1 = slot.getStack();
+            itemstack = itemstack1.copy();
+            if (index < bagslotcount) {
+                if (!this.mergeItemStack(itemstack1, bagslotcount, this.inventorySlots.size(), true))
                     return ItemStack.EMPTY;
-                }
-                if (itemstack1.isEmpty()) slot.putStack(ItemStack.EMPTY); else slot.onSlotChanged();
+            } else if (!this.mergeItemStack(itemstack1, 0, bagslotcount, false)) {
+                return ItemStack.EMPTY;
             }
-            return itemstack;
+            if (itemstack1.isEmpty()) slot.putStack(ItemStack.EMPTY); else slot.onSlotChanged();
+        }
+        return itemstack;
     }
 
     @Nonnull
@@ -156,37 +159,42 @@ public class SBContainer extends Container {
             for (int i = 0; i <= 35; i++) {
                 ItemStack stack = inv.getStackInSlot(i);
                 if (stack == playerEntity.getHeldItemMainhand()) {
-                    slotID = i;
+                    slotLocation = Pair.of(SlotOwner.INVENTORY, i);
                     return stack;
                 }
             }
         }
 
         if (playerEntity.getHeldItemOffhand().getItem() instanceof BackpackItem) {
-            slotID = -106;
+            slotLocation = Pair.of(SlotOwner.OFFHAND, -1); // -1 because we know what slot the offhand is
             return playerEntity.getHeldItemOffhand();
         }
 
         // Before a full inventory, check the players curios if loaded
         if (SimplyBackpacks.curiosLoaded) {
             ItemStack stack = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, playerEntity)
-                    .map(e -> {
-                        slotID = e.getMiddle() * -1; // Flip the id for internal reason
-                        return e.getRight();
-                    }).orElse(ItemStack.EMPTY);
+                    .map(ImmutableTriple::getRight).orElse(ItemStack.EMPTY);
 
-            if (!stack.isEmpty())
+            if (!stack.isEmpty()) {
+                slotLocation = Pair.of(SlotOwner.CURIOS, -1);
                 return stack;
+            }
         }
 
         for (int i = 0; i <= 35; i++) {
             ItemStack stack = inv.getStackInSlot(i);
             if (stack.getItem() instanceof BackpackItem) {
-                slotID = i;
+                slotLocation = Pair.of(SlotOwner.INVENTORY, i);
                 return stack;
             }
         }
 
         return ItemStack.EMPTY;
+    }
+
+    private enum SlotOwner {
+        CURIOS,
+        OFFHAND,
+        INVENTORY
     }
 }

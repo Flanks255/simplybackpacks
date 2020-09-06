@@ -1,10 +1,10 @@
 package com.flanks255.simplybackpacks.capability;
 
+import com.flanks255.simplybackpacks.SimplyBackpacks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -14,8 +14,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BackpackProvider implements ICapabilitySerializable<CompoundNBT> {
-    private LazyOptional<IItemHandler> lazyBackpackItemHandler;
-    private BackpackItemHandler backpackItemHandler;
+    private final LazyOptional<IItemHandler> lazyBackpackItemHandler;
+    private final BackpackItemHandler backpackItemHandler;
+
+    // Holds the last compound until the itemHandler is marked as dirty
+    // I have literally no clue if this is the best way of handling this...
+    private CompoundNBT lastWrite = new CompoundNBT();
 
     public BackpackProvider(ItemStack stack, int slots) {
         backpackItemHandler = new BackpackItemHandler(stack, slots);
@@ -34,7 +38,14 @@ public class BackpackProvider implements ICapabilitySerializable<CompoundNBT> {
 
     @Override
     public CompoundNBT serializeNBT() {
-        return backpackItemHandler.serializeNBT();
+        // This is called every tick, not sure why, so we'll cache the result once dirty
+        if (backpackItemHandler.dirty) {
+            SimplyBackpacks.LOGGER.debug("DIRTY STATE HANDLED");
+            lastWrite = backpackItemHandler.serializeNBT();
+            backpackItemHandler.dirty = false;
+        }
+
+        return lastWrite;
     }
 
     @Override

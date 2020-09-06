@@ -9,14 +9,20 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 
 public class BackpackFilterHandler extends ItemStackHandler {
-    public BackpackFilterHandler() {
+    private BackpackItemHandler parent;
+
+    public BackpackFilterHandler(BackpackItemHandler parent) {
         super(16);
+
+        this.parent = parent;
     }
 
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (!getStackInSlot(slot).isEmpty()) {
             this.setStackInSlot(slot, ItemStack.EMPTY);
+            this.parent.dirty = true;
+            return ItemStack.EMPTY;
         }
 
         return super.extractItem(slot, amount, simulate);
@@ -33,6 +39,8 @@ public class BackpackFilterHandler extends ItemStackHandler {
             return stack;
         } else {
             this.setStackInSlot(slot, stack);
+            this.parent.dirty = true;
+            return stack;
         }
 
         return super.insertItem(slot, stack, simulate);

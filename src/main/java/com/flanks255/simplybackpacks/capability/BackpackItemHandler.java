@@ -9,12 +9,12 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 public class BackpackItemHandler extends ItemStackHandler {
-    private BackpackFilterHandler filterHandler;
-    public boolean dirty;
+    private final BackpackFilterHandler filterHandler;
+    public boolean dirty = true; // Flag dirty for initial state
 
     public BackpackItemHandler(ItemStack stack, int slots) {
         super(slots);
-        this.filterHandler = new BackpackFilterHandler();
+        this.filterHandler = new BackpackFilterHandler(this);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class BackpackItemHandler extends ItemStackHandler {
 
         //check for some other modded inventories
         if (stack.hasTag()) {
-            CompoundNBT tag = stack.getTag();
+            CompoundNBT tag = stack.getOrCreateTag();
             if (tag.contains("Items") || tag.contains("Inventory"))
                 return stack;
         }

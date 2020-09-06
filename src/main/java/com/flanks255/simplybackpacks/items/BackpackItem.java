@@ -77,43 +77,6 @@ public class BackpackItem extends Item {
         return new BackpackProvider(stack, this.backpack.slots); //stack, this.backpack.slots, nbt);
     }
 
-//    class BackpackCaps implements ICapabilitySerializable {
-//        public BackpackCaps(ItemStack stack, int size, CompoundNBT nbtIn) {
-//            itemStack = stack;
-//            this.size = size;
-//            inventory = new BackpackItemHandler(itemStack, size);
-//            optional = LazyOptional.of(() -> inventory);
-//        }
-//
-//        private int size;
-//        private ItemStack itemStack;
-//        private BackpackItemHandler inventory;
-//        private LazyOptional<IItemHandler> optional;
-//
-//        @Nonnull
-//        @Override
-//        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-//            if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-//                return optional.cast();
-//            }
-//            else
-//                return LazyOptional.empty();
-//        }
-//
-//        @Override
-//        public INBT serializeNBT() {
-////            System.out.println("SAVE");
-//            inventory.save();
-//            return new CompoundNBT();
-//        }
-//
-//        @Override
-//        public void deserializeNBT(INBT nbt) {
-//            System.out.println("LOADING NATIVELY!");
-//            inventory.load();
-//        }
-//    }
-
     public void togglePickup(PlayerEntity playerEntity, ItemStack stack) {
         CompoundNBT nbt = stack.getOrCreateTag();
 
@@ -153,41 +116,29 @@ public class BackpackItem extends Item {
     }
 
     public boolean pickupEvent(ItemStack stack, ItemStack backpack) {
-        System.out.println(stack);
         if (!backpack.getOrCreateTag().getBoolean("Pickup"))
             return false;
 
         return backpack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
                 .map(handler -> {
-                    backpack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(e -> {
-                        for (int i = 0; i < e.getSlots(); i++) {
-                            System.out.println(e.getStackInSlot(i));
-                        }
-                    });
-                    System.out.println(stack);
-
                     if (!(handler instanceof BackpackItemHandler))
                         return false;
-
-//                    ((BackpackItemHandler) handler).load();
 
                     if (!filterItem(stack, backpack))
                         return false;
 
-                    ItemStack pickedUp = stack;
                     for (int i = 0; i < handler.getSlots(); i++) {
                         ItemStack slot = handler.getStackInSlot(i);
-                        if (slot.isEmpty() || (ItemHandlerHelper.canItemStacksStack(slot, pickedUp) && slot.getCount() < slot.getMaxStackSize() && slot.getCount() < handler.getSlotLimit(i))) {
-                            ItemStack remainder = handler.insertItem(i, pickedUp.copy(), false);
-                            System.out.println(remainder);
-                            pickedUp.setCount(remainder.getCount());
+                        if (slot.isEmpty() || (ItemHandlerHelper.canItemStacksStack(slot, stack) && slot.getCount() < slot.getMaxStackSize() && slot.getCount() < handler.getSlotLimit(i))) {
+                            ItemStack remainder = handler.insertItem(i, stack.copy(), false);
+                            stack.setCount(remainder.getCount());
                             if (remainder.getCount() == 0)
                                 break;
                         }
                     }
 
-                    return pickedUp.isEmpty();
-                }).orElse(Boolean.FALSE);
+                    return stack.isEmpty();
+                }).orElse(false);
     }
 
 
