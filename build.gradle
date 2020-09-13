@@ -36,7 +36,7 @@ repositories {
     }
 }
 
-version = "1.16.2-${mod_version}"
+version = "$mod_version"
 group = 'com.flanks255' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'simplybackpacks'
 
@@ -50,7 +50,7 @@ minecraft {
     // Simply re-run your setup task after changing the mappings to update your workspace.
     //mappings channel: 'snapshot', version: '20200123-mixed-1.15.2'
     //mappings channel: 'snapshot', version: '20200726-mixed-1.16.1'
-    mappings channel: 'snapshot', version: '20200826-mixed-1.16.2'
+    mappings channel: 'snapshot', version: "$mappings_version"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -116,10 +116,10 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     //minecraft 'net.minecraftforge:forge:1.15.2-31.1.1'
     //minecraft 'net.minecraftforge:forge:1.16.1-32.0.106'
-    minecraft 'net.minecraftforge:forge:1.16.2-33.0.5'
+    minecraft "net.minecraftforge:forge:$forge_version"
 
-    compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
-    runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
+    //compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
+    //runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
 
     //compile fg.deobf(curse.resolve("nbtedit",2799777))
     //compile fg.deobf(curse.resolve("simply-light",2795157))
