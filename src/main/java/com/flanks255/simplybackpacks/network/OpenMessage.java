@@ -36,7 +36,7 @@ public class OpenMessage {
                     @Nullable
                     @Override
                     public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
-                        return new SBContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getBlockPos(), p_createMenu_2_, p_createMenu_3_);
+                        return new SBContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getPosition(), p_createMenu_2_, p_createMenu_3_);
                     }
                 });
             }

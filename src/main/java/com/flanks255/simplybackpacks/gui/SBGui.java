@@ -50,7 +50,7 @@ public class SBGui extends ContainerScreen<SBContainer> {
     }
 
     @Override
-    protected void drawBackground(MatrixStack p_230450_1_, float partialTicks, int mouseX, int mouseY) {
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f ,1.0f);
         this.getMinecraft().textureManager.bindTexture(GUI);
         drawTexturedQuad(guiLeft, guiTop, xSize, ySize, 0, 0, 1, 1, 0);
@@ -60,24 +60,24 @@ public class SBGui extends ContainerScreen<SBContainer> {
         BufferBuilder buffer = tess.getBuffer();
 
         buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        buffer.vertex((double)x + 0, (double) y + height, (double) z).texture(tx,ty + th).endVertex();
-        buffer.vertex((double) x + width,(double) y + height, (double) z).texture(tx + tw,ty + th).endVertex();
-        buffer.vertex((double) x + width, (double) y + 0, (double) z).texture(tx + tw,ty).endVertex();
-        buffer.vertex((double) x + 0, (double) y + 0, (double) z).texture(tx,ty).endVertex();
+        buffer.pos((double)x + 0, (double) y + height, (double) z).tex(tx,ty + th).endVertex();
+        buffer.pos((double) x + width,(double) y + height, (double) z).tex(tx + tw,ty + th).endVertex();
+        buffer.pos((double) x + width, (double) y + 0, (double) z).tex(tx + tw,ty).endVertex();
+        buffer.pos  ((double) x + 0, (double) y + 0, (double) z).tex(tx,ty).endVertex();
 
         tess.draw();
     }
 
     @Override
-    protected void drawForeground(MatrixStack p_230451_1_, int mouseX, int mouseY) {
-       this.textRenderer.draw(p_230451_1_, this.title.getString(), 7,6,0x404040);
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
+       this.font.drawString(matrixStack, this.title.getString(), 7,6,0x404040);
     }
 
     @Override
-    public void render(MatrixStack p_230430_1_, int p_render_1_, int p_render_2_, float p_render_3_) {
-        this.renderBackground(p_230430_1_);
-        super.render(p_230430_1_,p_render_1_, p_render_2_, p_render_3_);
-        this.drawMouseoverTooltip(p_230430_1_, p_render_1_, p_render_2_);
+    public void render(MatrixStack matrixStack, int p_render_1_, int p_render_2_, float p_render_3_) {
+        this.renderBackground(matrixStack);
+        super.render(matrixStack,p_render_1_, p_render_2_, p_render_3_);
+        this.renderHoveredTooltip(matrixStack, p_render_1_, p_render_2_);
     }
 
     @Override

@@ -21,6 +21,7 @@ public class BackpackItemHandler extends ItemStackHandler {
         private ItemStack itemStack;
         private int size;
         private boolean dirty = false;
+        private boolean loaded = false;
 
         public FilterItemHandler filter = new FilterItemHandler();
 
@@ -76,6 +77,13 @@ public class BackpackItemHandler extends ItemStackHandler {
     public void load() {
         load(itemStack.getOrCreateTag());
     }
+
+    public void loadIfNotLoaded() {
+        if (!loaded)
+            load();
+        loaded = true;
+    }
+
     public void load(@Nonnull CompoundNBT nbt) {
         if (nbt.contains("Inventory"))
             deserializeNBT(nbt.getCompound("Inventory"));

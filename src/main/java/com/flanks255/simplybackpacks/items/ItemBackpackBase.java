@@ -83,7 +83,7 @@ public class ItemBackpackBase extends Item {
                     @Nullable
                     @Override
                     public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
-                        return new FilterContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getBlockPos(), p_createMenu_2_, p_createMenu_3_);
+                        return new FilterContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getPosition(), p_createMenu_2_, p_createMenu_3_);
                     }
                 });
             } else {
@@ -98,12 +98,12 @@ public class ItemBackpackBase extends Item {
                     @Nullable
                     @Override
                     public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
-                        return new SBContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getBlockPos(), p_createMenu_2_, p_createMenu_3_);
+                        return new SBContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getPosition(), p_createMenu_2_, p_createMenu_3_);
                     }
                 });
             }
         }
-        return ActionResult.success(playerIn.getHeldItem(handIn));
+        return ActionResult.resultSuccess(playerIn.getHeldItem(handIn));
     }
 
     @Nullable
@@ -201,7 +201,7 @@ public class ItemBackpackBase extends Item {
         IItemHandler handler = stupidIdiot.orElse(null);
         if (handler == null || !(handler instanceof BackpackItemHandler))
             return false;
-        ((BackpackItemHandler) handler).load();
+        ((BackpackItemHandler) handler).loadIfNotLoaded();
 
         if (!filterItem(event.getItem().getItem(), stack))
             return false;

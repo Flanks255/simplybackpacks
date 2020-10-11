@@ -60,14 +60,14 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
     private ResourceLocation GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/filter_gui.png");;
 
     @Override
-    public void render(MatrixStack p_230430_1_, int p_render_1_, int p_render_2_, float p_render_3_) {
-        this.renderBackground(p_230430_1_);
-        super.render(p_230430_1_,p_render_1_, p_render_2_, p_render_3_);
-        this.drawMouseoverTooltip(p_230430_1_, p_render_1_, p_render_2_);
+    public void render(MatrixStack matrixStack, int p_render_1_, int p_render_2_, float p_render_3_) {
+        this.renderBackground(matrixStack);
+        super.render(matrixStack,p_render_1_, p_render_2_, p_render_3_);
+        this.renderHoveredTooltip(matrixStack, p_render_1_, p_render_2_);
     }
 
     @Override
-    protected void drawBackground(MatrixStack p_230450_1_, float partialTicks, int mouseX, int mouseY) {
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f ,1.0f);
         this.getMinecraft().textureManager.bindTexture(GUI);
         drawTexturedQuad(guiLeft, guiTop, xSize, ySize, 0, 0, 1, 1, 0);
@@ -77,27 +77,27 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
         BufferBuilder buffer = tess.getBuffer();
 
         buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        buffer.vertex((double)x + 0, (double) y + height, (double) z).texture(tx,ty + th).endVertex();
-        buffer.vertex((double) x + width,(double) y + height, (double) z).texture(tx + tw,ty + th).endVertex();
-        buffer.vertex((double) x + width, (double) y + 0, (double) z).texture(tx + tw,ty).endVertex();
-        buffer.vertex((double) x + 0, (double) y + 0, (double) z).texture(tx,ty).endVertex();
+        buffer.pos((double)x + 0, (double) y + height, (double) z).tex(tx,ty + th).endVertex();
+        buffer.pos((double) x + width,(double) y + height, (double) z).tex(tx + tw,ty + th).endVertex();
+        buffer.pos((double) x + width, (double) y + 0, (double) z).tex(tx + tw,ty).endVertex();
+        buffer.pos((double) x + 0, (double) y + 0, (double) z).tex(tx,ty).endVertex();
 
         tess.draw();
     }
 
     @Override
-    protected void drawForeground(MatrixStack p_230451_1_, int p_230451_2_, int p_230451_3_) {
-        //dont draw nothin...
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
+        // nope...
     }
 
     @Override
-    protected void drawMouseoverTooltip(MatrixStack p_230459_1_, int x, int y) {
-        super.drawMouseoverTooltip(p_230459_1_, x, y);
+    protected void renderHoveredTooltip(MatrixStack matrixStack, int x, int y) {
+        super.renderHoveredTooltip(matrixStack, x, y);
 
         for(Widget button : buttons) {
             if (button.isMouseOver(x,y) && button instanceof SlotButton)
                 if (!container.itemHandler.filter.getStackInSlot(((SlotButton)button).slot).isEmpty())
-                    renderTooltip(p_230459_1_, container.itemHandler.filter.getStackInSlot(((SlotButton)button).slot), x, y);
+                    renderTooltip(matrixStack, container.itemHandler.filter.getStackInSlot(((SlotButton)button).slot), x, y);
         }
     }
 
@@ -126,7 +126,7 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
                     itemRenderer.zLevel = 100F;
                     //RenderHelper.enableGUIStandardItemLighting();
                     RenderSystem.enableDepthTest();
-                    RenderHelper.enableGuiDepthLighting();
+                    RenderHelper.enableStandardItemLighting();
                     itemRenderer.renderItemAndEffectIntoGUI(tmp, x, y);
                     itemRenderer.renderItemOverlayIntoGUI(fontRenderer, tmp, x, y, "");
                     itemRenderer.zLevel = 0F;
@@ -157,7 +157,7 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
         public void renderButton(MatrixStack stack, int p_renderButton_1_, int p_renderButton_2_, float p_renderButton_3_) {
             getMinecraft().getTextureManager().bindTexture(state?on:off);
             drawTexturedQuad(x,y,width,height,0,0,1,1, 100F);
-            fontRenderer.draw(stack, I18n.format(textKey), x + 34, y + 4, 0x404040);
+            fontRenderer.drawString(stack, I18n.format(textKey), x + 34, y + 4, 0x404040);
         }
     }
 }
