@@ -50,7 +50,6 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
 
             mods {
@@ -62,12 +61,9 @@ minecraft {
 
         server {
             workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
+
+            args 'nogui'
 
             mods {
                 simplybackpacks {
@@ -78,7 +74,6 @@ minecraft {
 
         data {
             workingDirectory project.file('run')
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
 
             args '--mod', 'simplybackpacks', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
@@ -97,13 +92,15 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     minecraft "net.minecraftforge:forge:$forge_version"
 
-    //compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
-    //runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
+    runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
 
-    //compile fg.deobf(curse.resolve("nbtedit",2799777))
-    //compile fg.deobf(curse.resolve("simply-light",2795157))
-    //compile fg.deobf(curse.resolve("building-gadgets",2820989))
-    //compile fg.deobf(curse.resolve("mining-gadgets",2933766))
+    compile fg.deobf(curse.resolve("the-one-probe",3040735))
+    compile fg.deobf(curse.resolve("nbtedit",3062106))
+    compile fg.deobf(curse.resolve("simply-light",3056336))
+    compile fg.deobf(curse.resolve("building-gadgets",3055749))
+    compile fg.deobf(curse.resolve("mining-gadgets",3055465))
+    compile fg.deobf(curse.resolve("charging-gadgets",3055493))
 
 }
 
