@@ -1,19 +1,18 @@
 package com.flanks255.simplybackpacks;
 
 
+import com.flanks255.simplybackpacks.data.Generator;
 import com.flanks255.simplybackpacks.gui.FilterContainer;
 import com.flanks255.simplybackpacks.gui.FilterGui;
 import com.flanks255.simplybackpacks.gui.SBContainer;
 import com.flanks255.simplybackpacks.gui.SBGui;
+import com.flanks255.simplybackpacks.items.BackpackItem;
 import com.flanks255.simplybackpacks.items.ItemBackpackBase;
 import com.flanks255.simplybackpacks.network.OpenMessage;
 import com.flanks255.simplybackpacks.network.SBNetwork;
 import com.flanks255.simplybackpacks.network.ToggleMessage;
-import javafx.stage.Screen;
-import net.java.games.input.Keyboard;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ContainerType;
@@ -26,13 +25,17 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,19 +43,32 @@ import org.apache.logging.log4j.Logger;
 public class SimplyBackpacks {
     public static final String MODID = "simplybackpacks";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
-    public static SimpleChannel network;
+    public static SimpleChannel NETWORK;
     public static SBNetwork sbnetwork = new SBNetwork();
 
-    public static final ItemBackpackBase commonBackpack = new ItemBackpackBase("commonbackpack", 18, Rarity.COMMON);
-    public static final ItemBackpackBase uncommonBackpack = new ItemBackpackBase("uncommonbackpack", 33, Rarity.UNCOMMON);
-    public static final ItemBackpackBase rareBackpack = new ItemBackpackBase("rarebackpack", 66, Rarity.RARE);
-    public static final ItemBackpackBase epicBackpack = new ItemBackpackBase("epicbackpack", 99, Rarity.EPIC);
+    //new
+    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    private static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
+    private static final DeferredRegister<IRecipeSerializer<?>> RECIPES = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
+
+    public static final RegistryObject<Item> BACKPACKITEM = ITEMS.register("backpack", BackpackItem::new);
+
+    //old backpacks
+    public static final RegistryObject<Item> COMMONBACKPACK = ITEMS.register("commonbackpack", () -> new ItemBackpackBase("commonbackpack", 18, Rarity.COMMON));
+    public static final RegistryObject<Item> UNCOMMONBACKPACK = ITEMS.register("uncommonbackpack", () -> new ItemBackpackBase("uncommonbackpack", 33, Rarity.UNCOMMON));
+    public static final RegistryObject<Item> RAREBACKPACK = ITEMS.register("rarebackpack", () -> new ItemBackpackBase("rarebackpack", 66, Rarity.RARE));
+    public static final RegistryObject<Item> EPICBACKPACK = ITEMS.register("epicbackpack", () -> new ItemBackpackBase("epicbackpack", 99, Rarity.EPIC));
 
     private NonNullList<KeyBinding> keyBinds= NonNullList.create();
 
      public SimplyBackpacks() {
+         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+         ITEMS.register(bus);
+
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientStuff);
+
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(Generator::gatherData);
 
         MinecraftForge.EVENT_BUS.addListener(this::pickupEvent);
         MinecraftForge.EVENT_BUS.register(this);
@@ -61,7 +77,7 @@ public class SimplyBackpacks {
 
 
     public void setup(final FMLCommonSetupEvent event) {
-         network = sbnetwork.register();
+         NETWORK = sbnetwork.register();
     }
 
     private void pickupEvent(EntityItemPickupEvent event) {
@@ -94,9 +110,9 @@ public class SimplyBackpacks {
 
     private void onClientTick(TickEvent.ClientTickEvent event) {
         if (keyBinds.get(0).isPressed())
-            network.sendToServer(new ToggleMessage());
+            NETWORK.sendToServer(new ToggleMessage());
         if (keyBinds.get(1).isPressed())
-            network.sendToServer(new OpenMessage());
+            NETWORK.sendToServer(new OpenMessage());
     }
 
     private void clientStuff(final FMLClientSetupEvent event) {
@@ -110,13 +126,6 @@ public class SimplyBackpacks {
     }
     @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents {
-        @SubscribeEvent
-        public static void onItemRegistry(final RegistryEvent.Register<Item> itemRegistryEvent) {
-                itemRegistryEvent.getRegistry().register(commonBackpack.setName());
-                itemRegistryEvent.getRegistry().register(uncommonBackpack.setName());
-                itemRegistryEvent.getRegistry().register(rareBackpack.setName());
-                itemRegistryEvent.getRegistry().register(epicBackpack.setName());
-        }
         @SubscribeEvent
         public static void onContainerRegistry(final RegistryEvent.Register<ContainerType<?>> containerRegistryEvent) {
             containerRegistryEvent.getRegistry().register(SBContainer.type);
