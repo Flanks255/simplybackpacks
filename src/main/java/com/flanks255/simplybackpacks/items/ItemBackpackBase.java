@@ -65,6 +65,12 @@ public class ItemBackpackBase extends Item {
     }
 
     @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return false;
+    }
+
+
+    @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         if (!worldIn.isRemote) {
             if (playerIn.isSneaking()) {
@@ -196,7 +202,7 @@ public class ItemBackpackBase extends Item {
         IItemHandler handler = stupidIdiot.orElse(null);
         if (handler == null || !(handler instanceof BackpackItemHandler))
             return false;
-        ((BackpackItemHandler) handler).load();
+        ((BackpackItemHandler) handler).loadIfNotLoaded();
 
         if (!filterItem(event.getItem().getItem(), stack))
             return false;

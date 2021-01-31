@@ -27,6 +27,10 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
         super(id, group, recipeWidth, recipeHeight, ingredients, recipeOutput);
     }
 
+    public CopyBackpackDataRecipe(ShapedRecipe shapedRecipe) {
+        super(shapedRecipe.getId(), shapedRecipe.getGroup(), shapedRecipe.getRecipeWidth(), shapedRecipe.getRecipeHeight(), shapedRecipe.getIngredients(), shapedRecipe.getRecipeOutput());
+    }
+
     @Override
     public ItemStack getCraftingResult(CraftingInventory inv) {
         final ItemStack craftingResult = super.getCraftingResult(inv);
@@ -54,42 +58,29 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
         @Nullable
         @Override
         public CopyBackpackDataRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
-            int width = buffer.readInt();
-            int height = buffer.readInt();
-            String group = buffer.readString();
-
-            NonNullList<Ingredient> ingredients = NonNullList.withSize(height * width, Ingredient.EMPTY);
-            for (int i = 0; i < ingredients.size(); i++) {
-                ingredients.set(i, Ingredient.read(buffer));
-
-            }
-
-            ItemStack craftingResult = buffer.readItemStack();
-            return new CopyBackpackDataRecipe(recipeId,group,width,height,ingredients,craftingResult);
+            return new CopyBackpackDataRecipe(IRecipeSerializer.CRAFTING_SHAPED.read(recipeId, buffer));
         }
 
         @Override
         public CopyBackpackDataRecipe read(ResourceLocation recipeId, JsonObject json) {
-                String group = JSONUtils.getString(json, "group", "");
-                Map<String, Ingredient> map = ShapedRecipe.deserializeKey(JSONUtils.getJsonObject(json, "key"));
-                String[] pattern = ShapedRecipe.shrink(ShapedRecipe.patternFromJson(JSONUtils.getJsonArray(json, "pattern")));
-                int width = pattern[0].length();
-                int height = pattern.length;
-                NonNullList<Ingredient> ingredients = ShapedRecipe.deserializeIngredients(pattern, map, width, height);
-                ItemStack result = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
-
-                return new CopyBackpackDataRecipe(recipeId, group,width, height,ingredients,result);
+            try {
+                return new CopyBackpackDataRecipe(IRecipeSerializer.CRAFTING_SHAPED.read(recipeId, json));
+            }
+            catch (Exception exception) {
+                SimplyBackpacks.LOGGER.info("Error reading CopyBackpack Recipe from packet: ", exception);
+                throw exception;
+            }
         }
 
         @Override
         public void write(PacketBuffer buffer, CopyBackpackDataRecipe recipe) {
-            buffer.writeVarInt(recipe.getRecipeWidth());
-            buffer.writeVarInt(recipe.getRecipeHeight());
-            buffer.writeString(recipe.getGroup());
-            for (Ingredient ingredient: recipe.getIngredients()) {
-                ingredient.write(buffer);
+            try {
+                IRecipeSerializer.CRAFTING_SHAPED.write(buffer, recipe);
             }
-            buffer.writeItemStack(recipe.getRecipeOutput());
+            catch (Exception exception) {
+                SimplyBackpacks.LOGGER.info("Error writing CopyBackpack Recipe to packet: ", exception);
+                throw exception;
+            }
         }
     }
 

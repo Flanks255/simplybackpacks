@@ -64,8 +64,8 @@ public class SBContainer extends Container {
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
         if (slotID == -106)
-            return true; //offhand, cant move it anyway...
-        return !playerIn.inventory.getStackInSlot(slotID).isEmpty();
+            return playerIn.getHeldItemOffhand().getItem() instanceof ItemBackpackBase; //whoops guess you can...
+        return playerIn.inventory.getStackInSlot(slotID).getItem() instanceof ItemBackpackBase;
     }
 
 

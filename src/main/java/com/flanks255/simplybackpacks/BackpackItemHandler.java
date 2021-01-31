@@ -1,9 +1,11 @@
 package com.flanks255.simplybackpacks;
 
 import com.flanks255.simplybackpacks.items.ItemBackpackBase;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.tags.BlockTags;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -19,17 +21,27 @@ public class BackpackItemHandler extends ItemStackHandler {
         private ItemStack itemStack;
         private int size;
         private boolean dirty = false;
+        private boolean loaded = false;
 
         public FilterItemHandler filter = new FilterItemHandler();
 
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+        //check for shulkers.
+        if (stack.getItem() instanceof BlockItem) {
+            if (((BlockItem) stack.getItem()).getBlock().isIn(BlockTags.field_226150_J_)) {
+                return stack;
+            }
+        }
+        //check for some other modded inventories
         if (stack.hasTag()) {
             CompoundNBT tag = stack.getTag();
-            if (tag.contains("Items") || tag.contains("BlockEntityTag") || tag.contains("Inventory"))
+            if (tag.contains("Items") || tag.contains("Inventory"))
                 return stack;
         }
+
+        //check for itemhandler capability
         if (stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent())
             return stack;
         dirty = true;
@@ -65,6 +77,13 @@ public class BackpackItemHandler extends ItemStackHandler {
     public void load() {
         load(itemStack.getOrCreateTag());
     }
+
+    public void loadIfNotLoaded() {
+        if (!loaded)
+            load();
+        loaded = true;
+    }
+
     public void load(@Nonnull CompoundNBT nbt) {
         if (nbt.contains("Inventory"))
             deserializeNBT(nbt.getCompound("Inventory"));
