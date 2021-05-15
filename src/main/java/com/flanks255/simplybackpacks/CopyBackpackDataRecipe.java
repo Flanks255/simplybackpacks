@@ -54,6 +54,10 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
         return craftingResult;
     }
 
+    @Override
+    public IRecipeSerializer<?> getSerializer() {
+        return SimplyBackpacks.COPYRECIPE.get();
+    }
 
     public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<CopyBackpackDataRecipe> {
         @Nullable

@@ -2,26 +2,27 @@ package com.flanks255.simplybackpacks.gui;
 
 import com.flanks255.simplybackpacks.BackpackItemHandler;
 import com.flanks255.simplybackpacks.SBContainerSlot;
+import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.items.ItemBackpackBase;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 public class SBContainer extends Container {
-    public SBContainer(final int windowId, final PlayerInventory playerInventory) {
+    public SBContainer(final int windowId, final PlayerInventory playerInventory, PacketBuffer extra) {
         this(windowId, playerInventory.player.world, playerInventory.player.getPosition(), playerInventory, playerInventory.player);
     }
 
     public SBContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        super(type, windowId);
+        super(SimplyBackpacks.SBCONTAINER.get(), windowId);
 
         playerInv = playerInventory;
         ItemStack stack = findBackpack(playerEntity);
@@ -57,7 +58,6 @@ public class SBContainer extends Container {
 
     private int slotID;
     public String itemKey = "";
-    public static final ContainerType type = new ContainerType<>(SBContainer::new).setRegistryName("sb_container");
     private PlayerInventory playerInv;
     public BackpackItemHandler handler;
 
