@@ -1,6 +1,8 @@
 package com.flanks255.simplybackpacks.items;
 
 import com.flanks255.simplybackpacks.gui.NeoSBContainer;
+import com.flanks255.simplybackpacks.save.BackpackData;
+import com.flanks255.simplybackpacks.save.BackpackDataManager;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -22,6 +24,9 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -105,16 +110,30 @@ public class BackpackItem extends Item implements INamedContainerProvider {
 
     static class Caps implements ICapabilityProvider {
         private final ItemStack stack;
+        private LazyOptional<IItemHandler> itemHandlerOptional;
 
-        Caps(ItemStack stack) {
+        public Caps(ItemStack stack) {
             this.stack = stack;
         }
 
         @Nonnull
         @Override
         public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-
-            return null;
+            if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+                if (itemHandlerOptional == null && stack.hasTag() && stack.getTag().contains("UUID")) {
+                    if (BackpackDataManager.CLIENT_CACHE.containsKey(stack.getTag().getUniqueId("UUID")))
+                        itemHandlerOptional = BackpackDataManager.CLIENT_CACHE.get(stack.getTag().getUniqueId("UUID")).getOptional();
+                    else
+                    {
+                        BackpackData backpack = BackpackDataManager.get(ServerLifecycleHooks.getCurrentServer().func_241755_D_()).getBackpack(stack.getTag().getUniqueId("UUID"));
+                        if (backpack != null)
+                            itemHandlerOptional = backpack.getOptional();
+                    }
+                }
+            }
+            if (itemHandlerOptional != null)
+                return itemHandlerOptional.cast();
+            return LazyOptional.empty();
         }
     }
 }
