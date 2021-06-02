@@ -153,7 +153,7 @@ public class ItemBackpackBase extends Item {
 
         nbt.putBoolean("Pickup", Pickup);
         if (playerEntity instanceof ServerPlayerEntity)
-            SimplyBackpacks.network.send(PacketDistributor.PLAYER.with(()-> (ServerPlayerEntity) playerEntity), new ToggleMessageMessage(Pickup));
+            SimplyBackpacks.NETWORK.send(PacketDistributor.PLAYER.with(()-> (ServerPlayerEntity) playerEntity), new ToggleMessageMessage(Pickup));
         else
             playerEntity.sendStatusMessage(new StringTextComponent(I18n.format(Pickup?"simplybackpacks.autopickupenabled":"simplybackpacks.autopickupdisabled")), true);
 

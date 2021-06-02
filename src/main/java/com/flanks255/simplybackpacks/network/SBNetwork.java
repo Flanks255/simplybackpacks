@@ -6,16 +6,11 @@ import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class SBNetwork {
-    public ResourceLocation channelName;
-    public String networkVersion;
+    public static final ResourceLocation channelName = new ResourceLocation(SimplyBackpacks.MODID, "network");
+    public static final String networkVersion = new ResourceLocation(SimplyBackpacks.MODID, "1").toString();
 
-    private SimpleChannel network;
-
-    public SimpleChannel register() {
-        channelName = new ResourceLocation(SimplyBackpacks.MODID, "network");
-        networkVersion = new ResourceLocation(SimplyBackpacks.MODID, "1").toString();
-
-        network = NetworkRegistry.ChannelBuilder.named(channelName)
+    public static SimpleChannel register() {
+        final SimpleChannel network = NetworkRegistry.ChannelBuilder.named(channelName)
                 .clientAcceptedVersions(version -> true)
                 .serverAcceptedVersions(version -> true)
                 .networkProtocolVersion(() -> networkVersion)
@@ -42,10 +37,6 @@ public class SBNetwork {
                 .consumer(FilterMessage::handle)
                 .add();
 
-        return network;
-    }
-
-    public SimpleChannel getNetworkChannel() {
         return network;
     }
 }

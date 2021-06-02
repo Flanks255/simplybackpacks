@@ -13,6 +13,7 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -31,14 +32,12 @@ public class FilterContainer  extends Container {
     private PlayerEntity player;
     private ItemStack item;
 
-    public static final ContainerType type = new ContainerType<>(FilterContainer::new).setRegistryName("sb_filter_container");
-
-    public FilterContainer(final int windowId, final PlayerInventory playerInventory) {
+    public FilterContainer(final int windowId, final PlayerInventory playerInventory, PacketBuffer extra) {
         this(windowId, playerInventory.player.world, playerInventory.player.getPosition(), playerInventory, playerInventory.player);
     }
 
     public FilterContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        super(type, windowId);
+        super(SimplyBackpacks.FILTERCONTAINER.get(), windowId);
 
         item = findBackpack(playerEntity);
 
@@ -118,7 +117,7 @@ public class FilterContainer  extends Container {
         nbt.putBoolean("Pickup",Pickup);
 
         if (player.getEntityWorld().isRemote)
-            SimplyBackpacks.network.sendToServer(new ToggleMessage());
+            SimplyBackpacks.NETWORK.sendToServer(new ToggleMessage());
         return Pickup;
     }
 
@@ -127,7 +126,7 @@ public class FilterContainer  extends Container {
         nbt.putInt("Filter-OPT", newOpts);
         item.setTag(nbt);
         if (player.getEntityWorld().isRemote)
-            SimplyBackpacks.network.sendToServer(new FilterMessage(newOpts));
+            SimplyBackpacks.NETWORK.sendToServer(new FilterMessage(newOpts));
         return newOpts;
     }
 

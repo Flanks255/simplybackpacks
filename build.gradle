@@ -1,11 +1,12 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'https://maven.creeperhost.net/' }
+        maven { url = 'https://maven.minecraftforge.net' }
         jcenter()
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
@@ -13,31 +14,20 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "com.wynprice.cursemaven:CurseMaven:1.2.+"
+repositories {
+    maven {
+        url "https://www.cursemaven.com"
     }
 }
 
-apply plugin: "com.wynprice.cursemaven"
-
 repositories {
-    maven { // TOP
-        name 'tterrag maven'
-        url "https://maven.tterrag.com/"
-    }
     maven { // JEI
-        url "http://dvs1.progwml6.com/files/maven"
+        url "https://dvs1.progwml6.com/files/maven"
     }
 }
 
 version = "$mod_version"
-group = 'com.flanks255' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = 'com.flanks255'
 archivesBaseName = 'simplybackpacks'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
@@ -95,12 +85,12 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
     runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
 
-    compile fg.deobf(curse.resolve("the-one-probe",3040735))
-    compile fg.deobf(curse.resolve("nbtedit",3062106))
-    compile fg.deobf(curse.resolve("simply-light",3056336))
-    compile fg.deobf(curse.resolve("building-gadgets",3055749))
-    compile fg.deobf(curse.resolve("mining-gadgets",3055465))
-    compile fg.deobf(curse.resolve("charging-gadgets",3055493))
+    compile fg.deobf("curse.maven:TOP-245211:3157997")
+    compile fg.deobf("curse.maven:BUILDINGGADGETS-298187:3205295")
+    compile fg.deobf("curse.maven:NBTEDIT-247580:3062106")
+    compile fg.deobf("curse.maven:SIMPLYLIGHT-300331:3288992")
+    compile fg.deobf("curse.maven:MINGAD-351748:3279909")
+    compile fg.deobf("curse.maven:CHARGEGAD-399757:3055493")
 
 }
 
