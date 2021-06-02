@@ -20,6 +20,7 @@ public class ItemModels extends ItemModelProvider {
     }
 
     private void registerBackpack() {
+        /*
         String path = SimplyBackpacks.BACKPACKITEM.get().getRegistryName().getPath();
         final ResourceLocation tier = new ResourceLocation(SimplyBackpacks.MODID, "tier");
         withExistingParent(path, mcLoc("item/handheld"))
@@ -32,6 +33,6 @@ public class ItemModels extends ItemModelProvider {
                 .model(new ModelFile.UncheckedModelFile(modLoc("item/rarebackpack"))).end()
                 .override()
                 .predicate(tier, 3)
-                .model(new ModelFile.UncheckedModelFile(modLoc("item/epicbackpack"))).end();
+                .model(new ModelFile.UncheckedModelFile(modLoc("item/epicbackpack"))).end();*/
     }
 }

@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-        maven { url = 'https://forge.modpacks.ch/maven' }
+        maven { url = 'https://maven.creeperhost.net/' }
         maven { url = 'https://maven.minecraftforge.net' }
         jcenter()
         mavenCentral()
@@ -27,7 +27,7 @@ repositories {
 }
 
 version = "$mod_version"
-group = 'com.flanks255' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = 'com.flanks255'
 archivesBaseName = 'simplybackpacks'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.

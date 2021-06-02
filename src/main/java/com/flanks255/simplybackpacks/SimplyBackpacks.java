@@ -41,21 +41,16 @@ public class SimplyBackpacks {
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static SimpleChannel NETWORK;
 
-    //new
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     private static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
     private static final DeferredRegister<IRecipeSerializer<?>> RECIPES = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
 
-    public static final RegistryObject<Item> BACKPACKITEM = ITEMS.register("backpack", BackpackItem::new);
+    //public static final RegistryObject<Item> BACKPACKITEM = ITEMS.register("backpack", BackpackItem::new);
 
     public static final RegistryObject<IRecipeSerializer<?>> COPYRECIPE = RECIPES.register("backpack_upgrade", CopyBackpackDataRecipe.Serializer::new);
     public static final RegistryObject<ContainerType<SBContainer>> SBCONTAINER = CONTAINERS.register("sb_container", () -> IForgeContainerType.create(SBContainer::new));
     public static final RegistryObject<ContainerType<FilterContainer>> FILTERCONTAINER = CONTAINERS.register("filter_container", () -> IForgeContainerType.create(FilterContainer::new));
 
-    public static final RegistryObject<ContainerType<NeoSBContainer>> NEOSBCONTAINER = CONTAINERS.register("neo_sb_container", () -> IForgeContainerType.create(NeoSBContainer::fromNetwork));
-
-
-    //old backpacks
     public static final RegistryObject<Item> COMMONBACKPACK = ITEMS.register("commonbackpack", () -> new ItemBackpackBase("commonbackpack", 18, Rarity.COMMON));
     public static final RegistryObject<Item> UNCOMMONBACKPACK = ITEMS.register("uncommonbackpack", () -> new ItemBackpackBase("uncommonbackpack", 33, Rarity.UNCOMMON));
     public static final RegistryObject<Item> RAREBACKPACK = ITEMS.register("rarebackpack", () -> new ItemBackpackBase("rarebackpack", 66, Rarity.RARE));
@@ -122,15 +117,13 @@ public class SimplyBackpacks {
         ScreenManager.registerFactory(SBCONTAINER.get(), SBGui::new);
         ScreenManager.registerFactory(FILTERCONTAINER.get(), FilterGui::new);
 
-        ScreenManager.registerFactory(NEOSBCONTAINER.get(), NeoSBGui::new);
-
         keyBinds.add(0, new KeyBinding("key.simplybackpacks.backpackpickup.desc", -1, "key.simplybackpacks.category"));
         keyBinds.add(1, new KeyBinding("key.simplybackpacks.backpackopen.desc", -1, "key.simplybackpacks.category"));
         ClientRegistry.registerKeyBinding(keyBinds.get(0));
         ClientRegistry.registerKeyBinding(keyBinds.get(1));
-
+/*
         ItemModelsProperties.registerProperty(BACKPACKITEM.get(), new ResourceLocation(MODID, "tier"),
                 (stack, world, entity) -> stack.getOrCreateTag().getInt("tier")
-                );
+                );*/
     }
 }

@@ -1,43 +1,27 @@
 package com.flanks255.simplybackpacks.items;
 
-import com.flanks255.simplybackpacks.gui.NeoSBContainer;
-import com.flanks255.simplybackpacks.save.BackpackData;
-import com.flanks255.simplybackpacks.save.BackpackDataManager;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.network.NetworkHooks;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.UUID;
 
-public class BackpackItem extends Item implements INamedContainerProvider {
+public class BackpackItem extends Item {
 
     public BackpackItem() {
         super(new Item.Properties().maxStackSize(1).group(ItemGroup.TOOLS));
     }
-
     @Override
     public String getTranslationKey(ItemStack stack) {
         CompoundNBT nbt = stack.getOrCreateTag();
@@ -77,7 +61,16 @@ public class BackpackItem extends Item implements INamedContainerProvider {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         if (!worldIn.isRemote) {
-            NetworkHooks.openGui((ServerPlayerEntity) playerIn, this);
+            ItemStack item = playerIn.getHeldItem(handIn);
+            if (item.getItem() instanceof BackpackItem) {
+                CompoundNBT tag = item.getOrCreateTag();
+                UUID uuid;
+                if (!tag.contains("UUID")) {
+                    uuid = UUID.randomUUID();
+                    tag.putUniqueId("UUID", uuid);
+                } else
+                    uuid = tag.getUniqueId("UUID");
+            }
         }
         return ActionResult.resultSuccess(playerIn.getHeldItem(handIn));
     }
@@ -86,54 +79,12 @@ public class BackpackItem extends Item implements INamedContainerProvider {
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
 
-        if (flagIn.isAdvanced() && stack.hasTag() && stack.getTag().contains("tier")) {
-            tooltip.add(new StringTextComponent("Tier: "+ stack.getTag().getInt("tier")));
+        if (flagIn.isAdvanced() && stack.hasTag()) {
+            if(stack.getTag().contains("tier"))
+                tooltip.add(new StringTextComponent("Tier: "+ stack.getTag().getInt("tier")));
+            if(stack.getTag().contains("UUID"))
+                tooltip.add(new StringTextComponent("UUID: "+ stack.getTag().getUniqueId("UUID")));
         }
     }
 
-    @Nullable
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-        return new Caps(stack);
-    }
-
-    @Override
-    public ITextComponent getDisplayName() {
-        return new StringTextComponent("Backpack"); //TODO fix later...
-    }
-
-    @Nullable
-    @Override
-    public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new NeoSBContainer(windowId, NeoSBContainer.findBackpack(playerEntity));
-    }
-
-    static class Caps implements ICapabilityProvider {
-        private final ItemStack stack;
-        private LazyOptional<IItemHandler> itemHandlerOptional;
-
-        public Caps(ItemStack stack) {
-            this.stack = stack;
-        }
-
-        @Nonnull
-        @Override
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-            if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-                if (itemHandlerOptional == null && stack.hasTag() && stack.getTag().contains("UUID")) {
-                    if (BackpackDataManager.CLIENT_CACHE.containsKey(stack.getTag().getUniqueId("UUID")))
-                        itemHandlerOptional = BackpackDataManager.CLIENT_CACHE.get(stack.getTag().getUniqueId("UUID")).getOptional();
-                    else
-                    {
-                        BackpackData backpack = BackpackDataManager.get(ServerLifecycleHooks.getCurrentServer().func_241755_D_()).getBackpack(stack.getTag().getUniqueId("UUID"));
-                        if (backpack != null)
-                            itemHandlerOptional = backpack.getOptional();
-                    }
-                }
-            }
-            if (itemHandlerOptional != null)
-                return itemHandlerOptional.cast();
-            return LazyOptional.empty();
-        }
-    }
 }
