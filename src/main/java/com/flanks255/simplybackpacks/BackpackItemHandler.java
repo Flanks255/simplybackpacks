@@ -28,22 +28,9 @@ public class BackpackItemHandler extends ItemStackHandler {
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-        //check for shulkers.
-        if (stack.getItem() instanceof BlockItem) {
-            if (((BlockItem) stack.getItem()).getBlock().isIn(BlockTags.SHULKER_BOXES)) {
-                return stack;
-            }
-        }
-        //check for some other modded inventories
-        if (stack.hasTag()) {
-            CompoundNBT tag = stack.getTag();
-            if (tag.contains("Items") || tag.contains("Inventory"))
-                return stack;
-        }
-
-        //check for itemhandler capability
-        if (stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent())
+        if (!SimplyBackpacks.filterItem(stack))
             return stack;
+
         dirty = true;
         return super.insertItem(slot, stack, simulate);
     }
@@ -130,12 +117,7 @@ public class BackpackItemHandler extends ItemStackHandler {
         }
 
         public void setItem(int slot, ItemStack item) {
-            if (item.hasTag()) {
-                CompoundNBT tag = item.getTag();
-                if (tag.contains("Items") || tag.contains("BlockEntityTag") || tag.contains("Inventory"))
-                    return;
-            }
-            if (item.getItem() instanceof ItemBackpackBase || item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent())
+            if (!SimplyBackpacks.filterItem(item))
                 return;
             else {
                 this.setStackInSlot(slot, item);
@@ -147,7 +129,7 @@ public class BackpackItemHandler extends ItemStackHandler {
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            if (stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent() || stack.getItem() instanceof ItemBackpackBase)
+            if (!SimplyBackpacks.filterItem(stack))
                 return stack;
 
             return super.insertItem(slot, stack, simulate);

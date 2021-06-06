@@ -8,5 +8,7 @@ public class Generator {
         DataGenerator generator = event.getGenerator();
 
         generator.addProvider(new ItemModels(generator, event.getExistingFileHelper()));
+        SBBlockTags blockTags = new SBBlockTags(generator, event.getExistingFileHelper());
+        generator.addProvider(new SBItemTags(generator, blockTags, event.getExistingFileHelper()));
     }
 }

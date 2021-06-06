@@ -1,0 +1,142 @@
+{
+  "replace": false,
+  "values": [
+    "simplybackpacks:commonbackpack",
+    "simplybackpacks:uncommonbackpack",
+    "simplybackpacks:rarebackpack",
+    "simplybackpacks:epicbackpack",
+    "minecraft:shulker_box",
+    "minecraft:black_shulker_box",
+    "minecraft:blue_shulker_box",
+    "minecraft:brown_shulker_box",
+    "minecraft:cyan_shulker_box",
+    "minecraft:gray_shulker_box",
+    "minecraft:green_shulker_box",
+    "minecraft:light_blue_shulker_box",
+    "minecraft:light_gray_shulker_box",
+    "minecraft:lime_shulker_box",
+    "minecraft:magenta_shulker_box",
+    "minecraft:orange_shulker_box",
+    "minecraft:pink_shulker_box",
+    "minecraft:purple_shulker_box",
+    "minecraft:red_shulker_box",
+    "minecraft:white_shulker_box",
+    "minecraft:yellow_shulker_box",
+    {
+      "id": "quantumstorage:quantum_bag_white",
+      "required": false
+    },
+    {
+      "id": "quantumstorage:quantum_bag_orange",
+      "required": false
+    },
+    {
+      "id": "quantumstorage:quantum_bag_magenta",
+      "required": false
+    },
+    {
+      "id": "quantumstorage:quantum_bag_light_blue",
+      "required": false
+    },
+    {
+      "id": "quantumstorage:quantum_bag_yellow",
+      "required": false
+    },
+    {
+      "id": "quantumstorage:quantum_bag_lime",
+      "required": false
+    },
+    {
+      "id": "quantumstorage:quantum_bag_pink",
+      "required": false
+    },
+    {
+      "id": "quantumstorage:quantum_bag_gray",
+      "required": false
+    },
+    {
+      "id": "quantumstorage:quantum_bag_light_gray",
+      "required": false
+    },
+    {
+      "id": "quantumstorage:quantum_bag_cyan",
+      "required": false
+    },
+    {
+      "id": "quantumstorage:quantum_bag_purple",
+      "required": false
+    },
+    {
+      "id": "quantumstorage:quantum_bag_blue",
+      "required": false
+    },
+    {
+      "id": "quantumstorage:quantum_bag_brown",
+      "required": false
+    },
+    {
+      "id": "quantumstorage:quantum_bag_green",
+      "required": false
+    },
+    {
+      "id": "quantumstorage:quantum_bag_red",
+      "required": false
+    },
+    {
+      "id": "quantumstorage:quantum_bag_black",
+      "required": false
+    },
+    {
+      "id": "mekanism:personal_chest",
+      "required": false
+    },
+    {
+      "id": "rftoolsstorage:modular_storage",
+      "required": false
+    },
+    {
+      "id": "rftoolsstorage:modular_storage",
+      "required": false
+    },
+    {
+      "id": "rftoolsstorage:storage_module0",
+      "required": false
+    },
+    {
+      "id": "rftoolsstorage:storage_module1",
+      "required": false
+    },
+    {
+      "id": "rftoolsstorage:storage_module2",
+      "required": false
+    },
+    {
+      "id": "rftoolsstorage:storage_module3",
+      "required": false
+    },
+    {
+      "id": "immersiveengineering:crate",
+      "required": false
+    },
+    {
+      "id": "immersiveengineering:reinforced_crate",
+      "required": false
+    },
+    {
+      "id": "industrialforegoing:infinity_backpack",
+      "required": false
+    },
+    {
+      "id": "pneumaticcraft:reinforced_chest",
+      "required": false
+    },
+    {
+      "id": "pneumaticcraft:smart_chest",
+      "required": false
+    },
+    {
+      "id": "forcecraft:force_pack",
+      "required": false
+    }
+  ]
+}

@@ -23,19 +23,7 @@ public class SBContainerSlot extends SlotItemHandler {
 
     @Override
     public boolean isItemValid(@Nonnull ItemStack stack) {
-        //check for shulkers.
-        if (stack.getItem() instanceof BlockItem) {
-            if (((BlockItem) stack.getItem()).getBlock().isIn(BlockTags.SHULKER_BOXES)) {
-                return false;
-            }
-        }
-        if (stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent())
-            return false;
-        if (stack.hasTag()) {
-            CompoundNBT tag = stack.getTag();
-            return !(tag.contains("Items") || tag.contains("Inventory"));
-        }
-        return true;
+        return SimplyBackpacks.filterItem(stack);
     }
 
     @Override

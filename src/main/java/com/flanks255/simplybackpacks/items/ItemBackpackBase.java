@@ -194,11 +194,11 @@ public class ItemBackpackBase extends Item {
         if (!nbt.getBoolean("Pickup"))
                 return false;
 
-        LazyOptional<IItemHandler> stupidIdiot = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-        if (!stupidIdiot.isPresent())
+        LazyOptional<IItemHandler> optional = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+        if (!optional.isPresent())
             return false;
 
-        IItemHandler handler = stupidIdiot.orElse(null);
+        IItemHandler handler = optional.orElse(null);
         if (handler == null || !(handler instanceof BackpackItemHandler))
             return false;
         ((BackpackItemHandler) handler).loadIfNotLoaded();

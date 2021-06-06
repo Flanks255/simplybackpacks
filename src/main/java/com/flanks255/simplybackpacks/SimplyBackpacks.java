@@ -1,7 +1,10 @@
 package com.flanks255.simplybackpacks;
 
 
+import com.flanks255.simplybackpacks.configuration.CommonConfiguration;
+import com.flanks255.simplybackpacks.configuration.ConfigCache;
 import com.flanks255.simplybackpacks.data.Generator;
+import com.flanks255.simplybackpacks.data.SBItemTags;
 import com.flanks255.simplybackpacks.gui.*;
 import com.flanks255.simplybackpacks.items.BackpackItem;
 import com.flanks255.simplybackpacks.items.ItemBackpackBase;
@@ -15,6 +18,10 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.*;
 import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ITag;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -23,9 +30,11 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -40,6 +49,12 @@ public class SimplyBackpacks {
     public static final String MODID = "simplybackpacks";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static SimpleChannel NETWORK;
+
+    //forge:holds_items
+    public static final ITag.INamedTag<Item> HOLDS_ITEMS = ItemTags.makeWrapperTag(new ResourceLocation("forge", "holds_items").toString());
+    //storagedrawers:drawers
+    public static final ITag.INamedTag<Item> STORAGEDRAWERS = ItemTags.makeWrapperTag(new ResourceLocation("storagedrawers", "drawers").toString());
+
 
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     private static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
@@ -63,6 +78,10 @@ public class SimplyBackpacks {
          ITEMS.register(bus);
          CONTAINERS.register(bus);
          RECIPES.register(bus);
+
+         //Configs
+         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfiguration.COMMON_CONFIG);
+         bus.addListener(this::onConfigReload);
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientStuff);
@@ -125,5 +144,33 @@ public class SimplyBackpacks {
         ItemModelsProperties.registerProperty(BACKPACKITEM.get(), new ResourceLocation(MODID, "tier"),
                 (stack, world, entity) -> stack.getOrCreateTag().getInt("tier")
                 );*/
+    }
+
+    private void onConfigReload(ModConfig.ModConfigEvent event) {
+        ConfigCache.RefreshCache();
+    }
+
+    public static boolean filterItem(ItemStack stack) {
+         //check for backpacks
+        if (stack.getItem() instanceof ItemBackpackBase)
+            return false;
+
+        //check the config whitelist, overrides all checks further.
+        if (ConfigCache.WHITELIST.contains(stack.getItem().getRegistryName()))
+            return true;
+
+        //check for common storage tags.
+        if (stack.hasTag()) {
+            CompoundNBT tag = stack.getTag();
+            if (tag.contains("Items") || tag.contains("Inventory"))
+                return false;
+        }
+
+        //check for forge:holds_items / storagedrawers:drawers
+        if (stack.getItem().isIn(HOLDS_ITEMS) || stack.getItem().isIn(STORAGEDRAWERS))
+            return false;
+
+        // if all else fails, check the config blacklist
+        return !ConfigCache.BLACKLIST.contains(stack.getItem().getRegistryName());
     }
 }
