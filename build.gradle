@@ -10,23 +10,18 @@ buildscript {
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply plugin: "com.matthewprenger.cursegradle"
+apply from: 'https://files.saps.dev/ci/git-md-changelog.gradle'
 
 repositories {
-    maven {
-        url "https://www.cursemaven.com"
-    }
+    maven { url "https://www.cursemaven.com" }
+    maven { url "https://dvs1.progwml6.com/files/maven" }
 }
 
-repositories {
-    maven { // JEI
-        url "https://dvs1.progwml6.com/files/maven"
-    }
-}
-
-version = "$mod_version"
+def ENV = System.getenv()
+version = "${mod_version}-build.${ENV.GITHUB_RUN_NUMBER ?: 9999}"
 group = 'com.flanks255'
 archivesBaseName = 'simplybackpacks'
 
@@ -116,12 +111,42 @@ def reobfArtifact = artifacts.add('default', reobfFile) {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifact reobfArtifact
+            artifact(reobfArtifact) {
+                builtBy reobfArtifact
+                artifactId = archivesBaseName
+                classifier null
+            }
         }
     }
+
     repositories {
-        maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
+        if (ENV.SAPS_TOKEN) {
+            maven {
+                url "https://maven.saps.dev/minecraft"
+                credentials {
+                    username = "flanks"
+                    password = "${ENV.SAPS_TOKEN}"
+                }
+            }
+        }
+    }
+}
+
+if (ENV.CURSEFORGE_KEY) {
+    curseforge {
+        apiKey = ENV.CURSEFORGE_KEY
+        project {
+            id = project.curseforge_id
+            releaseType = "beta"
+            addGameVersion "Forge"
+            addGameVersion "1.16.5"
+            addGameVersion "1.16.4"
+            addGameVersion "1.16.3"
+            addGameVersion "1.16.2"
+            addGameVersion "1.16.1"
+            mainArtifact(jar)
+            changelog = getGitChangelog
+            changelogType = 'markdown'
         }
     }
 }
