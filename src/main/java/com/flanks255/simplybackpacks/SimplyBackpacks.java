@@ -4,9 +4,7 @@ package com.flanks255.simplybackpacks;
 import com.flanks255.simplybackpacks.configuration.CommonConfiguration;
 import com.flanks255.simplybackpacks.configuration.ConfigCache;
 import com.flanks255.simplybackpacks.data.Generator;
-import com.flanks255.simplybackpacks.data.SBItemTags;
 import com.flanks255.simplybackpacks.gui.*;
-import com.flanks255.simplybackpacks.items.BackpackItem;
 import com.flanks255.simplybackpacks.items.ItemBackpackBase;
 import com.flanks255.simplybackpacks.network.OpenMessage;
 import com.flanks255.simplybackpacks.network.SBNetwork;
@@ -19,7 +17,6 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.*;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.NonNullList;
@@ -53,7 +50,7 @@ public class SimplyBackpacks {
     //forge:holds_items
     public static final ITag.INamedTag<Item> HOLDS_ITEMS = ItemTags.makeWrapperTag(new ResourceLocation("forge", "holds_items").toString());
     //storagedrawers:drawers
-    public static final ITag.INamedTag<Item> STORAGEDRAWERS = ItemTags.makeWrapperTag(new ResourceLocation("storagedrawers", "drawers").toString());
+    public static final ITag.INamedTag<Item> STORAGEDRAWERS = ItemTags.createOptional(new ResourceLocation("storagedrawers", "drawers"));
 
 
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
