@@ -87,6 +87,8 @@ dependencies {
     compile fg.deobf("curse.maven:SIMPLYLIGHT-300331:3288992")
     compile fg.deobf("curse.maven:MINGAD-351748:3279909")
     compile fg.deobf("curse.maven:CHARGEGAD-399757:3055493")
+    compile fg.deobf("curse.maven:ENSORC-349447:3246996")
+    compile fg.deobf("curse.maven:COFHCORE-69162:3249453")
 }
 
 jar {
