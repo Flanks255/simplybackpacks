@@ -4,6 +4,10 @@
     {
       "id": "ensorcellation:soulbound",
       "required": false
+    },
+    {
+      "id": "tombstone:soulbound",
+      "required": false
     }
   ]
 }

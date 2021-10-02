@@ -21,6 +21,7 @@ public class SBEnchantmentGen extends TagsProvider<Enchantment> {
     @Override
     protected void registerTags() {
         this.getOrCreateBuilder(SimplyBackpacks.SOULBOUND).addOptional(new ResourceLocation("ensorcellation","soulbound"));
+        this.getOrCreateBuilder(SimplyBackpacks.SOULBOUND).addOptional(new ResourceLocation("tombstone","soulbound"));
     }
 
     @Override

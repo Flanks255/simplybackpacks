@@ -87,6 +87,22 @@
       "required": false
     },
     {
+      "id": "krate:krate_small",
+      "required": false
+    },
+    {
+      "id": "krate:krate_basic",
+      "required": false
+    },
+    {
+      "id": "krate:krate_big",
+      "required": false
+    },
+    {
+      "id": "krate:krate_large",
+      "required": false
+    },
+    {
       "id": "mekanism:personal_chest",
       "required": false
     },

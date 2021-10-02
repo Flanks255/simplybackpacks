@@ -57,7 +57,7 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
 
     }
 
-    private ResourceLocation GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/filter_gui.png");;
+    private ResourceLocation GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/filter_gui.png");
 
     @Override
     public void render(MatrixStack matrixStack, int p_render_1_, int p_render_2_, float p_render_3_) {

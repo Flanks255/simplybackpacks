@@ -20,6 +20,7 @@ public class SBItemTags extends ItemTagsProvider {
         tagBackpacks();
         tagShulkers();
         tagQuantumBags();
+        tagKrates();
 
 
         this.getOrCreateBuilder(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("mekanism", "personal_chest"));
@@ -40,6 +41,17 @@ public class SBItemTags extends ItemTagsProvider {
 
         this.getOrCreateBuilder(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("forcecraft", "force_pack"));
 
+    }
+
+    private void tagKrates() {
+        TagOtherModsItem("krate","krate_small");
+        TagOtherModsItem("krate","krate_basic");
+        TagOtherModsItem("krate","krate_big");
+        TagOtherModsItem("krate","krate_large");
+    }
+
+    private void TagOtherModsItem(String modid, String item) {
+        this.getOrCreateBuilder(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation(modid, item));
     }
 
     private void tagBackpacks() {
