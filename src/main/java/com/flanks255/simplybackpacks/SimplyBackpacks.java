@@ -3,8 +3,13 @@ package com.flanks255.simplybackpacks;
 
 import com.flanks255.simplybackpacks.configuration.CommonConfiguration;
 import com.flanks255.simplybackpacks.configuration.ConfigCache;
+import com.flanks255.simplybackpacks.crafting.CopyBackpackDataRecipe;
+import com.flanks255.simplybackpacks.crafting.TargetNBTIngredient;
 import com.flanks255.simplybackpacks.data.Generator;
-import com.flanks255.simplybackpacks.gui.*;
+import com.flanks255.simplybackpacks.gui.FilterContainer;
+import com.flanks255.simplybackpacks.gui.FilterGui;
+import com.flanks255.simplybackpacks.gui.SBContainer;
+import com.flanks255.simplybackpacks.gui.SBGui;
 import com.flanks255.simplybackpacks.items.ItemBackpackBase;
 import com.flanks255.simplybackpacks.network.OpenMessage;
 import com.flanks255.simplybackpacks.network.SBNetwork;
@@ -15,7 +20,9 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Rarity;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tags.ITag;
@@ -24,6 +31,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeTagHandler;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
@@ -94,6 +102,8 @@ public class SimplyBackpacks {
 
 
     public void setup(final FMLCommonSetupEvent event) {
+         event.enqueueWork(() ->
+             CraftingHelper.register(TargetNBTIngredient.Serializer.NAME, TargetNBTIngredient.SERIALIZER));
          NETWORK = SBNetwork.register();
     }
 

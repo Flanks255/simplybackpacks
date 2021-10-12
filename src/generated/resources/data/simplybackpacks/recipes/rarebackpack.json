@@ -1,0 +1,29 @@
+{
+  "type": "simplybackpacks:backpack_upgrade",
+  "pattern": [
+    "A A",
+    "DBD",
+    "CEC"
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:gems/diamond"
+    },
+    "B": {
+      "item": "simplybackpacks:uncommonbackpack",
+      "type": "simplybackpacks:nbt_target"
+    },
+    "C": {
+      "tag": "forge:chests"
+    },
+    "D": {
+      "tag": "forge:dyes/blue"
+    },
+    "E": {
+      "tag": "forge:storage_blocks/diamond"
+    }
+  },
+  "result": {
+    "item": "simplybackpacks:rarebackpack"
+  }
+}

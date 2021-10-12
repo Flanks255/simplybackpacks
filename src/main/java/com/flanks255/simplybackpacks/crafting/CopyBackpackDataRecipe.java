@@ -1,27 +1,18 @@
-package com.flanks255.simplybackpacks;
+package com.flanks255.simplybackpacks.crafting;
 
-import com.flanks255.simplybackpacks.items.ItemBackpackBase;
-import com.google.gson.JsonArray;
+import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.google.gson.JsonObject;
-import com.mojang.realmsclient.util.JsonUtils;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipe;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Map;
 
 public class CopyBackpackDataRecipe extends ShapedRecipe {
     public CopyBackpackDataRecipe(final ResourceLocation id, final String group, final int recipeWidth, final int recipeHeight, final NonNullList<Ingredient> ingredients, final ItemStack recipeOutput) {
@@ -35,12 +26,19 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
     @Override
     public ItemStack getCraftingResult(CraftingInventory inv) {
         final ItemStack craftingResult = super.getCraftingResult(inv);
+        TargetNBTIngredient donorIngredient = null;
         ItemStack dataSource = ItemStack.EMPTY;
-
+        NonNullList<Ingredient> ingredients = getIngredients();
+        for (Ingredient ingredient : ingredients) {
+            if (ingredient instanceof TargetNBTIngredient) {
+                donorIngredient = (TargetNBTIngredient) ingredient;
+                break;
+            }
+        }
         if (!craftingResult.isEmpty()) {
             for (int i = 0; i < inv.getSizeInventory(); i++) {
                 final ItemStack item = inv.getStackInSlot(i);
-                if (!item.isEmpty() && item.getItem() instanceof ItemBackpackBase) {
+                if (!item.isEmpty() && donorIngredient.test(item)) {
                     dataSource = item;
                     break;
                 }

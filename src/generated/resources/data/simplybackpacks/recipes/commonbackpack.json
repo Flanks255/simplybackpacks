@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "A A",
+    "DBD",
+    "BCB"
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:string"
+    },
+    "B": {
+      "tag": "forge:leather"
+    },
+    "C": {
+      "tag": "forge:chests"
+    },
+    "D": {
+      "tag": "forge:dyes/white"
+    }
+  },
+  "result": {
+    "item": "simplybackpacks:commonbackpack"
+  }
+}

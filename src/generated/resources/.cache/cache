@@ -1,2 +1,6 @@
 2fa3acc9181561f59ced54459a8cbc834f930088 data/forge/tags/enchantments/soulbound.json
 1fa111e391f471953e6c21cef84c7cfb32f1044e data/forge/tags/items/holds_items.json
+7620dd9c14600c9e6c0931ffd11443e45821deee data/simplybackpacks/recipes/commonbackpack.json
+58608772565cfbc4dd71bc7ff6274d000c5295a2 data/simplybackpacks/recipes/epicbackpack.json
+f54f5ed6eb2efc618a3a6fde0b2e80153f1609ac data/simplybackpacks/recipes/rarebackpack.json
+33082d4e0d8f811a0e319540ba64faffd771ae84 data/simplybackpacks/recipes/uncommonbackpack.json

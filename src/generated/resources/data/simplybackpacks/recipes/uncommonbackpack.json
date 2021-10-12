@@ -1,0 +1,29 @@
+{
+  "type": "simplybackpacks:backpack_upgrade",
+  "pattern": [
+    "A A",
+    "EBE",
+    "CDC"
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:ingots/gold"
+    },
+    "B": {
+      "item": "simplybackpacks:commonbackpack",
+      "type": "simplybackpacks:nbt_target"
+    },
+    "C": {
+      "tag": "forge:chests"
+    },
+    "D": {
+      "tag": "forge:storage_blocks/gold"
+    },
+    "E": {
+      "tag": "forge:dyes/yellow"
+    }
+  },
+  "result": {
+    "item": "simplybackpacks:uncommonbackpack"
+  }
+}

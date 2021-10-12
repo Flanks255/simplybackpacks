@@ -37,7 +37,6 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
-            property 'forge.logging.console.level', 'debug'
 
             mods {
                 simplybackpacks {
@@ -48,7 +47,6 @@ minecraft {
 
         server {
             workingDirectory project.file('run')
-            property 'forge.logging.console.level', 'debug'
 
             args 'nogui'
 
@@ -61,7 +59,6 @@ minecraft {
 
         data {
             workingDirectory project.file('run')
-            property 'forge.logging.console.level', 'debug'
 
             args '--mod', 'simplybackpacks', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
