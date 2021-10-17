@@ -5,28 +5,23 @@ import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.gui.FilterContainer;
 import com.flanks255.simplybackpacks.gui.SBContainer;
 import com.flanks255.simplybackpacks.network.ToggleMessageMessage;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
@@ -34,7 +29,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -45,7 +40,7 @@ import java.util.List;
 
 public class ItemBackpackBase extends Item {
     public ItemBackpackBase(String name, Integer size, Rarity rarity) {
-        super(new Item.Properties().maxStackSize(1).group(ItemGroup.TOOLS));
+        super(new Item.Properties().stacksTo(1).tab(CreativeModeTab.TAB_TOOLS));
         this.name = name;
         this.size = size;
         this.rarity = rarity;
@@ -73,7 +68,7 @@ public class ItemBackpackBase extends Item {
 
     @Override
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        return enchantment.isIn(SimplyBackpacks.SOULBOUND);
+        return enchantment.is(SimplyBackpacks.SOULBOUND);
     }
 
     @Override
@@ -82,50 +77,50 @@ public class ItemBackpackBase extends Item {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        if (!worldIn.isRemote) {
-            if (playerIn.isSneaking()) {
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+        if (!worldIn.isClientSide) {
+            if (playerIn.isShiftKeyDown()) {
                 //filter
-                playerIn.openContainer(new INamedContainerProvider() {
+                playerIn.openMenu(new MenuProvider() {
                     @Override
-                    public ITextComponent getDisplayName() {
-                        return new StringTextComponent("Backpack Filter");
+                    public Component getDisplayName() {
+                        return new TextComponent("Backpack Filter");
                     }
 
                     @Nullable
                     @Override
-                    public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
-                        return new FilterContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getPosition(), p_createMenu_2_, p_createMenu_3_);
+                    public AbstractContainerMenu createMenu(int p_createMenu_1_, Inventory p_createMenu_2_, Player p_createMenu_3_) {
+                        return new FilterContainer(p_createMenu_1_, p_createMenu_3_.level, p_createMenu_3_.blockPosition(), p_createMenu_2_, p_createMenu_3_);
                     }
                 });
             } else {
                 //open
-                playerIn.openContainer(new INamedContainerProvider() {
+                playerIn.openMenu(new MenuProvider() {
                     @Override
-                    public ITextComponent getDisplayName() {
-                        return playerIn.getHeldItem(handIn).getDisplayName();
+                    public Component getDisplayName() {
+                        return playerIn.getItemInHand(handIn).getHoverName();
 
                     }
 
                     @Nullable
                     @Override
-                    public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
-                        return new SBContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getPosition(), p_createMenu_2_, p_createMenu_3_);
+                    public AbstractContainerMenu createMenu(int p_createMenu_1_, Inventory p_createMenu_2_, Player p_createMenu_3_) {
+                        return new SBContainer(p_createMenu_1_, p_createMenu_3_.level, p_createMenu_3_.blockPosition(), p_createMenu_2_, p_createMenu_3_);
                     }
                 });
             }
         }
-        return ActionResult.resultSuccess(playerIn.getHeldItem(handIn));
+        return InteractionResultHolder.success(playerIn.getItemInHand(handIn));
     }
 
     @Nullable
     @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
         return new BackpackCaps(stack, size, nbt);
     }
 
     class BackpackCaps implements ICapabilitySerializable {
-        public BackpackCaps(ItemStack stack, int size, CompoundNBT nbtIn) {
+        public BackpackCaps(ItemStack stack, int size, CompoundTag nbtIn) {
             itemStack = stack;
             this.size = size;
             inventory = new BackpackItemHandler(itemStack, size);
@@ -147,27 +142,27 @@ public class ItemBackpackBase extends Item {
         }
 
         @Override
-        public INBT serializeNBT() {
+        public Tag serializeNBT() {
             inventory.save();
-            return new CompoundNBT();
+            return new CompoundTag();
         }
 
         @Override
-        public void deserializeNBT(INBT nbt) {
+        public void deserializeNBT(Tag nbt) {
             inventory.load();
         }
     }
 
-    public void togglePickup(PlayerEntity playerEntity, ItemStack stack) {
-        CompoundNBT nbt = stack.getOrCreateTag();
+    public void togglePickup(Player playerEntity, ItemStack stack) {
+        CompoundTag nbt = stack.getOrCreateTag();
 
         boolean Pickup = !nbt.getBoolean("Pickup");
 
         nbt.putBoolean("Pickup", Pickup);
-        if (playerEntity instanceof ServerPlayerEntity)
-            SimplyBackpacks.NETWORK.send(PacketDistributor.PLAYER.with(()-> (ServerPlayerEntity) playerEntity), new ToggleMessageMessage(Pickup));
+        if (playerEntity instanceof ServerPlayer)
+            SimplyBackpacks.NETWORK.send(PacketDistributor.PLAYER.with(()-> (ServerPlayer) playerEntity), new ToggleMessageMessage(Pickup));
         else
-            playerEntity.sendStatusMessage(new StringTextComponent(I18n.format(Pickup?"simplybackpacks.autopickupenabled":"simplybackpacks.autopickupdisabled")), true);
+            playerEntity.displayClientMessage(new TextComponent(I18n.get(Pickup?"simplybackpacks.autopickupenabled":"simplybackpacks.autopickupdisabled")), true);
 
     }
 
@@ -186,9 +181,9 @@ public class ItemBackpackBase extends Item {
         for (int i = 0; i < 16; i++) {
             ItemStack fStack = handler.filter.getStackInSlot(i);
             if (!fStack.isEmpty()) {
-                if (fStack.isItemEqual(item)) {
+                if (fStack.sameItem(item)) {
                     if (nbtMatch)
-                        return ItemStack.areItemStackTagsEqual(fStack, item) == whitelist;
+                        return ItemStack.tagMatches(fStack, item) == whitelist;
                     else
                         return whitelist;
                 }
@@ -199,7 +194,7 @@ public class ItemBackpackBase extends Item {
     }
 
     public boolean pickupEvent(EntityItemPickupEvent event, ItemStack stack) {
-        CompoundNBT nbt = stack.getTag();
+        CompoundTag nbt = stack.getTag();
         if (nbt == null)
             return false;
 
@@ -234,36 +229,36 @@ public class ItemBackpackBase extends Item {
 
 
     private boolean hasTranslation(String key) {
-        return !I18n.format(key).equals(key);
+        return !I18n.get(key).equals(key);
     }
 
     private String fallbackString(String key, String fallback) {
-        String tmp = I18n.format(key);
+        String tmp = I18n.get(key);
         return tmp.equals(key)?fallback:tmp;
     }
 
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
-        String translationKey = getTranslationKey();
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+        String translationKey = getDescriptionId();
 
         boolean pickupEnabled = stack.getOrCreateTag().getBoolean("Pickup");
         if (pickupEnabled)
-            tooltip.add(new StringTextComponent(I18n.format("simplybackpacks.autopickupenabled")));
+            tooltip.add(new TextComponent(I18n.get("simplybackpacks.autopickupenabled")));
         else
-            tooltip.add(new StringTextComponent(I18n.format("simplybackpacks.autopickupdisabled")));
+            tooltip.add(new TextComponent(I18n.get("simplybackpacks.autopickupdisabled")));
 
         if (Screen.hasShiftDown()) {
-            tooltip.add(new StringTextComponent( I18n.format( translationKey + ".info") ));
+            tooltip.add(new TextComponent( I18n.get( translationKey + ".info") ));
             if (hasTranslation(translationKey + ".info2"))
-                tooltip.add(new StringTextComponent( I18n.format(translationKey + ".info2")));
+                tooltip.add(new TextComponent( I18n.get(translationKey + ".info2")));
             if (hasTranslation(translationKey + ".info3"))
-                tooltip.add(new StringTextComponent( I18n.format(translationKey + ".info3")));
+                tooltip.add(new TextComponent( I18n.get(translationKey + ".info3")));
         }
         else {
-            tooltip.add(new StringTextComponent( fallbackString("simplybackpacks.shift", "Press <§6§oShift§r> for info.") ));
+            tooltip.add(new TextComponent( fallbackString("simplybackpacks.shift", "Press <§6§oShift§r> for info.") ));
         }
     }
 }

@@ -2,10 +2,10 @@ package com.flanks255.simplybackpacks.data;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.TagsProvider;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.data.tags.TagsProvider;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nullable;
@@ -19,13 +19,13 @@ public class SBEnchantmentGen extends TagsProvider<Enchantment> {
     }
 
     @Override
-    protected void registerTags() {
-        this.getOrCreateBuilder(SimplyBackpacks.SOULBOUND).addOptional(new ResourceLocation("ensorcellation","soulbound"));
-        this.getOrCreateBuilder(SimplyBackpacks.SOULBOUND).addOptional(new ResourceLocation("tombstone","soulbound"));
+    protected void addTags() {
+        this.tag(SimplyBackpacks.SOULBOUND).addOptional(new ResourceLocation("ensorcellation","soulbound"));
+        this.tag(SimplyBackpacks.SOULBOUND).addOptional(new ResourceLocation("tombstone","soulbound"));
     }
 
     @Override
-    protected Path makePath(ResourceLocation id) {
+    protected Path getPath(ResourceLocation id) {
         return this.generator.getOutputFolder().resolve("data/" + id.getNamespace() + "/tags/enchantments/" + id.getPath() + ".json");
     }
 

@@ -1,9 +1,9 @@
 package com.flanks255.simplybackpacks.data;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
+import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.util.registry.Registry;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
 public class Generator {
     public static void gatherData(GatherDataEvent event) {

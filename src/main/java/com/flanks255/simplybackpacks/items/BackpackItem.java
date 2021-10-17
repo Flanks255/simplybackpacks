@@ -1,17 +1,17 @@
 package com.flanks255.simplybackpacks.items;
 
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -20,11 +20,11 @@ import java.util.UUID;
 public class BackpackItem extends Item {
 
     public BackpackItem() {
-        super(new Item.Properties().maxStackSize(1).group(ItemGroup.TOOLS));
+        super(new Item.Properties().stacksTo(1).tab(CreativeModeTab.TAB_TOOLS));
     }
     @Override
-    public String getTranslationKey(ItemStack stack) {
-        CompoundNBT nbt = stack.getOrCreateTag();
+    public String getDescriptionId(ItemStack stack) {
+        CompoundTag nbt = stack.getOrCreateTag();
         if (nbt.contains("tier"))
             switch(nbt.getInt("tier")) {
                 case 1:
@@ -42,7 +42,7 @@ public class BackpackItem extends Item {
 
     @Override
     public Rarity getRarity(ItemStack stack) {
-        CompoundNBT nbt = stack.getOrCreateTag();
+        CompoundTag nbt = stack.getOrCreateTag();
         if (nbt.contains("tier"))
             switch(nbt.getInt("tier")) {
                 case 1:
@@ -59,31 +59,31 @@ public class BackpackItem extends Item {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        if (!worldIn.isRemote) {
-            ItemStack item = playerIn.getHeldItem(handIn);
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+        if (!worldIn.isClientSide) {
+            ItemStack item = playerIn.getItemInHand(handIn);
             if (item.getItem() instanceof BackpackItem) {
-                CompoundNBT tag = item.getOrCreateTag();
+                CompoundTag tag = item.getOrCreateTag();
                 UUID uuid;
                 if (!tag.contains("UUID")) {
                     uuid = UUID.randomUUID();
-                    tag.putUniqueId("UUID", uuid);
+                    tag.putUUID("UUID", uuid);
                 } else
-                    uuid = tag.getUniqueId("UUID");
+                    uuid = tag.getUUID("UUID");
             }
         }
-        return ActionResult.resultSuccess(playerIn.getHeldItem(handIn));
+        return InteractionResultHolder.success(playerIn.getItemInHand(handIn));
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
         if (flagIn.isAdvanced() && stack.hasTag()) {
             if(stack.getTag().contains("tier"))
-                tooltip.add(new StringTextComponent("Tier: "+ stack.getTag().getInt("tier")));
+                tooltip.add(new TextComponent("Tier: "+ stack.getTag().getInt("tier")));
             if(stack.getTag().contains("UUID"))
-                tooltip.add(new StringTextComponent("UUID: "+ stack.getTag().getUniqueId("UUID")));
+                tooltip.add(new TextComponent("UUID: "+ stack.getTag().getUUID("UUID")));
         }
     }
 

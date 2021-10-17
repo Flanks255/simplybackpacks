@@ -1,6 +1,6 @@
 package com.flanks255.simplybackpacks.configuration;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.Collections;
@@ -19,8 +19,8 @@ public class CommonConfiguration {
 
     static {
         COMMON_BUILDER.comment("Anti-Nesting").push("antinesting");
-            ITEM_BLACKLIST = COMMON_BUILDER.comment("List of Resource Locations for items to be blocked").defineList("itemBlacklist", DEFAULT_BLACKLIST, obj -> obj instanceof String && ResourceLocation.isResouceNameValid((String) obj));
-            ITEM_WHITELIST = COMMON_BUILDER.comment("List of Resource Locations for items to be allowed despite matching other blocking checks.").defineList("itemWhitelist", DEFAULT_WHITELIST, obj -> obj instanceof String && ResourceLocation.isResouceNameValid((String) obj));
+            ITEM_BLACKLIST = COMMON_BUILDER.comment("List of Resource Locations for items to be blocked").defineList("itemBlacklist", DEFAULT_BLACKLIST, obj -> obj instanceof String && ResourceLocation.isValidResourceLocation((String) obj));
+            ITEM_WHITELIST = COMMON_BUILDER.comment("List of Resource Locations for items to be allowed despite matching other blocking checks.").defineList("itemWhitelist", DEFAULT_WHITELIST, obj -> obj instanceof String && ResourceLocation.isValidResourceLocation((String) obj));
         COMMON_BUILDER.pop();
 
 

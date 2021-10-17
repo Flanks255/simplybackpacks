@@ -1,11 +1,8 @@
 package com.flanks255.simplybackpacks.data;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
-import com.flanks255.simplybackpacks.items.BackpackItem;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 public class ItemModels extends ItemModelProvider {

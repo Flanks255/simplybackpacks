@@ -1,13 +1,9 @@
 package com.flanks255.simplybackpacks;
 
-import com.flanks255.simplybackpacks.items.ItemBackpackBase;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.tags.BlockTags;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
@@ -45,7 +41,7 @@ public class BackpackItemHandler extends ItemStackHandler {
     @Override
     public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
         validateSlotIndex(slot);
-        if (!ItemStack.areItemStackTagsEqual(stack, stacks.get(slot))) {
+        if (!ItemStack.tagMatches(stack, stacks.get(slot))) {
             onContentsChanged(slot);
         }
         this.stacks.set(slot, stack);
@@ -71,7 +67,7 @@ public class BackpackItemHandler extends ItemStackHandler {
         loaded = true;
     }
 
-    public void load(@Nonnull CompoundNBT nbt) {
+    public void load(@Nonnull CompoundTag nbt) {
         if (nbt.contains("Inventory"))
             deserializeNBT(nbt.getCompound("Inventory"));
         if (nbt.contains("Filter"))
@@ -80,7 +76,7 @@ public class BackpackItemHandler extends ItemStackHandler {
 
     public void save() {
         if (dirty) {
-            CompoundNBT nbt = itemStack.getOrCreateTag();
+            CompoundTag nbt = itemStack.getOrCreateTag();
             nbt.put("Inventory", serializeNBT());
             nbt.put("Filter", filter.serializeNBT());
             dirty = false;
@@ -88,18 +84,18 @@ public class BackpackItemHandler extends ItemStackHandler {
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt)
+    public void deserializeNBT(CompoundTag nbt)
     {
         setSize(size);
-        ListNBT tagList = nbt.getList("Items", Constants.NBT.TAG_COMPOUND);
+        ListTag tagList = nbt.getList("Items", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < tagList.size(); i++)
         {
-            CompoundNBT itemTags = tagList.getCompound(i);
+            CompoundTag itemTags = tagList.getCompound(i);
             int slot = itemTags.getInt("Slot");
 
             if (slot >= 0 && slot < stacks.size())
             {
-                stacks.set(slot, ItemStack.read(itemTags));
+                stacks.set(slot, ItemStack.of(itemTags));
             }
         }
         onLoad();

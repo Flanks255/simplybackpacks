@@ -1,8 +1,8 @@
 package com.flanks255.simplybackpacks.items;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
-import net.minecraft.item.Rarity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Represents a singleton instance of a backpack. Sets up each backpack in it's own way

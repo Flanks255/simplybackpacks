@@ -1,11 +1,6 @@
 package com.flanks255.simplybackpacks;
 
-
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tags.BlockTags;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -17,18 +12,18 @@ public class SBContainerSlot extends SlotItemHandler {
     }
 
     @Override
-    public int getItemStackLimit(@Nonnull ItemStack stack) {
-        return super.getSlotStackLimit();
+    public int getMaxStackSize(@Nonnull ItemStack stack) {
+        return super.getMaxStackSize();
     }
 
     @Override
-    public boolean isItemValid(@Nonnull ItemStack stack) {
+    public boolean mayPlace(@Nonnull ItemStack stack) {
         return SimplyBackpacks.filterItem(stack);
     }
 
     @Override
-    public void onSlotChanged() {
-        super.onSlotChanged();
+    public void setChanged() {
+        super.setChanged();
         if (getItemHandler() instanceof BackpackItemHandler)
             ((BackpackItemHandler) getItemHandler()).setDirty();
     }

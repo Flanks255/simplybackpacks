@@ -14,21 +14,21 @@ import com.flanks255.simplybackpacks.items.ItemBackpackBase;
 import com.flanks255.simplybackpacks.network.OpenMessage;
 import com.flanks255.simplybackpacks.network.SBNetwork;
 import com.flanks255.simplybackpacks.network.ToggleMessage;
-import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tags.ITag;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.common.ForgeTagHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -38,14 +38,15 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.fmlclient.registry.ClientRegistry;
+import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
@@ -58,28 +59,28 @@ public class SimplyBackpacks {
     public static SimpleChannel NETWORK;
 
     //forge:holds_items
-    public static final ITag.INamedTag<Item> HOLDS_ITEMS = ItemTags.makeWrapperTag(new ResourceLocation("forge", "holds_items").toString());
+    public static final Tag.Named<Item> HOLDS_ITEMS = ItemTags.bind(new ResourceLocation("forge", "holds_items").toString());
     //storagedrawers:drawers
-    public static final ITag.INamedTag<Item> STORAGEDRAWERS = ItemTags.createOptional(new ResourceLocation("storagedrawers", "drawers"));
-    public static final ITag.INamedTag<Enchantment> SOULBOUND = ForgeTagHandler.makeWrapperTag(ForgeRegistries.ENCHANTMENTS, new ResourceLocation("forge", "soulbound"));
+    public static final Tag.Named<Item> STORAGEDRAWERS = ItemTags.createOptional(new ResourceLocation("storagedrawers", "drawers"));
+    public static final Tag.Named<Enchantment> SOULBOUND = ForgeTagHandler.makeWrapperTag(ForgeRegistries.ENCHANTMENTS, new ResourceLocation("forge", "soulbound"));
 
 
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-    private static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
-    private static final DeferredRegister<IRecipeSerializer<?>> RECIPES = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
+    private static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
+    private static final DeferredRegister<RecipeSerializer<?>> RECIPES = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
 
     //public static final RegistryObject<Item> BACKPACKITEM = ITEMS.register("backpack", BackpackItem::new);
 
-    public static final RegistryObject<IRecipeSerializer<?>> COPYRECIPE = RECIPES.register("backpack_upgrade", CopyBackpackDataRecipe.Serializer::new);
-    public static final RegistryObject<ContainerType<SBContainer>> SBCONTAINER = CONTAINERS.register("sb_container", () -> IForgeContainerType.create(SBContainer::new));
-    public static final RegistryObject<ContainerType<FilterContainer>> FILTERCONTAINER = CONTAINERS.register("filter_container", () -> IForgeContainerType.create(FilterContainer::new));
+    public static final RegistryObject<RecipeSerializer<?>> COPYRECIPE = RECIPES.register("backpack_upgrade", CopyBackpackDataRecipe.Serializer::new);
+    public static final RegistryObject<MenuType<SBContainer>> SBCONTAINER = CONTAINERS.register("sb_container", () -> IForgeContainerType.create(SBContainer::new));
+    public static final RegistryObject<MenuType<FilterContainer>> FILTERCONTAINER = CONTAINERS.register("filter_container", () -> IForgeContainerType.create(FilterContainer::new));
 
     public static final RegistryObject<Item> COMMONBACKPACK = ITEMS.register("commonbackpack", () -> new ItemBackpackBase("commonbackpack", 18, Rarity.COMMON));
     public static final RegistryObject<Item> UNCOMMONBACKPACK = ITEMS.register("uncommonbackpack", () -> new ItemBackpackBase("uncommonbackpack", 33, Rarity.UNCOMMON));
     public static final RegistryObject<Item> RAREBACKPACK = ITEMS.register("rarebackpack", () -> new ItemBackpackBase("rarebackpack", 66, Rarity.RARE));
     public static final RegistryObject<Item> EPICBACKPACK = ITEMS.register("epicbackpack", () -> new ItemBackpackBase("epicbackpack", 99, Rarity.EPIC));
 
-    private final NonNullList<KeyBinding> keyBinds = NonNullList.create();
+    private final NonNullList<KeyMapping> keyBinds = NonNullList.create();
 
      public SimplyBackpacks() {
          IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -108,11 +109,11 @@ public class SimplyBackpacks {
     }
 
     private void pickupEvent(EntityItemPickupEvent event) {
-        if (event.getPlayer().openContainer instanceof SBContainer || event.getPlayer().isSneaking() || event.getItem().getItem().getItem() instanceof ItemBackpackBase)
+        if (event.getPlayer().containerMenu instanceof SBContainer || event.getPlayer().isShiftKeyDown() || event.getItem().getItem().getItem() instanceof ItemBackpackBase)
             return;
-        PlayerInventory playerInv = event.getPlayer().inventory;
+        Inventory playerInv = event.getPlayer().getInventory();
         for (int i = 0; i <= 8; i++) {
-            ItemStack stack = playerInv.getStackInSlot(i);
+            ItemStack stack = playerInv.getItem(i);
             if (stack.getItem() instanceof ItemBackpackBase && ((ItemBackpackBase) stack.getItem()).pickupEvent(event, stack)) {
                 event.setResult(Event.Result.ALLOW);
                 return;
@@ -120,15 +121,15 @@ public class SimplyBackpacks {
         }
     }
 
-    public static ItemStack findBackpack(PlayerEntity player) {
-         if (player.getHeldItemMainhand().getItem() instanceof ItemBackpackBase)
-             return player.getHeldItemMainhand();
-         if (player.getHeldItemOffhand().getItem() instanceof ItemBackpackBase)
-            return player.getHeldItemOffhand();
+    public static ItemStack findBackpack(Player player) {
+         if (player.getMainHandItem().getItem() instanceof ItemBackpackBase)
+             return player.getMainHandItem();
+         if (player.getOffhandItem().getItem() instanceof ItemBackpackBase)
+            return player.getOffhandItem();
 
-         PlayerInventory inventory = player.inventory;
+         Inventory inventory = player.getInventory();
          for (int i = 0; i <= 35; i++) {
-             ItemStack stack = inventory.getStackInSlot(i);
+             ItemStack stack = inventory.getItem(i);
              if (stack.getItem() instanceof  ItemBackpackBase)
                  return stack;
          }
@@ -136,18 +137,18 @@ public class SimplyBackpacks {
     }
 
     private void onClientTick(TickEvent.ClientTickEvent event) {
-        if (keyBinds.get(0).isPressed())
+        if (keyBinds.get(0).consumeClick())
             NETWORK.sendToServer(new ToggleMessage());
-        if (keyBinds.get(1).isPressed())
+        if (keyBinds.get(1).consumeClick())
             NETWORK.sendToServer(new OpenMessage());
     }
 
     private void clientStuff(final FMLClientSetupEvent event) {
-        ScreenManager.registerFactory(SBCONTAINER.get(), SBGui::new);
-        ScreenManager.registerFactory(FILTERCONTAINER.get(), FilterGui::new);
+        MenuScreens.register(SBCONTAINER.get(), SBGui::new);
+        MenuScreens.register(FILTERCONTAINER.get(), FilterGui::new);
 
-        keyBinds.add(0, new KeyBinding("key.simplybackpacks.backpackpickup.desc", -1, "key.simplybackpacks.category"));
-        keyBinds.add(1, new KeyBinding("key.simplybackpacks.backpackopen.desc", -1, "key.simplybackpacks.category"));
+        keyBinds.add(0, new KeyMapping("key.simplybackpacks.backpackpickup.desc", -1, "key.simplybackpacks.category"));
+        keyBinds.add(1, new KeyMapping("key.simplybackpacks.backpackopen.desc", -1, "key.simplybackpacks.category"));
         ClientRegistry.registerKeyBinding(keyBinds.get(0));
         ClientRegistry.registerKeyBinding(keyBinds.get(1));
 /*
@@ -156,7 +157,7 @@ public class SimplyBackpacks {
                 );*/
     }
 
-    private void onConfigReload(ModConfig.ModConfigEvent event) {
+    private void onConfigReload(ModConfigEvent event) {
         ConfigCache.RefreshCache();
     }
 
@@ -171,13 +172,13 @@ public class SimplyBackpacks {
 
         //check for common storage tags.
         if (stack.hasTag()) {
-            CompoundNBT tag = stack.getTag();
+            CompoundTag tag = stack.getTag();
             if (tag.contains("Items") || tag.contains("Inventory"))
                 return false;
         }
 
         //check for forge:holds_items / storagedrawers:drawers
-        if (stack.getItem().isIn(HOLDS_ITEMS) || stack.getItem().isIn(STORAGEDRAWERS))
+        if (stack.is(HOLDS_ITEMS) || stack.is(STORAGEDRAWERS))
             return false;
 
         // if all else fails, check the config blacklist

@@ -5,44 +5,43 @@ import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.items.ItemBackpackBase;
 import com.flanks255.simplybackpacks.network.FilterMessage;
 import com.flanks255.simplybackpacks.network.ToggleMessage;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.ClickType;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
-public class FilterContainer  extends Container {
+public class FilterContainer extends AbstractContainerMenu {
     @Override
-    public boolean canInteractWith(PlayerEntity playerIn) {
+    public boolean stillValid(Player playerIn) {
         if (slotID == -106)
-            return playerIn.getHeldItemOffhand().getItem() instanceof ItemBackpackBase; //whoops guess you can...
-        return playerIn.inventory.getStackInSlot(slotID).getItem() instanceof ItemBackpackBase;
+            return playerIn.getOffhandItem().getItem() instanceof ItemBackpackBase; //whoops guess you can...
+        return playerIn.getInventory().getItem(slotID).getItem() instanceof ItemBackpackBase;
     }
 
     public BackpackItemHandler itemHandler;
     private int slotID;
-    private PlayerEntity player;
+    private Player player;
     private ItemStack item;
 
-    public FilterContainer(final int windowId, final PlayerInventory playerInventory, PacketBuffer extra) {
-        this(windowId, playerInventory.player.world, playerInventory.player.getPosition(), playerInventory, playerInventory.player);
+    public FilterContainer(final int windowId, final Inventory playerInventory, FriendlyByteBuf extra) {
+        this(windowId, playerInventory.player.level, playerInventory.player.blockPosition(), playerInventory, playerInventory.player);
     }
 
-    public FilterContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public FilterContainer(int windowId, Level world, BlockPos pos, Inventory playerInventory, Player playerEntity) {
         super(SimplyBackpacks.FILTERCONTAINER.get(), windowId);
 
         item = findBackpack(playerEntity);
 
         if (item == null || item.isEmpty()) {
-            playerEntity.closeScreen();
+            playerEntity.closeContainer();
             return;
         }
 
@@ -55,31 +54,31 @@ public class FilterContainer  extends Container {
             itemHandler.load();
             player = playerEntity;
         } else {
-            playerEntity.closeScreen();
+            playerEntity.closeContainer();
         }
 
 
         addPlayerSlots(playerInventory);
     }
 
-    private ItemStack findBackpack(PlayerEntity playerEntity) {
-        PlayerInventory inv = playerEntity.inventory;
+    private ItemStack findBackpack(Player playerEntity) {
+        Inventory inv = playerEntity.getInventory();
 
-        if (playerEntity.getHeldItemMainhand().getItem() instanceof ItemBackpackBase) {
+        if (playerEntity.getMainHandItem().getItem() instanceof ItemBackpackBase) {
             for (int i = 0; i <= 35; i++) {
-                ItemStack stack = inv.getStackInSlot(i);
-                if (stack == playerEntity.getHeldItemMainhand()) {
+                ItemStack stack = inv.getItem(i);
+                if (stack == playerEntity.getMainHandItem()) {
                     slotID = i;
                     return stack;
                 }
             }
-        } else if (playerEntity.getHeldItemOffhand().getItem() instanceof ItemBackpackBase) {
+        } else if (playerEntity.getOffhandItem().getItem() instanceof ItemBackpackBase) {
             slotID = -106;
-            return playerEntity.getHeldItemOffhand();
+            return playerEntity.getOffhandItem();
         }
         else {
             for (int i = 0; i <= 35; i++) {
-                ItemStack stack = inv.getStackInSlot(i);
+                ItemStack stack = inv.getItem(i);
                 if (stack.getItem() instanceof ItemBackpackBase) {
                     slotID = i;
                     return stack;
@@ -91,15 +90,15 @@ public class FilterContainer  extends Container {
 
 
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity playerIn) {
-        if (slotId >= 0 && getSlot(slotId).getStack() == playerIn.getHeldItemMainhand())
-            return ItemStack.EMPTY;
+    public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player playerIn) {
+        if (slotId >= 0 && getSlot(slotId).getItem() == playerIn.getMainHandItem())
+            return;
 
         if (clickTypeIn == ClickType.SWAP)
-            return ItemStack.EMPTY;
+            return;
 
-        if (slotId >= 0) getSlot(slotId).inventory.markDirty();
-        return super.slotClick(slotId, dragType, clickTypeIn, playerIn);
+        if (slotId >= 0) getSlot(slotId).container.setChanged();
+        super.clicked(slotId, dragType, clickTypeIn, playerIn);
     }
 
     public int getFilterOpts() {
@@ -111,33 +110,33 @@ public class FilterContainer  extends Container {
     }
 
     public boolean togglePickup() {
-        CompoundNBT nbt = item.getOrCreateTag();
+        CompoundTag nbt = item.getOrCreateTag();
 
         boolean Pickup = !nbt.getBoolean("Pickup");
         nbt.putBoolean("Pickup",Pickup);
 
-        if (player.getEntityWorld().isRemote)
+        if (player.getCommandSenderWorld().isClientSide)
             SimplyBackpacks.NETWORK.sendToServer(new ToggleMessage());
         return Pickup;
     }
 
     public int setFilterOpts(int newOpts) {
-        CompoundNBT nbt = item.getOrCreateTag();
+        CompoundTag nbt = item.getOrCreateTag();
         nbt.putInt("Filter-OPT", newOpts);
         item.setTag(nbt);
-        if (player.getEntityWorld().isRemote)
+        if (player.getCommandSenderWorld().isClientSide)
             SimplyBackpacks.NETWORK.sendToServer(new FilterMessage(newOpts));
         return newOpts;
     }
 
     public void saveFilter(int newOpts) {
-        CompoundNBT nbt = item.getOrCreateTag();
+        CompoundTag nbt = item.getOrCreateTag();
         nbt.putInt("Filter-OPT", newOpts);
         item.setTag(nbt);
     }
 
 
-    public void addPlayerSlots(PlayerInventory playerInventory) {
+    public void addPlayerSlots(Inventory playerInventory) {
 
         int originX = 7;
         int originY = 83;
@@ -159,12 +158,12 @@ public class FilterContainer  extends Container {
     }
 
     @Override
-    public boolean enchantItem(PlayerEntity playerIn, int id) {
+    public boolean clickMenuButton(Player playerIn, int id) {
         //SimplyBackpacks.LOGGER.info("EnchantPacket: " + id);
-        if (playerIn.inventory.getItemStack().isEmpty())
+        if (getCarried().isEmpty())
             itemHandler.filter.removeItem(id);
         else {
-            ItemStack fake = playerIn.inventory.getItemStack().copy();
+            ItemStack fake = getCarried().copy();
             fake.setCount(1);
             itemHandler.filter.setItem(id, fake);
         }
@@ -172,7 +171,7 @@ public class FilterContainer  extends Container {
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+    public ItemStack quickMoveStack(Player playerIn, int index) {
         return ItemStack.EMPTY;
     }
 }
