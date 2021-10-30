@@ -3,6 +3,7 @@ package com.flanks255.simplybackpacks.gui;
 import com.flanks255.simplybackpacks.BackpackItemHandler;
 import com.flanks255.simplybackpacks.SBContainerSlot;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
+import com.flanks255.simplybackpacks.items.Backpack;
 import com.flanks255.simplybackpacks.items.ItemBackpackBase;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -11,26 +12,23 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 public class SBContainer extends Container {
     public SBContainer(final int windowId, final PlayerInventory playerInventory, PacketBuffer extra) {
-        this(windowId, playerInventory.player.world, playerInventory.player.getPosition(), playerInventory, playerInventory.player);
-    }
-
-    public SBContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         super(SimplyBackpacks.SBCONTAINER.get(), windowId);
 
+        playerEntity = playerInventory.player;
         playerInv = playerInventory;
         ItemStack stack = findBackpack(playerEntity);
 
-        if (stack == null || stack.isEmpty()) {
+        if (stack == null || stack.isEmpty() || !(stack.getItem() instanceof ItemBackpackBase)) {
             playerEntity.closeScreen();
             return;
         }
+
+        this.tier = ((ItemBackpackBase)stack.getItem()).getTier();
 
         IItemHandler tmp = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
 
@@ -50,16 +48,18 @@ public class SBContainer extends Container {
             playerEntity.closeScreen();
     }
 
-    public SBContainer(int openType, int windowId, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        this(windowId, world, pos, playerInventory, playerEntity);
-    }
-
     public int slotcount = 0;
 
     private int slotID;
     public String itemKey = "";
     private PlayerInventory playerInv;
     public BackpackItemHandler handler;
+    private Backpack tier;
+    private PlayerEntity playerEntity;
+
+    public Backpack getTier() {
+        return tier;
+    }
 
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
@@ -84,25 +84,8 @@ public class SBContainer extends Container {
     }
 
     private void addPlayerSlots(PlayerInventory playerInventory) {
-        int originX = 0;
-        int originY = 0;
-        switch(slotcount) {
-            case 18:
-                originX = 7;
-                originY = 67;
-                break;
-            case 33:
-                originX = 25;
-                originY = 85;
-                break;
-            case 66:
-                originX = 25;
-                originY = 139;
-                break;
-            default:
-                originX = 25;
-                originY = 193;
-        }
+        int originX = tier.slotXOffset;
+        int originY = tier.slotYOffset;
 
         //Player Inventory
         for (int row = 0; row < 3; row++) {

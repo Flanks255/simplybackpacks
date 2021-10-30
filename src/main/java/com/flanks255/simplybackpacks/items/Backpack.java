@@ -17,7 +17,7 @@ public enum Backpack {
     public Rarity rarity;
     public int slots;
 
-    public ResourceLocation location;
+    public ResourceLocation texture;
     public int xSize;
     public int ySize;
     public int slotXOffset;
@@ -28,7 +28,7 @@ public enum Backpack {
         this.name = name;
         this.rarity = rarity;
         this.slots = slots;
-        this.location = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/" + location);
+        this.texture = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/" + location);
         this.xSize = xSize;
         this.ySize = ySize;
         this.slotXOffset = slotXOffset;

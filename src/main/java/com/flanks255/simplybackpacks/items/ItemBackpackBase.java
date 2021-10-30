@@ -9,12 +9,9 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -44,26 +41,22 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemBackpackBase extends Item {
-    public ItemBackpackBase(String name, Integer size, Rarity rarity) {
+    public ItemBackpackBase(String name, Backpack tier) {
         super(new Item.Properties().maxStackSize(1).group(ItemGroup.TOOLS));
         this.name = name;
-        this.size = size;
-        this.rarity = rarity;
+        this.tier = tier;
     }
 
     String name;
-    Integer size;
-    Rarity rarity;
+    Backpack tier;
+
+    public Backpack getTier() {
+        return tier;
+    }
 
     @Override
     public Rarity getRarity(ItemStack stack) {
-        return rarity;
-    }
-
-    public ItemBackpackBase setName() {
-        setRegistryName(SimplyBackpacks.MODID, name);
-
-        return this;
+        return tier.rarity;
     }
 
     @Override
@@ -84,35 +77,13 @@ public class ItemBackpackBase extends Item {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         if (!worldIn.isRemote) {
+            ItemStack backpack = playerIn.getHeldItem(handIn);
             if (playerIn.isSneaking()) {
                 //filter
-                playerIn.openContainer(new INamedContainerProvider() {
-                    @Override
-                    public ITextComponent getDisplayName() {
-                        return new StringTextComponent("Backpack Filter");
-                    }
-
-                    @Nullable
-                    @Override
-                    public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
-                        return new FilterContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getPosition(), p_createMenu_2_, p_createMenu_3_);
-                    }
-                });
+                playerIn.openContainer(new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new FilterContainer(windowId, playerInventory, null), backpack.getDisplayName()));
             } else {
                 //open
-                playerIn.openContainer(new INamedContainerProvider() {
-                    @Override
-                    public ITextComponent getDisplayName() {
-                        return playerIn.getHeldItem(handIn).getDisplayName();
-
-                    }
-
-                    @Nullable
-                    @Override
-                    public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
-                        return new SBContainer(p_createMenu_1_, p_createMenu_3_.world, p_createMenu_3_.getPosition(), p_createMenu_2_, p_createMenu_3_);
-                    }
-                });
+                playerIn.openContainer(new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, null), backpack.getDisplayName()));
             }
         }
         return ActionResult.resultSuccess(playerIn.getHeldItem(handIn));
@@ -121,7 +92,7 @@ public class ItemBackpackBase extends Item {
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-        return new BackpackCaps(stack, size, nbt);
+        return new BackpackCaps(stack, tier.slots, nbt);
     }
 
     class BackpackCaps implements ICapabilitySerializable {
@@ -174,7 +145,7 @@ public class ItemBackpackBase extends Item {
 
     public boolean filterItem(ItemStack item, ItemStack packItem) {
         IItemHandler tmp = packItem.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-        if (tmp == null || !(tmp instanceof BackpackItemHandler))
+        if (!(tmp instanceof BackpackItemHandler))
             return false;
 
         int filterOpts = packItem.getOrCreateTag().getInt("Filter-OPT");
@@ -211,7 +182,7 @@ public class ItemBackpackBase extends Item {
             return false;
 
         IItemHandler handler = optional.orElse(null);
-        if (handler == null || !(handler instanceof BackpackItemHandler))
+        if (!(handler instanceof BackpackItemHandler))
             return false;
         ((BackpackItemHandler) handler).loadIfNotLoaded();
 
