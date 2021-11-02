@@ -5,6 +5,8 @@ import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.gui.FilterContainer;
 import com.flanks255.simplybackpacks.gui.SBContainer;
 import com.flanks255.simplybackpacks.network.ToggleMessageMessage;
+import com.flanks255.simplybackpacks.save.BackpackData;
+import com.flanks255.simplybackpacks.save.BackpackManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -17,7 +19,6 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -28,9 +29,9 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -39,6 +40,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.UUID;
 
 public class ItemBackpackBase extends Item {
     public ItemBackpackBase(String name, Backpack tier) {
@@ -50,8 +52,24 @@ public class ItemBackpackBase extends Item {
     String name;
     Backpack tier;
 
-    public Backpack getTier() {
-        return tier;
+    public static Backpack getTier(ItemStack stack) {
+        if (!stack.isEmpty() && stack.getItem() instanceof ItemBackpackBase)
+            return ((ItemBackpackBase) stack.getItem()).tier;
+        else
+        return Backpack.COMMON;
+    }
+
+    public static BackpackData getData(ItemStack stack) {
+        if (!(stack.getItem() instanceof ItemBackpackBase))
+            return null;
+        UUID uuid;
+        CompoundNBT tag = stack.getOrCreateTag();
+        if (!tag.contains("UUID")) {
+            uuid = UUID.randomUUID();
+            tag.putUniqueId("UUID", uuid);
+        } else
+            uuid = tag.getUniqueId("UUID");
+        return BackpackManager.get().getOrCreateBackpack(uuid, ((ItemBackpackBase) stack.getItem()).tier);
     }
 
     @Override
@@ -76,14 +94,17 @@ public class ItemBackpackBase extends Item {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        if (!worldIn.isRemote) {
+        if (!worldIn.isRemote && playerIn instanceof ServerPlayerEntity) {
             ItemStack backpack = playerIn.getHeldItem(handIn);
+            BackpackData data = ItemBackpackBase.getData(backpack);
+            if (data == null)
+                return ActionResult.resultFail(playerIn.getHeldItem(handIn));
             if (playerIn.isSneaking()) {
                 //filter
                 playerIn.openContainer(new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new FilterContainer(windowId, playerInventory, null), backpack.getDisplayName()));
             } else {
                 //open
-                playerIn.openContainer(new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, null), backpack.getDisplayName()));
+                NetworkHooks.openGui(((ServerPlayerEntity) playerIn), new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, data.getHandler()), backpack.getDisplayName()), (buffer -> buffer.writeInt(ItemBackpackBase.getTier(backpack).slots)));
             }
         }
         return ActionResult.resultSuccess(playerIn.getHeldItem(handIn));
@@ -92,40 +113,36 @@ public class ItemBackpackBase extends Item {
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-        return new BackpackCaps(stack, tier.slots, nbt);
+        return new BackpackCaps(stack);
     }
 
-    class BackpackCaps implements ICapabilitySerializable {
-        public BackpackCaps(ItemStack stack, int size, CompoundNBT nbtIn) {
-            itemStack = stack;
-            this.size = size;
-            inventory = new BackpackItemHandler(itemStack, size);
-            optional = LazyOptional.of(() -> inventory);
+    class BackpackCaps implements ICapabilityProvider {
+        private final ItemStack stack;
+
+        public BackpackCaps(ItemStack stack) {
+            this.stack = stack;
         }
-        private int size;
-        private ItemStack itemStack;
-        private BackpackItemHandler inventory;
-        private LazyOptional<IItemHandler> optional;
+
+        private LazyOptional<IItemHandler> optional = LazyOptional.empty();
 
         @Nonnull
         @Override
         public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
             if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-                return optional.cast();
+                if(optional.isPresent())
+                    return optional.cast();
+                else {
+                    BackpackData data = ItemBackpackBase.getData(stack);
+                    if (data != null) {
+                        optional = data.getOptional();
+                        return optional.cast();
+                    }
+                    else
+                        return LazyOptional.empty();
+                }
             }
             else
                 return LazyOptional.empty();
-        }
-
-        @Override
-        public INBT serializeNBT() {
-            inventory.save();
-            return new CompoundNBT();
-        }
-
-        @Override
-        public void deserializeNBT(INBT nbt) {
-            inventory.load();
         }
     }
 
@@ -219,6 +236,10 @@ public class ItemBackpackBase extends Item {
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
         String translationKey = getTranslationKey();
+        if (stack.getTag() != null && stack.getTag().contains("UUID")) {
+            UUID uuid = stack.getTag().getUniqueId("UUID");
+            tooltip.add(new StringTextComponent("ID: " + uuid.toString().substring(0,8)));
+        }
 
         boolean pickupEnabled = stack.getOrCreateTag().getBoolean("Pickup");
         if (pickupEnabled)

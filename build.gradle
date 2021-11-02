@@ -82,12 +82,9 @@ dependencies {
     runtimeOnly fg.deobf("com.flanks255:simplylight:1.16.4-1.+")
 
     runtimeOnly fg.deobf("curse.maven:TOP-245211:3157997")
-    runtimeOnly fg.deobf("curse.maven:BUILDINGGADGETS-298187:3205295")
     runtimeOnly fg.deobf("curse.maven:NBTEDIT-247580:3062106")
-    runtimeOnly fg.deobf("curse.maven:MINGAD-351748:3279909")
-    runtimeOnly fg.deobf("curse.maven:CHARGEGAD-399757:3055493")
-    runtimeOnly fg.deobf("curse.maven:ENSORC-349447:3246996")
-    runtimeOnly fg.deobf("curse.maven:COFHCORE-69162:3249453")
+    runtimeOnly fg.deobf("curse.maven:ENSORC-349447:3407021")
+    runtimeOnly fg.deobf("curse.maven:COFHCORE-69162:3407019")
 }
 
 jar {

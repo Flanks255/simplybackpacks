@@ -1,6 +1,5 @@
 package com.flanks255.simplybackpacks.gui;
 
-import com.flanks255.simplybackpacks.BackpackItemHandler;
 import com.flanks255.simplybackpacks.SBContainerSlot;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.items.Backpack;
@@ -12,15 +11,21 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
 public class SBContainer extends Container {
-    public SBContainer(final int windowId, final PlayerInventory playerInventory, PacketBuffer extra) {
+
+    public static SBContainer fromNetwork(final int windowId, final PlayerInventory playerInventory, PacketBuffer data) {
+        return new SBContainer(windowId, playerInventory, new ItemStackHandler(data.readInt()));
+    }
+
+    public SBContainer(final int windowId, final PlayerInventory playerInventory, IItemHandler handler) {
         super(SimplyBackpacks.SBCONTAINER.get(), windowId);
 
         playerEntity = playerInventory.player;
         playerInv = playerInventory;
+        this.handler = handler;
         ItemStack stack = findBackpack(playerEntity);
 
         if (stack == null || stack.isEmpty() || !(stack.getItem() instanceof ItemBackpackBase)) {
@@ -28,32 +33,18 @@ public class SBContainer extends Container {
             return;
         }
 
-        this.tier = ((ItemBackpackBase)stack.getItem()).getTier();
+        this.tier = ItemBackpackBase.getTier(stack);
 
-        IItemHandler tmp = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-
-
-        if (tmp instanceof BackpackItemHandler) {
-            handler = (BackpackItemHandler)tmp;
-            handler.load();
-            slotcount = tmp.getSlots();
             itemKey = stack.getTranslationKey();
-
-
 
             addMySlots(stack);
             addPlayerSlots(playerInv);
-        }
-        else
-            playerEntity.closeScreen();
     }
-
-    public int slotcount = 0;
 
     private int slotID;
     public String itemKey = "";
     private PlayerInventory playerInv;
-    public BackpackItemHandler handler;
+    public IItemHandler handler;
     private Backpack tier;
     private PlayerEntity playerEntity;
 
@@ -108,8 +99,8 @@ public class SBContainer extends Container {
     private void addMySlots(ItemStack stack) {
         if (handler == null ) return;
 
-        int cols = slotcount == 18? 9:11;
-        int rows = slotcount / cols;
+        int cols = tier.slots == 18? 9:11;
+        int rows = tier.slots / cols;
         int slotindex = 0;
 
         for (int row = 0; row < rows; row++) {
@@ -119,7 +110,7 @@ public class SBContainer extends Container {
 
                 this.addSlot(new SBContainerSlot(handler, slotindex, x + 1, y + 1));
                 slotindex++;
-                if (slotindex >= slotcount)
+                if (slotindex >= tier.slots)
                     break;
             }
         }

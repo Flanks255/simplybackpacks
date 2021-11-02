@@ -2,11 +2,14 @@ package com.flanks255.simplybackpacks.network;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.gui.SBContainer;
+import com.flanks255.simplybackpacks.items.ItemBackpackBase;
+import com.flanks255.simplybackpacks.save.BackpackData;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import java.util.function.Supplier;
 
@@ -22,8 +25,9 @@ public class OpenMessage {
         ctx.get().enqueueWork(()-> {
             ServerPlayerEntity player = ctx.get().getSender();
             ItemStack backpack = SimplyBackpacks.findBackpack(player);
-            if (!backpack.isEmpty()) {
-                player.openContainer(new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, null), backpack.getDisplayName()));
+            BackpackData data = ItemBackpackBase.getData(backpack);
+            if (!backpack.isEmpty() && data != null) {
+                NetworkHooks.openGui(player, new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, data.getHandler()), backpack.getDisplayName() ), (buffer) -> buffer.writeInt(ItemBackpackBase.getTier(backpack).slots));
             }
         });
         ctx.get().setPacketHandled(true);
