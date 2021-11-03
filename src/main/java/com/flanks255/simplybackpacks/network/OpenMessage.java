@@ -3,7 +3,7 @@ package com.flanks255.simplybackpacks.network;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.gui.SBContainer;
 import com.flanks255.simplybackpacks.items.ItemBackpackBase;
-import com.flanks255.simplybackpacks.save.BackpackData;
+import com.flanks255.simplybackpacks.inventory.BackpackData;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.item.ItemStack;

@@ -1,18 +1,17 @@
-package com.flanks255.simplybackpacks.save;
+package com.flanks255.simplybackpacks.inventory;
 
 import com.flanks255.simplybackpacks.items.Backpack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public class BackpackData {
     private final UUID uuid;
-    private final Backpack tier;
-    private final ItemStackHandler inventory;
+    private Backpack tier;
+    private final SBItemHandler inventory;
     private final LazyOptional<IItemHandler> optional;
 
     public LazyOptional<IItemHandler> getOptional() {
@@ -31,12 +30,7 @@ public class BackpackData {
         this.uuid = uuid;
         this.tier = tier;
 
-        inventory = new ItemStackHandler(tier.slots){
-            @Override
-            protected void onContentsChanged(int slot) {
-                BackpackManager.get().markDirty();
-            }
-        };
+        inventory = new SBItemHandler(tier.slots);
         optional = LazyOptional.of(() -> inventory);
     }
 
@@ -44,12 +38,7 @@ public class BackpackData {
         this.uuid = uuid;
         this.tier = Backpack.values()[Math.min(incomingNBT.getInt("Tier"), Backpack.ULTIMATE.ordinal())];
 
-        inventory = new ItemStackHandler(tier.slots) {
-            @Override
-            protected void onContentsChanged(int slot) {
-                BackpackManager.get().markDirty();
-            }
-        };
+        inventory = new SBItemHandler(tier.slots);
         inventory.deserializeNBT(incomingNBT.getCompound("Inventory"));
         optional = LazyOptional.of(() -> inventory);
     }
@@ -64,6 +53,13 @@ public class BackpackData {
             return Optional.of(new BackpackData(uuid, nbt));
         }
         return Optional.empty();
+    }
+
+    public void upgrade(Backpack newTier) {
+        if (newTier.ordinal() > tier.ordinal()) {
+            tier = newTier;
+            inventory.upgrade(tier.slots);
+        }
     }
 
     public CompoundNBT toNBT() {

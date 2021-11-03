@@ -5,8 +5,8 @@ import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.gui.FilterContainer;
 import com.flanks255.simplybackpacks.gui.SBContainer;
 import com.flanks255.simplybackpacks.network.ToggleMessageMessage;
-import com.flanks255.simplybackpacks.save.BackpackData;
-import com.flanks255.simplybackpacks.save.BackpackManager;
+import com.flanks255.simplybackpacks.inventory.BackpackData;
+import com.flanks255.simplybackpacks.inventory.BackpackManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -24,6 +24,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -94,11 +95,14 @@ public class ItemBackpackBase extends Item {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        if (!worldIn.isRemote && playerIn instanceof ServerPlayerEntity) {
-            ItemStack backpack = playerIn.getHeldItem(handIn);
+        ItemStack backpack = playerIn.getHeldItem(handIn);
+        if (!worldIn.isRemote && playerIn instanceof ServerPlayerEntity && backpack.getItem() instanceof ItemBackpackBase) {
             BackpackData data = ItemBackpackBase.getData(backpack);
-            if (data == null)
-                return ActionResult.resultFail(playerIn.getHeldItem(handIn));
+            Backpack itemTier = ((ItemBackpackBase) backpack.getItem()).tier;
+
+            if (data.getTier().ordinal() < itemTier.ordinal())
+                data.upgrade(itemTier);
+
             if (playerIn.isSneaking()) {
                 //filter
                 playerIn.openContainer(new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new FilterContainer(windowId, playerInventory, null), backpack.getDisplayName()));
@@ -195,29 +199,29 @@ public class ItemBackpackBase extends Item {
                 return false;
 
         LazyOptional<IItemHandler> optional = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-        if (!optional.isPresent())
-            return false;
+        if (optional.isPresent()) {
+            IItemHandler handler = optional.resolve().get();
 
-        IItemHandler handler = optional.orElse(null);
-        if (!(handler instanceof BackpackItemHandler))
-            return false;
-        ((BackpackItemHandler) handler).loadIfNotLoaded();
+            if (!(handler instanceof BackpackItemHandler))
+                return false;
 
-        if (!filterItem(event.getItem().getItem(), stack))
-            return false;
+            if (!filterItem(event.getItem().getItem(), stack))
+                return false;
 
-
-        ItemStack pickedUp = event.getItem().getItem();
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack slot = handler.getStackInSlot(i);
-            if (slot.isEmpty() || (ItemHandlerHelper.canItemStacksStack(slot, pickedUp) && slot.getCount() < slot.getMaxStackSize() && slot.getCount() < handler.getSlotLimit(i))) {
-                int remainder = handler.insertItem(i, pickedUp.copy(), false).getCount();
-                pickedUp.setCount(remainder);
-                if (remainder == 0)
-                    break;
+            ItemStack pickedUp = event.getItem().getItem();
+            for (int i = 0; i < handler.getSlots(); i++) {
+                ItemStack slot = handler.getStackInSlot(i);
+                if (slot.isEmpty() || (ItemHandlerHelper.canItemStacksStack(slot, pickedUp) && slot.getCount() < slot.getMaxStackSize() && slot.getCount() < handler.getSlotLimit(i))) {
+                    int remainder = handler.insertItem(i, pickedUp.copy(), false).getCount();
+                    pickedUp.setCount(remainder);
+                    if (remainder == 0)
+                        break;
+                }
             }
+            return pickedUp.isEmpty();
         }
-        return pickedUp.isEmpty();
+        else
+            return false;
     }
 
 
@@ -236,10 +240,6 @@ public class ItemBackpackBase extends Item {
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
         String translationKey = getTranslationKey();
-        if (stack.getTag() != null && stack.getTag().contains("UUID")) {
-            UUID uuid = stack.getTag().getUniqueId("UUID");
-            tooltip.add(new StringTextComponent("ID: " + uuid.toString().substring(0,8)));
-        }
 
         boolean pickupEnabled = stack.getOrCreateTag().getBoolean("Pickup");
         if (pickupEnabled)
@@ -256,6 +256,11 @@ public class ItemBackpackBase extends Item {
         }
         else {
             tooltip.add(new StringTextComponent( fallbackString("simplybackpacks.shift", "Press <§6§oShift§r> for info.") ));
+        }
+
+        if (flagIn.isAdvanced() && stack.getTag() != null && stack.getTag().contains("UUID")) {
+            UUID uuid = stack.getTag().getUniqueId("UUID");
+            tooltip.add(new StringTextComponent("ID: " + uuid.toString().substring(0,8)).mergeStyle(TextFormatting.GRAY, TextFormatting.ITALIC));
         }
     }
 }

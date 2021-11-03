@@ -1,4 +1,4 @@
-package com.flanks255.simplybackpacks.save;
+package com.flanks255.simplybackpacks.inventory;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.items.Backpack;
@@ -21,7 +21,7 @@ public class BackpackManager extends WorldSavedData {
 
     private static final HashMap<UUID, BackpackData> data = new HashMap<>();
 
-    public static BackpackManager clientCache = new BackpackManager();
+    public static BackpackManager blankClient = new BackpackManager();
 
     public BackpackManager() {
         super(NAME);
@@ -31,7 +31,7 @@ public class BackpackManager extends WorldSavedData {
         if (Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER)
             return ServerLifecycleHooks.getCurrentServer().getWorld(World.OVERWORLD).getSavedData().getOrCreate(BackpackManager::new, NAME);
         else
-            return clientCache;
+            return blankClient;
     }
     public Optional<BackpackData> getBackpack(UUID uuid) {
         if (data.containsKey(uuid))
