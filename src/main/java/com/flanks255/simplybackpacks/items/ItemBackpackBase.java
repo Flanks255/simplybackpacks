@@ -24,6 +24,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -99,10 +100,18 @@ public class ItemBackpackBase extends Item {
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack backpack = playerIn.getHeldItem(handIn);
         if (!worldIn.isRemote && playerIn instanceof ServerPlayerEntity && backpack.getItem() instanceof ItemBackpackBase) {
-
-
-
             BackpackData data = ItemBackpackBase.getData(backpack);
+            //Old backpack, lets migrate
+            if (backpack.getOrCreateTag().contains("Inventory")) {
+                ((SBItemHandler) data.getHandler()).deserializeNBT(backpack.getTag().getCompound("Inventory"));
+                if (backpack.getTag().contains("Filter")) {
+                    data.getFilter().deserializeNBT(backpack.getTag().getCompound("Filter"));
+                    backpack.getTag().remove("Filter");
+                }
+                playerIn.sendMessage(new StringTextComponent("Backpack Migrated"), Util.DUMMY_UUID);
+
+                backpack.getTag().remove("Inventory");
+            }
             Backpack itemTier = ((ItemBackpackBase) backpack.getItem()).tier;
             UUID uuid = data.getUuid();
 
