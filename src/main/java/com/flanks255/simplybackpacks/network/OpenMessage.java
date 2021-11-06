@@ -2,6 +2,7 @@ package com.flanks255.simplybackpacks.network;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.gui.SBContainer;
+import com.flanks255.simplybackpacks.inventory.BackpackManager;
 import com.flanks255.simplybackpacks.items.ItemBackpackBase;
 import com.flanks255.simplybackpacks.inventory.BackpackData;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -11,6 +12,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkHooks;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class OpenMessage {
@@ -25,9 +27,11 @@ public class OpenMessage {
         ctx.get().enqueueWork(()-> {
             ServerPlayerEntity player = ctx.get().getSender();
             ItemStack backpack = SimplyBackpacks.findBackpack(player);
-            BackpackData data = ItemBackpackBase.getData(backpack);
-            if (!backpack.isEmpty() && data != null) {
-                NetworkHooks.openGui(player, new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, data.getUuid(), data.getHandler()), backpack.getDisplayName() ), (buffer) -> buffer.writeInt(ItemBackpackBase.getTier(backpack).slots));
+            if (backpack.getOrCreateTag().contains("UUID")) {
+                Optional<BackpackData> data = BackpackManager.get().getBackpack(backpack.getTag().getUniqueId("UUID"));
+                if (!backpack.isEmpty() && data.isPresent()) {
+                    NetworkHooks.openGui(player, new SimpleNamedContainerProvider((windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, data.get().getUuid(), data.get().getHandler()), backpack.getDisplayName()), (buffer) -> buffer.writeUniqueId(data.get().getUuid()).writeInt(ItemBackpackBase.getTier(backpack).slots));
+                }
             }
         });
         ctx.get().setPacketHandled(true);

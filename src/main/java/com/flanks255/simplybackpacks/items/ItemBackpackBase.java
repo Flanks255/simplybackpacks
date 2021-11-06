@@ -99,6 +99,9 @@ public class ItemBackpackBase extends Item {
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack backpack = playerIn.getHeldItem(handIn);
         if (!worldIn.isRemote && playerIn instanceof ServerPlayerEntity && backpack.getItem() instanceof ItemBackpackBase) {
+
+
+
             BackpackData data = ItemBackpackBase.getData(backpack);
             Backpack itemTier = ((ItemBackpackBase) backpack.getItem()).tier;
             UUID uuid = data.getUuid();
