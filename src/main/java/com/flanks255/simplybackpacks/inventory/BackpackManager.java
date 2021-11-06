@@ -2,6 +2,7 @@ package com.flanks255.simplybackpacks.inventory;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.items.Backpack;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.world.World;
@@ -51,6 +52,16 @@ public class BackpackManager extends WorldSavedData {
             return data.get(uuid).getOptional();
 
             return LazyOptional.empty();
+    }
+
+    public LazyOptional<IItemHandler> getCapability(ItemStack stack) {
+        if (stack.getOrCreateTag().contains("UUID")) {
+            UUID uuid = stack.getTag().getUniqueId("UUID");
+            if (data.containsKey(uuid))
+                return data.get(uuid).getOptional();
+        }
+
+        return LazyOptional.empty();
     }
 
     @Override

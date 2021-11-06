@@ -1,11 +1,9 @@
 package com.flanks255.simplybackpacks.network;
 
-import com.flanks255.simplybackpacks.SimplyBackpacks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;

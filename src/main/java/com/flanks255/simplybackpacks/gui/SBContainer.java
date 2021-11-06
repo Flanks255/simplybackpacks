@@ -14,17 +14,21 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
+import java.util.UUID;
+
 public class SBContainer extends Container {
 
     public static SBContainer fromNetwork(final int windowId, final PlayerInventory playerInventory, PacketBuffer data) {
-        return new SBContainer(windowId, playerInventory, new ItemStackHandler(data.readInt()));
+        UUID uuidIn = data.readUniqueId();
+        return new SBContainer(windowId, playerInventory, uuidIn, new ItemStackHandler(data.readInt()));
     }
 
-    public SBContainer(final int windowId, final PlayerInventory playerInventory, IItemHandler handler) {
+    public SBContainer(final int windowId, final PlayerInventory playerInventory, UUID uuid, IItemHandler handler) {
         super(SimplyBackpacks.SBCONTAINER.get(), windowId);
 
         playerEntity = playerInventory.player;
         playerInv = playerInventory;
+        this.uuid = uuid;
         this.handler = handler;
         ItemStack stack = findBackpack(playerEntity);
 
@@ -42,11 +46,12 @@ public class SBContainer extends Container {
     }
 
     private int slotID;
+    private final UUID uuid;
     public String itemKey = "";
-    private PlayerInventory playerInv;
+    private final PlayerInventory playerInv;
     public IItemHandler handler;
     private Backpack tier;
-    private PlayerEntity playerEntity;
+    private final PlayerEntity playerEntity;
 
     public Backpack getTier() {
         return tier;

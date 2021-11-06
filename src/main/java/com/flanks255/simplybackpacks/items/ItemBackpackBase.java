@@ -1,12 +1,14 @@
 package com.flanks255.simplybackpacks.items;
 
-import com.flanks255.simplybackpacks.BackpackItemHandler;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.gui.FilterContainer;
 import com.flanks255.simplybackpacks.gui.SBContainer;
-import com.flanks255.simplybackpacks.network.ToggleMessageMessage;
 import com.flanks255.simplybackpacks.inventory.BackpackData;
 import com.flanks255.simplybackpacks.inventory.BackpackManager;
+import com.flanks255.simplybackpacks.inventory.FilterItemHandler;
+import com.flanks255.simplybackpacks.inventory.SBItemHandler;
+import com.flanks255.simplybackpacks.network.FilterSyncMessage;
+import com.flanks255.simplybackpacks.network.ToggleMessageMessage;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -99,16 +101,18 @@ public class ItemBackpackBase extends Item {
         if (!worldIn.isRemote && playerIn instanceof ServerPlayerEntity && backpack.getItem() instanceof ItemBackpackBase) {
             BackpackData data = ItemBackpackBase.getData(backpack);
             Backpack itemTier = ((ItemBackpackBase) backpack.getItem()).tier;
+            UUID uuid = data.getUuid();
 
             if (data.getTier().ordinal() < itemTier.ordinal())
                 data.upgrade(itemTier);
 
             if (playerIn.isSneaking()) {
                 //filter
-                playerIn.openContainer(new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new FilterContainer(windowId, playerInventory, null), backpack.getDisplayName()));
+                SimplyBackpacks.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) playerIn), new FilterSyncMessage(data.getUuid(), data.getFilter()));
+                NetworkHooks.openGui(((ServerPlayerEntity) playerIn), new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new FilterContainer(windowId, playerInventory, uuid, data.getFilter()), backpack.getDisplayName()), (buffer -> buffer.writeUniqueId(uuid)));
             } else {
                 //open
-                NetworkHooks.openGui(((ServerPlayerEntity) playerIn), new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, data.getHandler()), backpack.getDisplayName()), (buffer -> buffer.writeInt(ItemBackpackBase.getTier(backpack).slots)));
+                NetworkHooks.openGui(((ServerPlayerEntity) playerIn), new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, uuid, data.getHandler()), backpack.getDisplayName()), (buffer -> buffer.writeUniqueId(uuid).writeInt(ItemBackpackBase.getTier(backpack).slots)));
             }
         }
         return ActionResult.resultSuccess(playerIn.getHeldItem(handIn));
@@ -136,13 +140,7 @@ public class ItemBackpackBase extends Item {
                 if(optional.isPresent())
                     return optional.cast();
                 else {
-                    BackpackData data = ItemBackpackBase.getData(stack);
-                    if (data != null) {
-                        optional = data.getOptional();
-                        return optional.cast();
-                    }
-                    else
-                        return LazyOptional.empty();
+                    return BackpackManager.get().getCapability(stack).cast();
                 }
             }
             else
@@ -165,29 +163,34 @@ public class ItemBackpackBase extends Item {
 
 
     public boolean filterItem(ItemStack item, ItemStack packItem) {
-        IItemHandler tmp = packItem.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-        if (!(tmp instanceof BackpackItemHandler))
-            return false;
+        LazyOptional<IItemHandler> handlerOptional = packItem.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
 
-        int filterOpts = packItem.getOrCreateTag().getInt("Filter-OPT");
-        boolean whitelist = (filterOpts & 1) > 0;
-        boolean nbtMatch = (filterOpts & 2) > 0;
+        if (handlerOptional.isPresent() && handlerOptional.resolve().get() instanceof SBItemHandler) {
+            BackpackData data = ItemBackpackBase.getData(packItem);
+            if (data == null)
+                return false;
 
-        BackpackItemHandler handler = (BackpackItemHandler) tmp;
+            FilterItemHandler filterHandler = data.getFilter();
 
-        for (int i = 0; i < 16; i++) {
-            ItemStack fStack = handler.filter.getStackInSlot(i);
-            if (!fStack.isEmpty()) {
-                if (fStack.isItemEqual(item)) {
-                    if (nbtMatch)
-                        return ItemStack.areItemStackTagsEqual(fStack, item) == whitelist;
-                    else
-                        return whitelist;
+            int filterOpts = packItem.getOrCreateTag().getInt("Filter-OPT");
+            boolean whitelist = (filterOpts & 1) > 0;
+            boolean nbtMatch = (filterOpts & 2) > 0;
+
+            for (int i = 0; i < 16; i++) {
+                ItemStack fStack = filterHandler.getStackInSlot(i);
+                if (!fStack.isEmpty()) {
+                    if (fStack.isItemEqual(item)) {
+                        if (nbtMatch)
+                            return ItemStack.areItemStackTagsEqual(fStack, item) == whitelist;
+                        else
+                            return whitelist;
+                    }
                 }
             }
-        }
 
-        return !whitelist;
+            return !whitelist;
+        }
+        return false;
     }
 
     public boolean pickupEvent(EntityItemPickupEvent event, ItemStack stack) {
@@ -202,7 +205,7 @@ public class ItemBackpackBase extends Item {
         if (optional.isPresent()) {
             IItemHandler handler = optional.resolve().get();
 
-            if (!(handler instanceof BackpackItemHandler))
+            if (!(handler instanceof SBItemHandler))
                 return false;
 
             if (!filterItem(event.getItem().getItem(), stack))

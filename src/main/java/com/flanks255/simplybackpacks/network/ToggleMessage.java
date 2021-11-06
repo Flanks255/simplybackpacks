@@ -1,6 +1,5 @@
 package com.flanks255.simplybackpacks.network;
 
-import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.items.ItemBackpackBase;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;

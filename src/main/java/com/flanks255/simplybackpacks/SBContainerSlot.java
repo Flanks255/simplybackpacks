@@ -22,10 +22,4 @@ public class SBContainerSlot extends SlotItemHandler {
         return SimplyBackpacks.filterItem(stack);
     }
 
-    @Override
-    public void onSlotChanged() {
-        super.onSlotChanged();
-        if (getItemHandler() instanceof BackpackItemHandler)
-            ((BackpackItemHandler) getItemHandler()).setDirty();
-    }
 }

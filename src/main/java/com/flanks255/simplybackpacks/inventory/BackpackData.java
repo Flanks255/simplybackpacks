@@ -14,12 +14,18 @@ public class BackpackData {
     private final SBItemHandler inventory;
     private final LazyOptional<IItemHandler> optional;
 
+    private FilterItemHandler filter = new FilterItemHandler();
+
     public LazyOptional<IItemHandler> getOptional() {
         return optional;
     }
 
     public IItemHandler getHandler() {
         return inventory;
+    }
+
+    public FilterItemHandler getFilter() {
+        return filter;
     }
 
     public Backpack getTier() {
@@ -40,6 +46,8 @@ public class BackpackData {
 
         inventory = new SBItemHandler(tier.slots);
         inventory.deserializeNBT(incomingNBT.getCompound("Inventory"));
+        filter = new FilterItemHandler();
+        filter.deserializeNBT(incomingNBT.getCompound("Filter"));
         optional = LazyOptional.of(() -> inventory);
     }
 
@@ -69,6 +77,7 @@ public class BackpackData {
         nbt.putInt("Tier", tier.ordinal());
 
         nbt.put("Inventory", inventory.serializeNBT());
+        nbt.put("Filter", filter.serializeNBT());
 
         return nbt;
     }

@@ -37,6 +37,8 @@ public class SBNetwork {
                 .consumer(FilterMessage::handle)
                 .add();
 
+        network.registerMessage(5, FilterSyncMessage.class, FilterSyncMessage::encode, FilterSyncMessage::decode, FilterSyncMessage::consume);
+
         return network;
     }
 }

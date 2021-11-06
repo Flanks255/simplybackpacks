@@ -27,7 +27,7 @@ public class OpenMessage {
             ItemStack backpack = SimplyBackpacks.findBackpack(player);
             BackpackData data = ItemBackpackBase.getData(backpack);
             if (!backpack.isEmpty() && data != null) {
-                NetworkHooks.openGui(player, new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, data.getHandler()), backpack.getDisplayName() ), (buffer) -> buffer.writeInt(ItemBackpackBase.getTier(backpack).slots));
+                NetworkHooks.openGui(player, new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, data.getUuid(), data.getHandler()), backpack.getDisplayName() ), (buffer) -> buffer.writeInt(ItemBackpackBase.getTier(backpack).slots));
             }
         });
         ctx.get().setPacketHandled(true);

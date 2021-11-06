@@ -1,7 +1,9 @@
 package com.flanks255.simplybackpacks.gui;
 
-import com.flanks255.simplybackpacks.BackpackItemHandler;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
+import com.flanks255.simplybackpacks.inventory.BackpackManager;
+import com.flanks255.simplybackpacks.inventory.FilterItemHandler;
+import com.flanks255.simplybackpacks.items.Backpack;
 import com.flanks255.simplybackpacks.items.ItemBackpackBase;
 import com.flanks255.simplybackpacks.network.FilterMessage;
 import com.flanks255.simplybackpacks.network.ToggleMessage;
@@ -9,15 +11,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
+
+import java.util.UUID;
 
 public class FilterContainer  extends Container {
     @Override
@@ -27,35 +26,28 @@ public class FilterContainer  extends Container {
         return playerIn.inventory.getStackInSlot(slotID).getItem() instanceof ItemBackpackBase;
     }
 
-    public BackpackItemHandler itemHandler;
+    public FilterItemHandler filterHandler;
     private int slotID;
-    private PlayerEntity player;
-    private ItemStack item;
+    private PlayerEntity playerEntity;
+    private ItemStack stack;
+    private UUID uuid;
 
-    public FilterContainer(final int windowId, final PlayerInventory playerInventory, PacketBuffer extra) {
-        this(windowId, playerInventory.player.world, playerInventory.player.getPosition(), playerInventory, playerInventory.player);
+    public static FilterContainer fromNetwork(final int windowId, final PlayerInventory playerInventory, PacketBuffer extra) {
+        UUID uuid = extra.readUniqueId();
+        return new FilterContainer(windowId, playerInventory, uuid, BackpackManager.blankClient.getOrCreateBackpack(uuid, Backpack.COMMON).getFilter());
     }
 
-    public FilterContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public FilterContainer(int windowId, PlayerInventory playerInventory, UUID uuid, FilterItemHandler handlerIn) {
         super(SimplyBackpacks.FILTERCONTAINER.get(), windowId);
 
-        item = findBackpack(playerEntity);
+        playerEntity = playerInventory.player;
+        this.uuid = uuid;
+        stack = findBackpack(playerEntity);
+        this.filterHandler = handlerIn;
 
-        if (item == null || item.isEmpty()) {
+        if (stack == null || stack.isEmpty() || !(stack.getItem() instanceof ItemBackpackBase)) {
             playerEntity.closeScreen();
             return;
-        }
-
-        IItemHandler tmp = item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-        if (tmp == null)
-            return;
-
-        if (tmp instanceof BackpackItemHandler) {
-            itemHandler = (BackpackItemHandler)tmp;
-            itemHandler.load();
-            player = playerEntity;
-        } else {
-            playerEntity.closeScreen();
         }
 
 
@@ -103,37 +95,37 @@ public class FilterContainer  extends Container {
     }
 
     public int getFilterOpts() {
-        return item.getOrCreateTag().getInt("Filter-OPT");
+        return stack.getOrCreateTag().getInt("Filter-OPT");
     }
 
     public boolean getPickup() {
-        return item.getOrCreateTag().getBoolean("Pickup");
+        return stack.getOrCreateTag().getBoolean("Pickup");
     }
 
     public boolean togglePickup() {
-        CompoundNBT nbt = item.getOrCreateTag();
+        CompoundNBT nbt = stack.getOrCreateTag();
 
         boolean Pickup = !nbt.getBoolean("Pickup");
         nbt.putBoolean("Pickup",Pickup);
 
-        if (player.getEntityWorld().isRemote)
+        if (playerEntity.getEntityWorld().isRemote)
             SimplyBackpacks.NETWORK.sendToServer(new ToggleMessage());
         return Pickup;
     }
 
     public int setFilterOpts(int newOpts) {
-        CompoundNBT nbt = item.getOrCreateTag();
+        CompoundNBT nbt = stack.getOrCreateTag();
         nbt.putInt("Filter-OPT", newOpts);
-        item.setTag(nbt);
-        if (player.getEntityWorld().isRemote)
+        stack.setTag(nbt);
+        if (playerEntity.getEntityWorld().isRemote)
             SimplyBackpacks.NETWORK.sendToServer(new FilterMessage(newOpts));
         return newOpts;
     }
 
     public void saveFilter(int newOpts) {
-        CompoundNBT nbt = item.getOrCreateTag();
+        CompoundNBT nbt = stack.getOrCreateTag();
         nbt.putInt("Filter-OPT", newOpts);
-        item.setTag(nbt);
+        stack.setTag(nbt);
     }
 
 
@@ -160,13 +152,12 @@ public class FilterContainer  extends Container {
 
     @Override
     public boolean enchantItem(PlayerEntity playerIn, int id) {
-        //SimplyBackpacks.LOGGER.info("EnchantPacket: " + id);
         if (playerIn.inventory.getItemStack().isEmpty())
-            itemHandler.filter.removeItem(id);
+            filterHandler.removeItem(id);
         else {
             ItemStack fake = playerIn.inventory.getItemStack().copy();
             fake.setCount(1);
-            itemHandler.filter.setItem(id, fake);
+            filterHandler.setItem(id, fake);
         }
         return true;
     }
