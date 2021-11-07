@@ -28,6 +28,8 @@ public class BackpackManager extends WorldSavedData {
         super(NAME);
     }
 
+    public HashMap<UUID, BackpackData> getMap() { return data; }
+
     public static BackpackManager get() {
         if (Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER)
             return ServerLifecycleHooks.getCurrentServer().getWorld(World.OVERWORLD).getSavedData().getOrCreate(BackpackManager::new, NAME);

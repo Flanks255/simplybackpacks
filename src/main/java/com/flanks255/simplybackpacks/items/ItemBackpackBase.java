@@ -101,6 +101,7 @@ public class ItemBackpackBase extends Item {
         ItemStack backpack = playerIn.getHeldItem(handIn);
         if (!worldIn.isRemote && playerIn instanceof ServerPlayerEntity && backpack.getItem() instanceof ItemBackpackBase) {
             BackpackData data = ItemBackpackBase.getData(backpack);
+
             //Old backpack, lets migrate
             if (backpack.getOrCreateTag().contains("Inventory")) {
                 ((SBItemHandler) data.getHandler()).deserializeNBT(backpack.getTag().getCompound("Inventory"));
@@ -114,6 +115,8 @@ public class ItemBackpackBase extends Item {
             }
             Backpack itemTier = ((ItemBackpackBase) backpack.getItem()).tier;
             UUID uuid = data.getUuid();
+
+            data.updateAccessRecords(playerIn.getName().getString(), System.currentTimeMillis());
 
             if (data.getTier().ordinal() < itemTier.ordinal())
                 data.upgrade(itemTier);

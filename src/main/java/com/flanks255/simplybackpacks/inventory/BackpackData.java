@@ -2,6 +2,7 @@ package com.flanks255.simplybackpacks.inventory;
 
 import com.flanks255.simplybackpacks.items.Backpack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
@@ -13,6 +14,7 @@ public class BackpackData {
     private Backpack tier;
     private final SBItemHandler inventory;
     private final LazyOptional<IItemHandler> optional;
+    public final Metadata meta = new Metadata();
 
     private FilterItemHandler filter = new FilterItemHandler();
 
@@ -32,6 +34,17 @@ public class BackpackData {
         return tier;
     }
 
+    public void updateAccessRecords(String player, long time) {
+        if (meta.firstAccessedTime == 0) {
+            //new Backpack, set creation data
+            meta.firstAccessedTime = time;
+            meta.firstAccessedPlayer = player;
+        }
+
+        meta.setLastAccessedTime(time);
+        meta.setLastAccessedPlayer(player);
+    }
+
     public BackpackData(UUID uuid, Backpack tier) {
         this.uuid = uuid;
         this.tier = tier;
@@ -49,6 +62,9 @@ public class BackpackData {
         filter = new FilterItemHandler();
         filter.deserializeNBT(incomingNBT.getCompound("Filter"));
         optional = LazyOptional.of(() -> inventory);
+
+        if (incomingNBT.contains("Metadata"))
+            meta.deserializeNBT(incomingNBT.getCompound("Metadata"));
     }
 
     public UUID getUuid() {
@@ -79,6 +95,61 @@ public class BackpackData {
         nbt.put("Inventory", inventory.serializeNBT());
         nbt.put("Filter", filter.serializeNBT());
 
+        nbt.put("Metadata", meta.serializeNBT());
+
         return nbt;
+    }
+
+
+
+    public static class Metadata implements INBTSerializable<CompoundNBT> {
+        private String firstAccessedPlayer = "";
+
+        private long firstAccessedTime = 0;
+        private String lastAccessedPlayer = "";
+        private long lastAccessedTime = 0;
+        public long getLastAccessedTime() {
+            return lastAccessedTime;
+        }
+
+        public void setLastAccessedTime(long lastAccessedTime) {
+            this.lastAccessedTime = lastAccessedTime;
+        }
+
+        public String getLastAccessedPlayer() {
+            return lastAccessedPlayer;
+        }
+
+        public void setLastAccessedPlayer(String lastAccessedPlayer) {
+            this.lastAccessedPlayer = lastAccessedPlayer;
+        }
+
+        public long getFirstAccessedTime() {
+            return firstAccessedTime;
+        }
+
+        public String getFirstAccessedPlayer() {
+            return firstAccessedPlayer;
+        }
+
+        @Override
+        public CompoundNBT serializeNBT() {
+            CompoundNBT nbt = new CompoundNBT();
+
+            nbt.putString("firstPlayer", firstAccessedPlayer);
+            nbt.putLong("firstTime", firstAccessedTime);
+            nbt.putString("lastPlayer", lastAccessedPlayer);
+            nbt.putLong("lastTime", lastAccessedTime);
+
+            return nbt;
+        }
+
+        @Override
+        public void deserializeNBT(CompoundNBT nbt) {
+            firstAccessedPlayer = nbt.getString("firstPlayer");
+            firstAccessedTime = nbt.getLong("firstTime");
+            lastAccessedPlayer = nbt.getString("lastPlayer");
+            lastAccessedTime = nbt.getLong("lastTime");
+        }
     }
 }

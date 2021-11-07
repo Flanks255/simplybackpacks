@@ -1,6 +1,7 @@
 package com.flanks255.simplybackpacks;
 
 
+import com.flanks255.simplybackpacks.commands.SBCommands;
 import com.flanks255.simplybackpacks.configuration.CommonConfiguration;
 import com.flanks255.simplybackpacks.configuration.ConfigCache;
 import com.flanks255.simplybackpacks.crafting.CopyBackpackDataRecipe;
@@ -33,6 +34,7 @@ import net.minecraftforge.common.ForgeTagHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.extensions.IForgeContainerType;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -76,18 +78,21 @@ public class SimplyBackpacks {
     public static final RegistryObject<Item> UNCOMMONBACKPACK = ITEMS.register("uncommonbackpack", () -> new ItemBackpackBase("uncommonbackpack", Backpack.UNCOMMON));
     public static final RegistryObject<Item> RAREBACKPACK = ITEMS.register("rarebackpack", () -> new ItemBackpackBase("rarebackpack", Backpack.RARE));
     public static final RegistryObject<Item> EPICBACKPACK = ITEMS.register("epicbackpack", () -> new ItemBackpackBase("epicbackpack", Backpack.EPIC));
+    public static final RegistryObject<Item> ULTIMATEBACKPACK = ITEMS.register("ultimatebackpack", () -> new ItemBackpackBase("ultimatebackpack", Backpack.ULTIMATE));
 
     private final NonNullList<KeyBinding> keyBinds = NonNullList.create();
 
-     public SimplyBackpacks() {
-         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-         ITEMS.register(bus);
-         CONTAINERS.register(bus);
-         RECIPES.register(bus);
+    public SimplyBackpacks() {
+        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        ITEMS.register(bus);
+        CONTAINERS.register(bus);
+        RECIPES.register(bus);
 
-         //Configs
-         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfiguration.COMMON_CONFIG);
-         bus.addListener(this::onConfigReload);
+        //Configs
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfiguration.COMMON_CONFIG);
+        bus.addListener(this::onConfigReload);
+
+        MinecraftForge.EVENT_BUS.addListener(this::onCommandsRegister);
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientStuff);
@@ -100,9 +105,13 @@ public class SimplyBackpacks {
 
 
     public void setup(final FMLCommonSetupEvent event) {
-         event.enqueueWork(() ->
-             CraftingHelper.register(TargetNBTIngredient.Serializer.NAME, TargetNBTIngredient.SERIALIZER));
-         NETWORK = SBNetwork.register();
+        event.enqueueWork(() ->
+            CraftingHelper.register(TargetNBTIngredient.Serializer.NAME, TargetNBTIngredient.SERIALIZER));
+        NETWORK = SBNetwork.register();
+    }
+
+    private void onCommandsRegister(RegisterCommandsEvent event) {
+        SBCommands.register(event.getDispatcher());
     }
 
     private void pickupEvent(EntityItemPickupEvent event) {
@@ -119,18 +128,18 @@ public class SimplyBackpacks {
     }
 
     public static ItemStack findBackpack(PlayerEntity player) {
-         if (player.getHeldItemMainhand().getItem() instanceof ItemBackpackBase)
-             return player.getHeldItemMainhand();
-         if (player.getHeldItemOffhand().getItem() instanceof ItemBackpackBase)
+        if (player.getHeldItemMainhand().getItem() instanceof ItemBackpackBase)
+            return player.getHeldItemMainhand();
+        if (player.getHeldItemOffhand().getItem() instanceof ItemBackpackBase)
             return player.getHeldItemOffhand();
 
-         PlayerInventory inventory = player.inventory;
-         for (int i = 0; i <= 35; i++) {
-             ItemStack stack = inventory.getStackInSlot(i);
-             if (stack.getItem() instanceof  ItemBackpackBase)
-                 return stack;
-         }
-         return ItemStack.EMPTY;
+        PlayerInventory inventory = player.inventory;
+        for (int i = 0; i <= 35; i++) {
+            ItemStack stack = inventory.getStackInSlot(i);
+            if (stack.getItem() instanceof  ItemBackpackBase)
+                return stack;
+        }
+        return ItemStack.EMPTY;
     }
 
     private void onClientTick(TickEvent.ClientTickEvent event) {
@@ -159,7 +168,7 @@ public class SimplyBackpacks {
     }
 
     public static boolean filterItem(ItemStack stack) {
-         //check for backpacks
+        //check for backpacks
         if (stack.getItem() instanceof ItemBackpackBase)
             return false;
 

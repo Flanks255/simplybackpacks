@@ -30,6 +30,7 @@ public class OpenMessage {
             if (backpack.getOrCreateTag().contains("UUID")) {
                 Optional<BackpackData> data = BackpackManager.get().getBackpack(backpack.getTag().getUniqueId("UUID"));
                 if (!backpack.isEmpty() && data.isPresent()) {
+                    data.get().updateAccessRecords(player.getName().getString(), System.currentTimeMillis());
                     NetworkHooks.openGui(player, new SimpleNamedContainerProvider((windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, data.get().getUuid(), data.get().getHandler()), backpack.getDisplayName()), (buffer) -> buffer.writeUniqueId(data.get().getUuid()).writeInt(ItemBackpackBase.getTier(backpack).slots));
                 }
             }
