@@ -1,6 +1,6 @@
 package com.flanks255.simplybackpacks.network;
 
-import com.flanks255.simplybackpacks.items.ItemBackpackBase;
+import com.flanks255.simplybackpacks.items.BackpackItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -22,16 +22,16 @@ public class ToggleMessage {
                     PlayerEntity player = ctx.get().getSender();
                     if (player == null)
                         return;
-                    if (player.getHeldItemMainhand().getItem() instanceof ItemBackpackBase)
-                        ((ItemBackpackBase) player.getHeldItemMainhand().getItem()).togglePickup(player, player.getHeldItemMainhand());
-                    else if (player.getHeldItemOffhand().getItem() instanceof  ItemBackpackBase)
-                        ((ItemBackpackBase) player.getHeldItemOffhand().getItem()).togglePickup(player, player.getHeldItemOffhand());
+                    if (player.getHeldItemMainhand().getItem() instanceof BackpackItem)
+                        ((BackpackItem) player.getHeldItemMainhand().getItem()).togglePickup(player, player.getHeldItemMainhand());
+                    else if (player.getHeldItemOffhand().getItem() instanceof BackpackItem)
+                        ((BackpackItem) player.getHeldItemOffhand().getItem()).togglePickup(player, player.getHeldItemOffhand());
                     else {
                         //check hotbar
                         for (int i = 0; i <= 8; i++ ) {
                             ItemStack stack = player.inventory.getStackInSlot(i);
-                            if (stack.getItem() instanceof  ItemBackpackBase) {
-                                ((ItemBackpackBase) stack.getItem()).togglePickup(player, stack);
+                            if (stack.getItem() instanceof BackpackItem) {
+                                ((BackpackItem) stack.getItem()).togglePickup(player, stack);
                                 break;
                             }
                         }

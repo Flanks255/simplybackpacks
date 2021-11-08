@@ -24,6 +24,10 @@
   "item.simplybackpacks.rarebackpack.info2":"§bHolds 66 Stacks§r",
 
   "item.simplybackpacks.epicbackpack":"Epic Backpack",
-  "item.simplybackpacks.epicbackpack.info":"The Ultimate backpack.",
-  "item.simplybackpacks.epicbackpack.info2":"§dHolds 99 Stacks§r"
+  "item.simplybackpacks.epicbackpack.info":"A pretty epic backpack.",
+  "item.simplybackpacks.epicbackpack.info2":"§dHolds 99 Stacks§r",
+
+  "item.simplybackpacks.ultimatebackpack":"Ultimate Backpack",
+  "item.simplybackpacks.ultimatebackpack.info":"The Ultimate backpack.",
+  "item.simplybackpacks.ultimatebackpack.info2":"§dHolds ?? Stacks§r"
 }

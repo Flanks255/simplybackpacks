@@ -12,7 +12,7 @@ import com.flanks255.simplybackpacks.gui.FilterGui;
 import com.flanks255.simplybackpacks.gui.SBContainer;
 import com.flanks255.simplybackpacks.gui.SBGui;
 import com.flanks255.simplybackpacks.items.Backpack;
-import com.flanks255.simplybackpacks.items.ItemBackpackBase;
+import com.flanks255.simplybackpacks.items.BackpackItem;
 import com.flanks255.simplybackpacks.network.OpenMessage;
 import com.flanks255.simplybackpacks.network.SBNetwork;
 import com.flanks255.simplybackpacks.network.ToggleMessage;
@@ -25,7 +25,6 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.NonNullList;
@@ -39,6 +38,8 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -46,12 +47,16 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.SlotTypeMessage;
+import top.theillusivec4.curios.api.SlotTypePreset;
 
 @Mod("simplybackpacks")
 public class SimplyBackpacks {
@@ -59,8 +64,11 @@ public class SimplyBackpacks {
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static SimpleChannel NETWORK;
 
+    public static boolean curiosLoaded = false;
+
     //forge:holds_items
     public static final ITag.INamedTag<Item> HOLDS_ITEMS = ItemTags.makeWrapperTag(new ResourceLocation("forge", "holds_items").toString());
+    public static final ITag.INamedTag<Item> CURIOS_BACK = ItemTags.makeWrapperTag(new ResourceLocation("curios", "back").toString());
     //storagedrawers:drawers
     public static final ITag.INamedTag<Item> STORAGEDRAWERS = ItemTags.createOptional(new ResourceLocation("storagedrawers", "drawers"));
     public static final ITag.INamedTag<Enchantment> SOULBOUND = ForgeTagHandler.makeWrapperTag(ForgeRegistries.ENCHANTMENTS, new ResourceLocation("forge", "soulbound"));
@@ -74,11 +82,11 @@ public class SimplyBackpacks {
     public static final RegistryObject<ContainerType<SBContainer>> SBCONTAINER = CONTAINERS.register("sb_container", () -> IForgeContainerType.create(SBContainer::fromNetwork));
     public static final RegistryObject<ContainerType<FilterContainer>> FILTERCONTAINER = CONTAINERS.register("filter_container", () -> IForgeContainerType.create(FilterContainer::fromNetwork));
 
-    public static final RegistryObject<Item> COMMONBACKPACK = ITEMS.register("commonbackpack", () -> new ItemBackpackBase("commonbackpack", Backpack.COMMON));
-    public static final RegistryObject<Item> UNCOMMONBACKPACK = ITEMS.register("uncommonbackpack", () -> new ItemBackpackBase("uncommonbackpack", Backpack.UNCOMMON));
-    public static final RegistryObject<Item> RAREBACKPACK = ITEMS.register("rarebackpack", () -> new ItemBackpackBase("rarebackpack", Backpack.RARE));
-    public static final RegistryObject<Item> EPICBACKPACK = ITEMS.register("epicbackpack", () -> new ItemBackpackBase("epicbackpack", Backpack.EPIC));
-    public static final RegistryObject<Item> ULTIMATEBACKPACK = ITEMS.register("ultimatebackpack", () -> new ItemBackpackBase("ultimatebackpack", Backpack.ULTIMATE));
+    public static final RegistryObject<Item> COMMONBACKPACK = ITEMS.register("commonbackpack", () -> new BackpackItem("commonbackpack", Backpack.COMMON));
+    public static final RegistryObject<Item> UNCOMMONBACKPACK = ITEMS.register("uncommonbackpack", () -> new BackpackItem("uncommonbackpack", Backpack.UNCOMMON));
+    public static final RegistryObject<Item> RAREBACKPACK = ITEMS.register("rarebackpack", () -> new BackpackItem("rarebackpack", Backpack.RARE));
+    public static final RegistryObject<Item> EPICBACKPACK = ITEMS.register("epicbackpack", () -> new BackpackItem("epicbackpack", Backpack.EPIC));
+    public static final RegistryObject<Item> ULTIMATEBACKPACK = ITEMS.register("ultimatebackpack", () -> new BackpackItem("ultimatebackpack", Backpack.ULTIMATE));
 
     private final NonNullList<KeyBinding> keyBinds = NonNullList.create();
 
@@ -94,13 +102,21 @@ public class SimplyBackpacks {
 
         MinecraftForge.EVENT_BUS.addListener(this::onCommandsRegister);
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientStuff);
-
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(Generator::gatherData);
+        bus.addListener(this::setup);
+        bus.addListener(this::clientStuff);
+        bus.addListener(Generator::gatherData);
+        bus.addListener(this::onEnqueueIMC);
 
         MinecraftForge.EVENT_BUS.addListener(this::pickupEvent);
         MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
+
+        curiosLoaded = ModList.get().isLoaded("curios");
+    }
+
+    private void onEnqueueIMC(InterModEnqueueEvent event) {
+        if (curiosLoaded) {
+            InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, () -> SlotTypePreset.BACK.getMessageBuilder().build());
+        }
     }
 
 
@@ -115,12 +131,12 @@ public class SimplyBackpacks {
     }
 
     private void pickupEvent(EntityItemPickupEvent event) {
-        if (event.getPlayer().openContainer instanceof SBContainer || event.getPlayer().isSneaking() || event.getItem().getItem().getItem() instanceof ItemBackpackBase)
+        if (event.getPlayer().openContainer instanceof SBContainer || event.getPlayer().isSneaking() || event.getItem().getItem().getItem() instanceof BackpackItem)
             return;
         PlayerInventory playerInv = event.getPlayer().inventory;
         for (int i = 0; i <= 8; i++) {
             ItemStack stack = playerInv.getStackInSlot(i);
-            if (stack.getItem() instanceof ItemBackpackBase && ((ItemBackpackBase) stack.getItem()).pickupEvent(event, stack)) {
+            if (stack.getItem() instanceof BackpackItem && ((BackpackItem) stack.getItem()).pickupEvent(event, stack)) {
                 event.setResult(Event.Result.ALLOW);
                 return;
             }
@@ -128,15 +144,26 @@ public class SimplyBackpacks {
     }
 
     public static ItemStack findBackpack(PlayerEntity player) {
-        if (player.getHeldItemMainhand().getItem() instanceof ItemBackpackBase)
+        if (player.getHeldItemMainhand().getItem() instanceof BackpackItem)
             return player.getHeldItemMainhand();
-        if (player.getHeldItemOffhand().getItem() instanceof ItemBackpackBase)
+        if (player.getHeldItemOffhand().getItem() instanceof BackpackItem)
             return player.getHeldItemOffhand();
+
+        if (curiosLoaded) {
+            ItemStack stack = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, player).map(data -> {
+                if (data.getRight().getItem() instanceof BackpackItem) {
+                    return data.getRight();
+                }
+                return ItemStack.EMPTY;
+            }).orElse(ItemStack.EMPTY);
+            if (!stack.isEmpty())
+                return stack;
+        }
 
         PlayerInventory inventory = player.inventory;
         for (int i = 0; i <= 35; i++) {
             ItemStack stack = inventory.getStackInSlot(i);
-            if (stack.getItem() instanceof  ItemBackpackBase)
+            if (stack.getItem() instanceof BackpackItem)
                 return stack;
         }
         return ItemStack.EMPTY;
@@ -157,10 +184,6 @@ public class SimplyBackpacks {
         keyBinds.add(1, new KeyBinding("key.simplybackpacks.backpackopen.desc", -1, "key.simplybackpacks.category"));
         ClientRegistry.registerKeyBinding(keyBinds.get(0));
         ClientRegistry.registerKeyBinding(keyBinds.get(1));
-/*
-        ItemModelsProperties.registerProperty(BACKPACKITEM.get(), new ResourceLocation(MODID, "tier"),
-                (stack, world, entity) -> stack.getOrCreateTag().getInt("tier")
-                );*/
     }
 
     private void onConfigReload(ModConfig.ModConfigEvent event) {
@@ -168,20 +191,9 @@ public class SimplyBackpacks {
     }
 
     public static boolean filterItem(ItemStack stack) {
-        //check for backpacks
-        if (stack.getItem() instanceof ItemBackpackBase)
-            return false;
-
         //check the config whitelist, overrides all checks further.
         if (ConfigCache.WHITELIST.contains(stack.getItem().getRegistryName()))
             return true;
-
-        //check for common storage tags.
-        if (stack.hasTag()) {
-            CompoundNBT tag = stack.getTag();
-            if (tag.contains("Items") || tag.contains("Inventory"))
-                return false;
-        }
 
         //check for forge:holds_items / storagedrawers:drawers
         if (stack.getItem().isIn(HOLDS_ITEMS) || stack.getItem().isIn(STORAGEDRAWERS))

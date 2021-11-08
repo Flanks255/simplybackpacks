@@ -18,6 +18,7 @@ apply from: 'https://files.saps.dev/ci/git-md-changelog.gradle'
 
 repositories {
     maven { url "https://www.cursemaven.com" }
+    maven { url = "https://maven.theillusivec4.top/" }
     maven { url "https://dvs1.progwml6.com/files/maven" }
     maven { url = "https://maven.saps.dev/minecraft" }
 }
@@ -85,6 +86,9 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:NBTEDIT-247580:3062106")
     runtimeOnly fg.deobf("curse.maven:ENSORC-349447:3407021")
     runtimeOnly fg.deobf("curse.maven:COFHCORE-69162:3407019")
+
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
+    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
 }
 
 jar {

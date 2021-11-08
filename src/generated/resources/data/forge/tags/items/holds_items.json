@@ -1,10 +1,6 @@
 {
   "replace": false,
   "values": [
-    "simplybackpacks:commonbackpack",
-    "simplybackpacks:uncommonbackpack",
-    "simplybackpacks:rarebackpack",
-    "simplybackpacks:epicbackpack",
     "minecraft:shulker_box",
     "minecraft:black_shulker_box",
     "minecraft:blue_shulker_box",

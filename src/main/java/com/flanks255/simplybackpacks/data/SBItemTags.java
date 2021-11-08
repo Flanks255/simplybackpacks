@@ -17,7 +17,6 @@ public class SBItemTags extends ItemTagsProvider {
 
     @Override
     protected void registerTags() {
-        tagBackpacks();
         tagShulkers();
         tagQuantumBags();
         tagKrates();
@@ -41,6 +40,11 @@ public class SBItemTags extends ItemTagsProvider {
 
         this.getOrCreateBuilder(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("forcecraft", "force_pack"));
 
+        this.getOrCreateBuilder(SimplyBackpacks.CURIOS_BACK).add(SimplyBackpacks.COMMONBACKPACK.get());
+        this.getOrCreateBuilder(SimplyBackpacks.CURIOS_BACK).add(SimplyBackpacks.UNCOMMONBACKPACK.get());
+        this.getOrCreateBuilder(SimplyBackpacks.CURIOS_BACK).add(SimplyBackpacks.RAREBACKPACK.get());
+        this.getOrCreateBuilder(SimplyBackpacks.CURIOS_BACK).add(SimplyBackpacks.EPICBACKPACK.get());
+        this.getOrCreateBuilder(SimplyBackpacks.CURIOS_BACK).add(SimplyBackpacks.ULTIMATEBACKPACK.get());
     }
 
     private void tagKrates() {
@@ -52,13 +56,6 @@ public class SBItemTags extends ItemTagsProvider {
 
     private void TagOtherModsItem(String modid, String item) {
         this.getOrCreateBuilder(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation(modid, item));
-    }
-
-    private void tagBackpacks() {
-        this.getOrCreateBuilder(SimplyBackpacks.HOLDS_ITEMS).add(SimplyBackpacks.COMMONBACKPACK.get());
-        this.getOrCreateBuilder(SimplyBackpacks.HOLDS_ITEMS).add(SimplyBackpacks.UNCOMMONBACKPACK.get());
-        this.getOrCreateBuilder(SimplyBackpacks.HOLDS_ITEMS).add(SimplyBackpacks.RAREBACKPACK.get());
-        this.getOrCreateBuilder(SimplyBackpacks.HOLDS_ITEMS).add(SimplyBackpacks.EPICBACKPACK.get());
     }
 
     private void tagShulkers() {
