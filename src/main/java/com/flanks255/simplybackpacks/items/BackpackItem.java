@@ -48,7 +48,7 @@ import java.util.UUID;
 
 public class BackpackItem extends Item {
     public BackpackItem(String name, Backpack tier) {
-        super(new Item.Properties().maxStackSize(1).group(ItemGroup.TOOLS));
+        super(new Item.Properties().maxStackSize(1).group(ItemGroup.TOOLS).isImmuneToFire());
         this.name = name;
         this.tier = tier;
     }
@@ -167,7 +167,7 @@ public class BackpackItem extends Item {
         }
     }
 
-    public void togglePickup(PlayerEntity playerEntity, ItemStack stack) {
+    public static void togglePickup(PlayerEntity playerEntity, ItemStack stack) {
         CompoundNBT nbt = stack.getOrCreateTag();
 
         boolean Pickup = !nbt.getBoolean("Pickup");
@@ -181,7 +181,7 @@ public class BackpackItem extends Item {
     }
 
 
-    public boolean filterItem(ItemStack item, ItemStack packItem) {
+    public static boolean filterItem(ItemStack item, ItemStack packItem) {
         LazyOptional<IItemHandler> handlerOptional = packItem.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
 
         if (handlerOptional.isPresent() && handlerOptional.resolve().get() instanceof SBItemHandler) {
@@ -212,7 +212,7 @@ public class BackpackItem extends Item {
         return false;
     }
 
-    public boolean pickupEvent(EntityItemPickupEvent event, ItemStack stack) {
+    public static boolean pickupEvent(EntityItemPickupEvent event, ItemStack stack) {
         CompoundNBT nbt = stack.getTag();
         if (nbt == null)
             return false;

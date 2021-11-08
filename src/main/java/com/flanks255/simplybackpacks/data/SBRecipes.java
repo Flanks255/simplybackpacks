@@ -70,5 +70,17 @@ public class SBRecipes extends RecipeProvider {
             .key('E', Items.IRON_BARS)
             .addCriterion("", lul)
             .build(WrappedRecipe.Inject(consumer, SimplyBackpacks.COPYRECIPE.get()));
+
+        ShapedRecipeBuilder.shapedRecipe(SimplyBackpacks.ULTIMATEBACKPACK.get())
+            .patternLine("A A")
+            .patternLine("EBE")
+            .patternLine("CDC")
+            .key('A', Tags.Items.INGOTS_NETHERITE)
+            .key('B', TargetNBTIngredient.of(SimplyBackpacks.RAREBACKPACK.get()))
+            .key('C', Tags.Items.CHESTS)
+            .key('D', Tags.Items.STORAGE_BLOCKS_NETHERITE)
+            .key('E', Tags.Items.NETHER_STARS)
+            .addCriterion("", lul)
+            .build(WrappedRecipe.Inject(consumer, SimplyBackpacks.COPYRECIPE.get()));
     }
 }

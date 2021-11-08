@@ -107,7 +107,17 @@ public class SBContainer extends Container {
     private void addMySlots(ItemStack stack) {
         if (handler == null ) return;
 
-        int cols = tier.slots == 18? 9:11;
+        int cols;
+        switch(tier.slots) {
+            case 18:
+                cols = 9;
+                break;
+            case 144:
+                cols = 16;
+                break;
+            default:
+                cols = 11;
+        }
         int rows = tier.slots / cols;
         int slotindex = 0;
 

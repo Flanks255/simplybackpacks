@@ -86,6 +86,7 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:NBTEDIT-247580:3062106")
     runtimeOnly fg.deobf("curse.maven:ENSORC-349447:3407021")
     runtimeOnly fg.deobf("curse.maven:COFHCORE-69162:3407019")
+    runtimeOnly fg.deobf("curse.maven:BG-298187:3498508")
 
     runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
     compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")

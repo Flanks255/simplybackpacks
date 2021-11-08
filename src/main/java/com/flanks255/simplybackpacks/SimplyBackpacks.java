@@ -52,6 +52,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import top.theillusivec4.curios.api.CuriosApi;
@@ -69,8 +70,6 @@ public class SimplyBackpacks {
     //forge:holds_items
     public static final ITag.INamedTag<Item> HOLDS_ITEMS = ItemTags.makeWrapperTag(new ResourceLocation("forge", "holds_items").toString());
     public static final ITag.INamedTag<Item> CURIOS_BACK = ItemTags.makeWrapperTag(new ResourceLocation("curios", "back").toString());
-    //storagedrawers:drawers
-    public static final ITag.INamedTag<Item> STORAGEDRAWERS = ItemTags.createOptional(new ResourceLocation("storagedrawers", "drawers"));
     public static final ITag.INamedTag<Enchantment> SOULBOUND = ForgeTagHandler.makeWrapperTag(ForgeRegistries.ENCHANTMENTS, new ResourceLocation("forge", "soulbound"));
 
 
@@ -133,17 +132,30 @@ public class SimplyBackpacks {
     private void pickupEvent(EntityItemPickupEvent event) {
         if (event.getPlayer().openContainer instanceof SBContainer || event.getPlayer().isSneaking() || event.getItem().getItem().getItem() instanceof BackpackItem)
             return;
+
+        if (SimplyBackpacks.curiosLoaded) {
+            ItemStack stack = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, event.getEntityLiving())
+                .map(ImmutableTriple::getRight).orElse(ItemStack.EMPTY);
+
+            if (!stack.isEmpty()) {
+                if (BackpackItem.pickupEvent(event, stack)) {
+                    event.setResult(Event.Result.ALLOW);
+                    return;
+                }
+            }
+        }
+
         PlayerInventory playerInv = event.getPlayer().inventory;
         for (int i = 0; i <= 8; i++) {
             ItemStack stack = playerInv.getStackInSlot(i);
-            if (stack.getItem() instanceof BackpackItem && ((BackpackItem) stack.getItem()).pickupEvent(event, stack)) {
+            if (stack.getItem() instanceof BackpackItem && BackpackItem.pickupEvent(event, stack)) {
                 event.setResult(Event.Result.ALLOW);
                 return;
             }
         }
     }
 
-    public static ItemStack findBackpack(PlayerEntity player) {
+    public static ItemStack findBackpackForHotkeys(PlayerEntity player) {
         if (player.getHeldItemMainhand().getItem() instanceof BackpackItem)
             return player.getHeldItemMainhand();
         if (player.getHeldItemOffhand().getItem() instanceof BackpackItem)
@@ -195,8 +207,8 @@ public class SimplyBackpacks {
         if (ConfigCache.WHITELIST.contains(stack.getItem().getRegistryName()))
             return true;
 
-        //check for forge:holds_items / storagedrawers:drawers
-        if (stack.getItem().isIn(HOLDS_ITEMS) || stack.getItem().isIn(STORAGEDRAWERS))
+        //check for forge:holds_items
+        if (stack.getItem().isIn(HOLDS_ITEMS))
             return false;
 
         // if all else fails, check the config blacklist

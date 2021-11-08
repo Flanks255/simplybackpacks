@@ -26,7 +26,7 @@ public class OpenMessage {
     public static void handle(final OpenMessage message, final Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(()-> {
             ServerPlayerEntity player = ctx.get().getSender();
-            ItemStack backpack = SimplyBackpacks.findBackpack(player);
+            ItemStack backpack = SimplyBackpacks.findBackpackForHotkeys(player);
             if (backpack.getOrCreateTag().contains("UUID")) {
                 Optional<BackpackData> data = BackpackManager.get().getBackpack(backpack.getTag().getUniqueId("UUID"));
                 if (!backpack.isEmpty() && data.isPresent()) {
