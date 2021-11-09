@@ -28,6 +28,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -86,18 +87,18 @@ public class BackpackItem extends Item {
     }
 
     @Override
+    public ITextComponent getDisplayName(ItemStack stack) {
+        return new TranslationTextComponent(this.getTranslationKey(stack)).mergeStyle(this.tier == Backpack.ULTIMATE?TextFormatting.DARK_AQUA:TextFormatting.RESET);
+    }
+
+    @Override
     public boolean isEnchantable(ItemStack stack) {
-        return true;
+        return false;
     }
 
     @Override
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
         return enchantment.isIn(SimplyBackpacks.SOULBOUND);
-    }
-
-    @Override
-    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
-        return false;
     }
 
     @Override

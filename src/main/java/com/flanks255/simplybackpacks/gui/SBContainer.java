@@ -112,19 +112,22 @@ public class SBContainer extends Container {
             case 18:
                 cols = 9;
                 break;
-            case 144:
+            case 158:
                 cols = 16;
                 break;
             default:
                 cols = 11;
         }
-        int rows = tier.slots / cols;
+        int rows = tier.slots == 158? 13:tier.slots / cols;
         int slotindex = 0;
 
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
                 int x = 7 + col * 18;
                 int y = 17 + row * 18;
+
+                if (row > 7 && col > 2 && col < 13)
+                    continue;
 
                 this.addSlot(new SBContainerSlot(handler, slotindex, x + 1, y + 1));
                 slotindex++;
@@ -137,23 +140,23 @@ public class SBContainer extends Container {
 
     @Override
     public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
-            ItemStack itemstack = ItemStack.EMPTY;
-            Slot slot = this.inventorySlots.get(index);
+        ItemStack itemstack = ItemStack.EMPTY;
+        Slot slot = this.inventorySlots.get(index);
 
-            if (slot != null && slot.getHasStack()) {
-                int bagslotcount = inventorySlots.size();
-                ItemStack itemstack1 = slot.getStack();
-                itemstack = itemstack1.copy();
-                if (index < playerIn.inventory.mainInventory.size()) {
-                    if (!this.mergeItemStack(itemstack1, playerIn.inventory.mainInventory.size(), bagslotcount, false))
-                        return ItemStack.EMPTY;
-                } else if (!this.mergeItemStack(itemstack1, 0, playerIn.inventory.mainInventory.size(), false)) {
+        if (slot != null && slot.getHasStack()) {
+            int bagslotcount = inventorySlots.size();
+            ItemStack itemstack1 = slot.getStack();
+            itemstack = itemstack1.copy();
+            if (index < playerIn.inventory.mainInventory.size()) {
+                if (!this.mergeItemStack(itemstack1, playerIn.inventory.mainInventory.size(), bagslotcount, false))
                     return ItemStack.EMPTY;
-                }
-                if (itemstack1.isEmpty()) slot.putStack(ItemStack.EMPTY); else slot.onSlotChanged();
+            } else if (!this.mergeItemStack(itemstack1, 0, playerIn.inventory.mainInventory.size(), false)) {
+                return ItemStack.EMPTY;
             }
-            return itemstack;
-    }
+            if (itemstack1.isEmpty()) slot.putStack(ItemStack.EMPTY); else slot.onSlotChanged();
+        }
+        return itemstack;
+}
 
     private ItemStack findBackpack(PlayerEntity playerEntity) {
         PlayerInventory inv = playerEntity.inventory;

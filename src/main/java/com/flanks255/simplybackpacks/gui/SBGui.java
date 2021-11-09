@@ -1,5 +1,6 @@
 package com.flanks255.simplybackpacks.gui;
 
+import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.items.Backpack;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -9,6 +10,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 
 public class SBGui extends ContainerScreen<SBContainer> {
@@ -17,9 +19,19 @@ public class SBGui extends ContainerScreen<SBContainer> {
 
         this.tier = container.getTier();
 
-        GUI = tier.texture;
+        if (tier == Backpack.ULTIMATE && Math.random() < 0.0001) {
+            playerInventory.player.playSound(SoundEvents.ENTITY_COW_HURT, 0.5f, 1f);
+            if (Math.random() < 0.5)
+                GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/ultimate_alt.png");
+            else
+                GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/ultimate_alt2.png");
+        }
+        else
+            GUI = tier.texture;
         xSize = tier.xSize;
         ySize = tier.ySize;
+
+
     }
 
     private ResourceLocation GUI;
@@ -51,7 +63,7 @@ public class SBGui extends ContainerScreen<SBContainer> {
 
     @Override
     protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
-       this.font.drawString(matrixStack, this.title.getString(), 7,6,0x404040);
+        this.font.drawString(matrixStack, this.title.getString(), 7,6,0x404040);
     }
 
     @Override

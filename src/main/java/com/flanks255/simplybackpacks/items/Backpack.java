@@ -14,7 +14,7 @@ public enum Backpack {
     UNCOMMON("Uncommon", Rarity.UNCOMMON, 33, "uncommon_gui.png", 212, 168, 25, 85, SimplyBackpacks.UNCOMMONBACKPACK),
     RARE("Rare", Rarity.RARE, 66, "rare_gui.png", 212, 222, 25, 139, SimplyBackpacks.RAREBACKPACK),
     EPIC("Epic", Rarity.EPIC, 99, "epic_gui.png", 212, 276, 25, 193, SimplyBackpacks.EPICBACKPACK),
-    ULTIMATE("Ultimate", Rarity.EPIC, 144, "ultimate_gui.png",302,276,71,193, SimplyBackpacks.ULTIMATEBACKPACK);
+    ULTIMATE("Ultimate", Rarity.EPIC, 158, "ultimate_gui.png",302,258,71,175, SimplyBackpacks.ULTIMATEBACKPACK);
 
     public Rarity rarity;
     public int slots;
