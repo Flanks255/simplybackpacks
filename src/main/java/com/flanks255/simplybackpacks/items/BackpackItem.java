@@ -49,7 +49,7 @@ import java.util.UUID;
 
 public class BackpackItem extends Item {
     public BackpackItem(String name, Backpack tier) {
-        super(new Item.Properties().maxStackSize(1).group(ItemGroup.TOOLS).isImmuneToFire());
+        super(new Item.Properties().stacksTo(1).tab(ItemGroup.TAB_TOOLS).fireResistant());
         this.name = name;
         this.tier = tier;
     }
@@ -71,9 +71,9 @@ public class BackpackItem extends Item {
         CompoundNBT tag = stack.getOrCreateTag();
         if (!tag.contains("UUID")) {
             uuid = UUID.randomUUID();
-            tag.putUniqueId("UUID", uuid);
+            tag.putUUID("UUID", uuid);
         } else
-            uuid = tag.getUniqueId("UUID");
+            uuid = tag.getUUID("UUID");
         return BackpackManager.get().getOrCreateBackpack(uuid, ((BackpackItem) stack.getItem()).tier);
     }
 
@@ -89,8 +89,8 @@ public class BackpackItem extends Item {
 
     @Override
     @Nonnull
-    public ITextComponent getDisplayName(@Nonnull ItemStack stack) {
-        return new TranslationTextComponent(this.getTranslationKey(stack)).mergeStyle(this.tier == Backpack.ULTIMATE?TextFormatting.DARK_AQUA:TextFormatting.RESET);
+    public ITextComponent getName(@Nonnull ItemStack stack) {
+        return new TranslationTextComponent(this.getDescriptionId(stack)).withStyle(this.tier == Backpack.ULTIMATE?TextFormatting.DARK_AQUA:TextFormatting.RESET);
     }
 
     @Override
@@ -105,9 +105,9 @@ public class BackpackItem extends Item {
 
     @Override
     @Nonnull
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn,@Nonnull Hand handIn) {
-        ItemStack backpack = playerIn.getHeldItem(handIn);
-        if (!worldIn.isRemote && playerIn instanceof ServerPlayerEntity && backpack.getItem() instanceof BackpackItem) {
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn,@Nonnull Hand handIn) {
+        ItemStack backpack = playerIn.getItemInHand(handIn);
+        if (!worldIn.isClientSide && playerIn instanceof ServerPlayerEntity && backpack.getItem() instanceof BackpackItem) {
             BackpackData data = BackpackItem.getData(backpack);
 
             //Old backpack, lets migrate
@@ -117,7 +117,7 @@ public class BackpackItem extends Item {
                     data.getFilter().deserializeNBT(backpack.getTag().getCompound("Filter"));
                     backpack.getTag().remove("Filter");
                 }
-                playerIn.sendMessage(new StringTextComponent("Backpack Migrated"), Util.DUMMY_UUID);
+                playerIn.sendMessage(new StringTextComponent("Backpack Migrated"), Util.NIL_UUID);
 
                 backpack.getTag().remove("Inventory");
             }
@@ -129,16 +129,16 @@ public class BackpackItem extends Item {
             if (data.getTier().ordinal() < itemTier.ordinal())
                 data.upgrade(itemTier);
 
-            if (playerIn.isSneaking()) {
+            if (playerIn.isShiftKeyDown()) {
                 //filter
                 SimplyBackpacks.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) playerIn), new FilterSyncMessage(data.getUuid(), data.getFilter()));
-                NetworkHooks.openGui(((ServerPlayerEntity) playerIn), new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new FilterContainer(windowId, playerInventory, uuid, data.getFilter()), backpack.getDisplayName()), (buffer -> buffer.writeUniqueId(uuid)));
+                NetworkHooks.openGui(((ServerPlayerEntity) playerIn), new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new FilterContainer(windowId, playerInventory, uuid, data.getFilter()), backpack.getHoverName()), (buffer -> buffer.writeUUID(uuid)));
             } else {
                 //open
-                NetworkHooks.openGui(((ServerPlayerEntity) playerIn), new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, uuid, data.getHandler()), backpack.getDisplayName()), (buffer -> buffer.writeUniqueId(uuid).writeInt(BackpackItem.getTier(backpack).slots)));
+                NetworkHooks.openGui(((ServerPlayerEntity) playerIn), new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, uuid, data.getHandler()), backpack.getHoverName()), (buffer -> buffer.writeUUID(uuid).writeInt(BackpackItem.getTier(backpack).slots)));
             }
         }
-        return ActionResult.resultSuccess(playerIn.getHeldItem(handIn));
+        return ActionResult.success(playerIn.getItemInHand(handIn));
     }
 
     @Nullable
@@ -178,7 +178,7 @@ public class BackpackItem extends Item {
         if (playerEntity instanceof ServerPlayerEntity)
             SimplyBackpacks.NETWORK.send(PacketDistributor.PLAYER.with(()-> (ServerPlayerEntity) playerEntity), new ToggleMessageMessage(Pickup));
         else
-            playerEntity.sendStatusMessage(new StringTextComponent(I18n.format(Pickup?"simplybackpacks.autopickupenabled":"simplybackpacks.autopickupdisabled")), true);
+            playerEntity.displayClientMessage(new StringTextComponent(I18n.get(Pickup?"simplybackpacks.autopickupenabled":"simplybackpacks.autopickupdisabled")), true);
 
     }
 
@@ -200,9 +200,9 @@ public class BackpackItem extends Item {
             for (int i = 0; i < 16; i++) {
                 ItemStack fStack = filterHandler.getStackInSlot(i);
                 if (!fStack.isEmpty()) {
-                    if (fStack.isItemEqual(item)) {
+                    if (fStack.sameItem(item)) {
                         if (nbtMatch)
-                            return ItemStack.areItemStackTagsEqual(fStack, item) == whitelist;
+                            return ItemStack.tagMatches(fStack, item) == whitelist;
                         else
                             return whitelist;
                     }
@@ -250,41 +250,41 @@ public class BackpackItem extends Item {
 
 
     private boolean hasTranslation(String key) {
-        return !I18n.format(key).equals(key);
+        return !I18n.get(key).equals(key);
     }
 
     private String fallbackString(String key, String fallback) {
-        String tmp = I18n.format(key);
+        String tmp = I18n.get(key);
         return tmp.equals(key)?fallback:tmp;
     }
 
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn,@Nonnull List<ITextComponent> tooltip,@Nonnull ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
-        String translationKey = getTranslationKey();
+    public void appendHoverText(@Nonnull ItemStack stack, @Nullable World worldIn,@Nonnull List<ITextComponent> tooltip,@Nonnull ITooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+        String translationKey = getDescriptionId();
 
         boolean pickupEnabled = stack.getOrCreateTag().getBoolean("Pickup");
         if (pickupEnabled)
-            tooltip.add(new StringTextComponent(I18n.format("simplybackpacks.autopickupenabled")));
+            tooltip.add(new StringTextComponent(I18n.get("simplybackpacks.autopickupenabled")));
         else
-            tooltip.add(new StringTextComponent(I18n.format("simplybackpacks.autopickupdisabled")));
+            tooltip.add(new StringTextComponent(I18n.get("simplybackpacks.autopickupdisabled")));
 
         if (Screen.hasShiftDown()) {
-            tooltip.add(new StringTextComponent( I18n.format( translationKey + ".info") ));
+            tooltip.add(new StringTextComponent( I18n.get( translationKey + ".info") ));
             if (hasTranslation(translationKey + ".info2"))
-                tooltip.add(new StringTextComponent( I18n.format(translationKey + ".info2")));
+                tooltip.add(new StringTextComponent( I18n.get(translationKey + ".info2")));
             if (hasTranslation(translationKey + ".info3"))
-                tooltip.add(new StringTextComponent( I18n.format(translationKey + ".info3")));
+                tooltip.add(new StringTextComponent( I18n.get(translationKey + ".info3")));
         }
         else {
             tooltip.add(new StringTextComponent( fallbackString("simplybackpacks.shift", "Press <§6§oShift§r> for info.") ));
         }
 
         if (flagIn.isAdvanced() && stack.getTag() != null && stack.getTag().contains("UUID")) {
-            UUID uuid = stack.getTag().getUniqueId("UUID");
-            tooltip.add(new StringTextComponent("ID: " + uuid.toString().substring(0,8)).mergeStyle(TextFormatting.GRAY, TextFormatting.ITALIC));
+            UUID uuid = stack.getTag().getUUID("UUID");
+            tooltip.add(new StringTextComponent("ID: " + uuid.toString().substring(0,8)).withStyle(TextFormatting.GRAY, TextFormatting.ITALIC));
         }
     }
 }

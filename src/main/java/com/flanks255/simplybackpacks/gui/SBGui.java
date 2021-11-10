@@ -20,10 +20,10 @@ public class SBGui extends ContainerScreen<SBContainer> {
         Backpack tier = container.getTier();
 
         //1 in 100, vs 1 in 10k
-        double chance = BackpackUtils.increasedAltChance(playerInventory.player.getUniqueID())? 0.01:0.0001;
+        double chance = BackpackUtils.increasedAltChance(playerInventory.player.getUUID())? 0.01:0.0001;
 
         if (tier == Backpack.ULTIMATE && Math.random() < chance) {
-            playerInventory.player.playSound(SoundEvents.ENTITY_COW_HURT, 0.5f, 1f);
+            playerInventory.player.playSound(SoundEvents.COW_HURT, 0.5f, 1f);
             if (Math.random() < 0.5)
                 GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/ultimate_alt.png");
             else
@@ -31,8 +31,8 @@ public class SBGui extends ContainerScreen<SBContainer> {
         }
         else
             GUI = tier.texture;
-        xSize = tier.xSize;
-        ySize = tier.ySize;
+        imageWidth = tier.xSize;
+        imageHeight = tier.ySize;
 
 
     }
@@ -45,21 +45,21 @@ public class SBGui extends ContainerScreen<SBContainer> {
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(@Nonnull MatrixStack matrixStack, float partialTicks, int x, int y) {
+    protected void renderBg(@Nonnull MatrixStack matrixStack, float partialTicks, int x, int y) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f ,1.0f);
-        this.getMinecraft().textureManager.bindTexture(GUI);
-        blit(matrixStack, guiLeft, guiTop, 0,0, xSize, ySize, xSize, ySize);
+        this.getMinecraft().textureManager.bind(GUI);
+        blit(matrixStack, leftPos, topPos, 0,0, imageWidth, imageHeight, imageWidth, imageHeight);
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(@Nonnull MatrixStack matrixStack, int x, int y) {
-        this.font.drawString(matrixStack, this.title.getString(), 7,6,0x404040);
+    protected void renderLabels(@Nonnull MatrixStack matrixStack, int x, int y) {
+        this.font.draw(matrixStack, this.title.getString(), 7,6,0x404040);
     }
 
     @Override
     public void render(@Nonnull MatrixStack matrixStack, int p_render_1_, int p_render_2_, float p_render_3_) {
         this.renderBackground(matrixStack);
         super.render(matrixStack,p_render_1_, p_render_2_, p_render_3_);
-        this.renderHoveredTooltip(matrixStack, p_render_1_, p_render_2_);
+        this.renderTooltip(matrixStack, p_render_1_, p_render_2_);
     }
 }

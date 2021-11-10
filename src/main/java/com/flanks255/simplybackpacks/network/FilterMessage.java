@@ -22,8 +22,8 @@ public class FilterMessage {
         if (ctx.get().getDirection().getReceptionSide().isServer())
             ctx.get().enqueueWork(() -> {
                 ServerPlayerEntity player = ctx.get().getSender();
-                if (player != null && player.openContainer instanceof FilterContainer)
-                    ((FilterContainer) player.openContainer).saveFilter(message.opts);
+                if (player != null && player.containerMenu instanceof FilterContainer)
+                    ((FilterContainer) player.containerMenu).saveFilter(message.opts);
 
             } );
         ctx.get().setPacketHandled(true);

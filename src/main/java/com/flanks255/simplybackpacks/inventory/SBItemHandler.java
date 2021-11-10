@@ -14,7 +14,7 @@ public class SBItemHandler extends ItemStackHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
-        BackpackManager.get().markDirty();
+        BackpackManager.get().setDirty();
     }
 
     public void upgrade(int slots) {

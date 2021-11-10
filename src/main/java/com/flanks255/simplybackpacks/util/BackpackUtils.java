@@ -19,7 +19,7 @@ public class BackpackUtils {
             return true;
 
         //check for forge:holds_items
-        if (stack.getItem().isIn(SimplyBackpacks.HOLDS_ITEMS))
+        if (stack.getItem().is(SimplyBackpacks.HOLDS_ITEMS))
             return false;
 
         // if all else fails, check the config blacklist
@@ -27,10 +27,10 @@ public class BackpackUtils {
     }
 
     public static ItemStack findBackpackForHotkeys(PlayerEntity player) {
-        if (player.getHeldItemMainhand().getItem() instanceof BackpackItem)
-            return player.getHeldItemMainhand();
-        if (player.getHeldItemOffhand().getItem() instanceof BackpackItem)
-            return player.getHeldItemOffhand();
+        if (player.getMainHandItem().getItem() instanceof BackpackItem)
+            return player.getMainHandItem();
+        if (player.getOffhandItem().getItem() instanceof BackpackItem)
+            return player.getOffhandItem();
 
         if (curiosLoaded) {
             ItemStack stack = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, player).map(data -> {
@@ -45,7 +45,7 @@ public class BackpackUtils {
 
         PlayerInventory inventory = player.inventory;
         for (int i = 0; i <= 35; i++) {
-            ItemStack stack = inventory.getStackInSlot(i);
+            ItemStack stack = inventory.getItem(i);
             if (stack.getItem() instanceof BackpackItem)
                 return stack;
         }

@@ -27,44 +27,44 @@ public class WrappedRecipe implements IFinishedRecipe {
     }
 
     @Override
-    public void serialize(@Nonnull JsonObject json) {
-        inner.serialize(json);
+    public void serializeRecipeData(@Nonnull JsonObject json) {
+        inner.serializeRecipeData(json);
     }
 
     @Override
     @Nonnull
-    public JsonObject getRecipeJson() {
+    public JsonObject serializeRecipe() {
         JsonObject jsonObject = new JsonObject();
 
         if (serializerOverride != null)
             jsonObject.addProperty("type", serializerOverride.getRegistryName().toString());
         else
-            jsonObject.addProperty("type", inner.getSerializer().getRegistryName().toString());
-        serialize(jsonObject);
+            jsonObject.addProperty("type", inner.getType().getRegistryName().toString());
+        serializeRecipeData(jsonObject);
         return jsonObject;
     }
 
     @Override
     @Nonnull
-    public ResourceLocation getID() {
-        return inner.getID();
+    public ResourceLocation getId() {
+        return inner.getId();
     }
 
     @Override
     @Nonnull
-    public IRecipeSerializer<?> getSerializer() {
-        return serializerOverride != null? serializerOverride:inner.getSerializer();
+    public IRecipeSerializer<?> getType() {
+        return serializerOverride != null? serializerOverride:inner.getType();
     }
 
     @Nullable
     @Override
-    public JsonObject getAdvancementJson() {
-        return inner.getAdvancementJson();
+    public JsonObject serializeAdvancement() {
+        return inner.serializeAdvancement();
     }
 
     @Nullable
     @Override
-    public ResourceLocation getAdvancementID() {
-        return inner.getAdvancementID();
+    public ResourceLocation getAdvancementId() {
+        return inner.getAdvancementId();
     }
 }

@@ -27,7 +27,7 @@ public class FilterItemHandler extends ItemStackHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
-        BackpackManager.get().markDirty();
+        BackpackManager.get().setDirty();
     }
 
     @Nonnull

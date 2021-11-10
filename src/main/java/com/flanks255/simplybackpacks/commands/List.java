@@ -17,7 +17,7 @@ import java.util.Set;
 
 public class List {
     public static ArgumentBuilder<CommandSource, ?> register() {
-        return Commands.literal("list").requires(cs -> cs.hasPermissionLevel(1)).executes(List::list)
+        return Commands.literal("list").requires(cs -> cs.hasPermission(1)).executes(List::list)
             .then(Commands.literal("firstOpened").then(Commands.argument("PlayerName", StringArgumentType.string())
                 .suggests((cs, builder) -> ISuggestionProvider.suggest(getPlayerSuggestions(cs), builder))
                 .executes(cs -> first(cs, StringArgumentType.getString(cs, "PlayerName")))))
@@ -37,14 +37,14 @@ public class List {
         BackpackManager backpacks = BackpackManager.get();
 
         if (backpacks.getMap().size() == 0) {
-            ctx.getSource().sendFeedback(new StringTextComponent("[ ]"), false);
+            ctx.getSource().sendSuccess(new StringTextComponent("[ ]"), false);
             return 0;
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
 
-        backpacks.getMap().forEach( (uuid, backpack) -> ctx.getSource().sendFeedback(new StringTextComponent(
+        backpacks.getMap().forEach( (uuid, backpack) -> ctx.getSource().sendSuccess(new StringTextComponent(
             "Truncated-UUID: " + backpack.getUuid().toString().substring(0,8) + "\nCreated By: " + backpack.meta.getLastAccessedPlayer() + " On: " + sdf.format(new Date(backpack.meta.getFirstAccessedTime())) + "\nLast accessed by: " + backpack.meta.getLastAccessedPlayer() + " on: " + sdf.format(new Date(backpack.meta.getLastAccessedTime()))
         ), false));
 
@@ -55,7 +55,7 @@ public class List {
         BackpackManager backpacks = BackpackManager.get();
 
         if (backpacks.getMap().size() == 0) {
-            ctx.getSource().sendFeedback(new StringTextComponent("[ ]"), false);
+            ctx.getSource().sendSuccess(new StringTextComponent("[ ]"), false);
             return 0;
         }
 
@@ -64,7 +64,7 @@ public class List {
 
         backpacks.getMap().forEach( (uuid, backpack) -> {
             if (backpack.meta.getFirstAccessedPlayer().equalsIgnoreCase(playerName)) {
-                ctx.getSource().sendFeedback(new StringTextComponent(
+                ctx.getSource().sendSuccess(new StringTextComponent(
                     "Truncated-UUID: " + backpack.getUuid().toString().substring(0, 8) + "\nCreated By: " + backpack.meta.getLastAccessedPlayer() + " On: " + sdf.format(new Date(backpack.meta.getFirstAccessedTime())) + "\nLast accessed by: " + backpack.meta.getLastAccessedPlayer() + " on: " + sdf.format(new Date(backpack.meta.getLastAccessedTime()))
                 ), false);
             }
@@ -77,7 +77,7 @@ public class List {
         BackpackManager backpacks = BackpackManager.get();
 
         if (backpacks.getMap().size() == 0) {
-            ctx.getSource().sendFeedback(new StringTextComponent("[ ]"), false);
+            ctx.getSource().sendSuccess(new StringTextComponent("[ ]"), false);
             return 0;
         }
 
@@ -86,7 +86,7 @@ public class List {
 
         backpacks.getMap().forEach( (uuid, backpack) -> {
             if (backpack.meta.getLastAccessedPlayer().equalsIgnoreCase(playerName)) {
-                ctx.getSource().sendFeedback(new StringTextComponent(
+                ctx.getSource().sendSuccess(new StringTextComponent(
                     "Truncated-UUID: " + backpack.getUuid().toString().substring(0, 8) + "\nCreated By: " + backpack.meta.getLastAccessedPlayer() + " On: " + sdf.format(new Date(backpack.meta.getFirstAccessedTime())) + "\nLast accessed by: " + backpack.meta.getLastAccessedPlayer() + " on: " + sdf.format(new Date(backpack.meta.getLastAccessedTime()))
                 ), false);
             }

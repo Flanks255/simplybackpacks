@@ -28,10 +28,10 @@ public class OpenMessage {
             ServerPlayerEntity player = ctx.get().getSender();
             ItemStack backpack = BackpackUtils.findBackpackForHotkeys(player);
             if (backpack.getOrCreateTag().contains("UUID")) {
-                Optional<BackpackData> data = BackpackManager.get().getBackpack(backpack.getTag().getUniqueId("UUID"));
+                Optional<BackpackData> data = BackpackManager.get().getBackpack(backpack.getTag().getUUID("UUID"));
                 if (!backpack.isEmpty() && data.isPresent()) {
                     data.get().updateAccessRecords(player.getName().getString(), System.currentTimeMillis());
-                    NetworkHooks.openGui(player, new SimpleNamedContainerProvider((windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, data.get().getUuid(), data.get().getHandler()), backpack.getDisplayName()), (buffer) -> buffer.writeUniqueId(data.get().getUuid()).writeInt(BackpackItem.getTier(backpack).slots));
+                    NetworkHooks.openGui(player, new SimpleNamedContainerProvider((windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, data.get().getUuid(), data.get().getHandler()), backpack.getHoverName()), (buffer) -> buffer.writeUUID(data.get().getUuid()).writeInt(BackpackItem.getTier(backpack).slots));
                 }
             }
         });

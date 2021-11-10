@@ -14,12 +14,12 @@ public class SBContainerSlot extends SlotItemHandler {
     }
 
     @Override
-    public int getItemStackLimit(@Nonnull ItemStack stack) {
-        return super.getSlotStackLimit();
+    public int getMaxStackSize(@Nonnull ItemStack stack) {
+        return super.getMaxStackSize();
     }
 
     @Override
-    public boolean isItemValid(@Nonnull ItemStack stack) {
+    public boolean mayPlace(@Nonnull ItemStack stack) {
         return BackpackUtils.filterItem(stack);
     }
 

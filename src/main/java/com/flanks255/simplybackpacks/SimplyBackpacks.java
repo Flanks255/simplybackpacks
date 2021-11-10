@@ -66,8 +66,8 @@ public class SimplyBackpacks {
     public static SimpleChannel NETWORK;
 
     //forge:holds_items
-    public static final ITag.INamedTag<Item> HOLDS_ITEMS = ItemTags.makeWrapperTag(new ResourceLocation("forge", "holds_items").toString());
-    public static final ITag.INamedTag<Item> CURIOS_BACK = ItemTags.makeWrapperTag(new ResourceLocation("curios", "back").toString());
+    public static final ITag.INamedTag<Item> HOLDS_ITEMS = ItemTags.bind(new ResourceLocation("forge", "holds_items").toString());
+    public static final ITag.INamedTag<Item> CURIOS_BACK = ItemTags.bind(new ResourceLocation("curios", "back").toString());
     public static final ITag.INamedTag<Enchantment> SOULBOUND = ForgeTagHandler.makeWrapperTag(ForgeRegistries.ENCHANTMENTS, new ResourceLocation("forge", "soulbound"));
 
 
@@ -128,7 +128,7 @@ public class SimplyBackpacks {
     }
 
     private void pickupEvent(EntityItemPickupEvent event) {
-        if (event.getPlayer().openContainer instanceof SBContainer || event.getPlayer().isSneaking() || event.getItem().getItem().getItem() instanceof BackpackItem)
+        if (event.getPlayer().containerMenu instanceof SBContainer || event.getPlayer().isShiftKeyDown() || event.getItem().getItem().getItem() instanceof BackpackItem)
             return;
 
         if (BackpackUtils.curiosLoaded) {
@@ -145,7 +145,7 @@ public class SimplyBackpacks {
 
         PlayerInventory playerInv = event.getPlayer().inventory;
         for (int i = 0; i <= 8; i++) {
-            ItemStack stack = playerInv.getStackInSlot(i);
+            ItemStack stack = playerInv.getItem(i);
             if (stack.getItem() instanceof BackpackItem && BackpackItem.pickupEvent(event, stack)) {
                 event.setResult(Event.Result.ALLOW);
                 return;
@@ -154,15 +154,15 @@ public class SimplyBackpacks {
     }
 
     private void onClientTick(TickEvent.ClientTickEvent event) {
-        if (keyBinds.get(0).isPressed())
+        if (keyBinds.get(0).consumeClick())
             NETWORK.sendToServer(new ToggleMessage());
-        if (keyBinds.get(1).isPressed())
+        if (keyBinds.get(1).consumeClick())
             NETWORK.sendToServer(new OpenMessage());
     }
 
     private void clientStuff(final FMLClientSetupEvent event) {
-        ScreenManager.registerFactory(SBCONTAINER.get(), SBGui::new);
-        ScreenManager.registerFactory(FILTERCONTAINER.get(), FilterGui::new);
+        ScreenManager.register(SBCONTAINER.get(), SBGui::new);
+        ScreenManager.register(FILTERCONTAINER.get(), FilterGui::new);
 
         keyBinds.add(0, new KeyBinding("key.simplybackpacks.backpackpickup.desc", -1, "key.simplybackpacks.category"));
         keyBinds.add(1, new KeyBinding("key.simplybackpacks.backpackopen.desc", -1, "key.simplybackpacks.category"));

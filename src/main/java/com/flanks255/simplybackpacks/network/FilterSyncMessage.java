@@ -17,19 +17,19 @@ public class FilterSyncMessage {
 
     public static FilterSyncMessage decode(final PacketBuffer buffer) {
         FilterItemHandler handler = new FilterItemHandler();
-        UUID uuid = buffer.readUniqueId();
+        UUID uuid = buffer.readUUID();
         int slotCount = buffer.readInt();
         for (int i = 0; i < slotCount; i++) {
-            handler.setStackInSlot(i, buffer.readItemStack());
+            handler.setStackInSlot(i, buffer.readItem());
         }
 
         return new FilterSyncMessage(uuid, handler);
     }
     public static void encode(final FilterSyncMessage message, final PacketBuffer buffer) {
-        buffer.writeUniqueId(message.uuid);
+        buffer.writeUUID(message.uuid);
         buffer.writeInt(message.handler.getSlots());
         for (int i = 0; i < message.handler.getSlots(); i++) {
-            buffer.writeItemStack(message.handler.getStackInSlot(i));
+            buffer.writeItem(message.handler.getStackInSlot(i));
         }
 
     }

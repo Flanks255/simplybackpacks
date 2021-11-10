@@ -23,7 +23,7 @@ public class ToggleMessageMessage {
     public static void handle(final ToggleMessageMessage message, final Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide().isClient())
             ctx.get().enqueueWork(() -> {
-                Minecraft.getInstance().player.sendStatusMessage(new StringTextComponent(I18n.format(message.enabled ?"simplybackpacks.autopickupenabled":"simplybackpacks.autopickupdisabled")),true);
+                Minecraft.getInstance().player.displayClientMessage(new StringTextComponent(I18n.get(message.enabled ?"simplybackpacks.autopickupenabled":"simplybackpacks.autopickupdisabled")),true);
             } );
         ctx.get().setPacketHandled(true);
     }

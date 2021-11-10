@@ -33,7 +33,7 @@ public class BackpackManager extends WorldSavedData {
 
     public static BackpackManager get() {
         if (Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER)
-            return ServerLifecycleHooks.getCurrentServer().getWorld(World.OVERWORLD).getSavedData().getOrCreate(BackpackManager::new, NAME);
+            return ServerLifecycleHooks.getCurrentServer().getLevel(World.OVERWORLD).getDataStorage().computeIfAbsent(BackpackManager::new, NAME);
         else
             return blankClient;
     }
@@ -45,7 +45,7 @@ public class BackpackManager extends WorldSavedData {
 
     public BackpackData getOrCreateBackpack(UUID uuid, Backpack tier) {
         return data.computeIfAbsent(uuid, id -> {
-            markDirty();
+            setDirty();
             return new BackpackData(id, tier);
         });
     }
@@ -54,12 +54,12 @@ public class BackpackManager extends WorldSavedData {
         if (data.containsKey(uuid))
             return data.get(uuid).getOptional();
 
-            return LazyOptional.empty();
+        return LazyOptional.empty();
     }
 
     public LazyOptional<IItemHandler> getCapability(ItemStack stack) {
         if (stack.getOrCreateTag().contains("UUID")) {
-            UUID uuid = stack.getTag().getUniqueId("UUID");
+            UUID uuid = stack.getTag().getUUID("UUID");
             if (data.containsKey(uuid))
                 return data.get(uuid).getOptional();
         }
@@ -68,7 +68,7 @@ public class BackpackManager extends WorldSavedData {
     }
 
     @Override
-    public void read(CompoundNBT nbt) {
+    public void load(CompoundNBT nbt) {
         if (nbt.contains("Backpacks")) {
             ListNBT list = nbt.getList("Backpacks", Constants.NBT.TAG_COMPOUND);
             list.forEach((backpackNBT) -> BackpackData.fromNBT((CompoundNBT) backpackNBT).ifPresent((backpack) -> data.put(backpack.getUuid(), backpack)));
@@ -77,7 +77,7 @@ public class BackpackManager extends WorldSavedData {
 
     @Override
     @Nonnull
-    public CompoundNBT write(CompoundNBT compound) {
+    public CompoundNBT save(CompoundNBT compound) {
         ListNBT backpacks = new ListNBT();
         data.forEach(((uuid, backpackData) -> backpacks.add(backpackData.toNBT())));
         compound.put("Backpacks", backpacks);

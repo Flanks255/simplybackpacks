@@ -21,7 +21,7 @@ import java.util.UUID;
 public class Recover {
     public static ArgumentBuilder<CommandSource, ?> register() {
         return Commands.literal("recover")
-            .requires(cs -> cs.hasPermissionLevel(1))
+            .requires(cs -> cs.hasPermission(1))
             .then(Commands.argument("UUID", StringArgumentType.string()).suggests(((context, builder) -> ISuggestionProvider.suggest(getUUIDSuggestions(context), builder))).executes(cs -> recover(cs, StringArgumentType.getString(cs, "UUID"))));
     }
     public static Set<String> getUUIDSuggestions(CommandContext<CommandSource> commandSource) {
@@ -44,13 +44,13 @@ public class Recover {
         BackpackManager backpacks = BackpackManager.get();
 
         if (backpacks.getMap().containsKey(uuid)) {
-            ServerPlayerEntity player = ctx.getSource().asPlayer();
+            ServerPlayerEntity player = ctx.getSource().getPlayerOrException();
 
             Optional<BackpackData> data = backpacks.getBackpack(uuid);
 
             data.ifPresent(backpack -> {
                 ItemStack stack = new ItemStack(backpack.getTier().item.get());
-                stack.getOrCreateTag().putUniqueId("UUID", backpack.getUuid());
+                stack.getOrCreateTag().putUUID("UUID", backpack.getUuid());
 
                 ItemHandlerHelper.giveItemToPlayer(player, stack);
             });

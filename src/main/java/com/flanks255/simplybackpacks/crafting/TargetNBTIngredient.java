@@ -14,6 +14,10 @@ import net.minecraftforge.common.crafting.IIngredientSerializer;
 import javax.annotation.Nonnull;
 import java.util.stream.Stream;
 
+import net.minecraft.item.crafting.Ingredient.IItemList;
+import net.minecraft.item.crafting.Ingredient.SingleItemList;
+import net.minecraft.item.crafting.Ingredient.TagList;
+
 public class TargetNBTIngredient extends Ingredient {
     public TargetNBTIngredient(Stream<? extends IItemList> itemLists) {
         super(itemLists);
@@ -39,8 +43,8 @@ public class TargetNBTIngredient extends Ingredient {
 
     @Override
     @Nonnull
-    public JsonElement serialize() {
-        JsonObject tmp = super.serialize().getAsJsonObject();
+    public JsonElement toJson() {
+        JsonObject tmp = super.toJson().getAsJsonObject();
         tmp.addProperty("type", Serializer.NAME.toString());
         return tmp;
     }
@@ -53,22 +57,22 @@ public class TargetNBTIngredient extends Ingredient {
         @Override
         @Nonnull
         public TargetNBTIngredient parse(PacketBuffer buffer) {
-            return new TargetNBTIngredient(Stream.generate(() -> new SingleItemList(buffer.readItemStack())).limit(buffer.readVarInt()));
+            return new TargetNBTIngredient(Stream.generate(() -> new SingleItemList(buffer.readItem())).limit(buffer.readVarInt()));
         }
 
         @Override
         @Nonnull
         public TargetNBTIngredient parse(@Nonnull JsonObject json) {
-            return new TargetNBTIngredient(Stream.of(Ingredient.deserializeItemList(json)));
+            return new TargetNBTIngredient(Stream.of(Ingredient.valueFromJson(json)));
         }
 
         @Override
         public void write(PacketBuffer buffer, TargetNBTIngredient ingredient) {
-            ItemStack[] items = ingredient.getMatchingStacks();
+            ItemStack[] items = ingredient.getItems();
             buffer.writeVarInt(items.length);
 
             for (ItemStack stack : items)
-                buffer.writeItemStack(stack);
+                buffer.writeItem(stack);
         }
     }
 }

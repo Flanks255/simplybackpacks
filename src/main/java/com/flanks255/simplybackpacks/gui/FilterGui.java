@@ -23,8 +23,8 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
     public FilterGui(FilterContainer container, PlayerInventory playerInventory, ITextComponent name) {
         super(container, playerInventory, name);
 
-        xSize = 176;
-        ySize = 166;
+        imageWidth = 176;
+        imageHeight = 166;
     }
 
     @Override
@@ -32,24 +32,24 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
         super.init();
 
         Button.IPressable slotClick = button -> {
-            Minecraft.getInstance().playerController.sendEnchantPacket(container.windowId, ((SlotButton)button).slot);
-            container.enchantItem(playerInventory.player, ((SlotButton)button).slot);
+            Minecraft.getInstance().gameMode.handleInventoryButtonClick(menu.containerId, ((SlotButton)button).slot);
+            menu.clickMenuButton(inventory.player, ((SlotButton)button).slot);
         };
 
         int slot = 0;
         for (int row = 0; row < 4; row ++) {
             for (int col = 0; col < 4; col++) {
-                int x = guiLeft + 7 + col * 18;
-                int y = guiTop + 7 + row * 18;
+                int x = leftPos + 7 + col * 18;
+                int y = topPos + 7 + row * 18;
 
                 addButton(new SlotButton(x+1, y+1,18 ,18, slot, slotClick));
                 slot++;
             }
         }
 
-        addButton(new SwitchButton(guiLeft + 80, guiTop + 8, "simplybackpacks.whitelist", ((container.getFilterOpts() & 1) > 0) , (button)-> ((SwitchButton)button).state = (container.setFilterOpts(container.getFilterOpts() ^ 1) & 1) > 0));
-        addButton(new SwitchButton(guiLeft + 80, guiTop + 8 + 18, "simplybackpacks.nbtdata", ((container.getFilterOpts() & 2) > 0) , (button)-> ((SwitchButton)button).state = (container.setFilterOpts(container.getFilterOpts() ^ 2) & 2) > 0));
-        addButton(new SwitchButton(guiLeft + 80, guiTop + 8 + 54, "simplybackpacks.autopickup", container.getPickup() , (button)-> ((SwitchButton)button).state = container.togglePickup()));
+        addButton(new SwitchButton(leftPos + 80, topPos + 8, "simplybackpacks.whitelist", ((menu.getFilterOpts() & 1) > 0) , (button)-> ((SwitchButton)button).state = (menu.setFilterOpts(menu.getFilterOpts() ^ 1) & 1) > 0));
+        addButton(new SwitchButton(leftPos + 80, topPos + 8 + 18, "simplybackpacks.nbtdata", ((menu.getFilterOpts() & 2) > 0) , (button)-> ((SwitchButton)button).state = (menu.setFilterOpts(menu.getFilterOpts() ^ 2) & 2) > 0));
+        addButton(new SwitchButton(leftPos + 80, topPos + 8 + 54, "simplybackpacks.autopickup", menu.getPickup() , (button)-> ((SwitchButton)button).state = menu.togglePickup()));
 
     }
 
@@ -59,31 +59,31 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
     public void render(@Nonnull MatrixStack matrixStack, int p_render_1_, int p_render_2_, float p_render_3_) {
         this.renderBackground(matrixStack);
         super.render(matrixStack,p_render_1_, p_render_2_, p_render_3_);
-        this.renderHoveredTooltip(matrixStack, p_render_1_, p_render_2_);
+        this.renderTooltip(matrixStack, p_render_1_, p_render_2_);
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(@Nonnull MatrixStack matrixStack, float partialTicks, int x, int y) {
+    protected void renderBg(@Nonnull MatrixStack matrixStack, float partialTicks, int x, int y) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f ,1.0f);
-        this.getMinecraft().textureManager.bindTexture(GUI);
+        this.getMinecraft().textureManager.bind(GUI);
 
 
-        blit(matrixStack, guiLeft, guiTop, 0,0, xSize, ySize, xSize, ySize);
+        blit(matrixStack, leftPos, topPos, 0,0, imageWidth, imageHeight, imageWidth, imageHeight);
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(@Nonnull MatrixStack matrixStack, int x, int y) {
+    protected void renderLabels(@Nonnull MatrixStack matrixStack, int x, int y) {
         // nope...
     }
 
     @Override
-    protected void renderHoveredTooltip(@Nonnull MatrixStack matrixStack, int x, int y) {
-        super.renderHoveredTooltip(matrixStack, x, y);
+    protected void renderTooltip(@Nonnull MatrixStack matrixStack, int x, int y) {
+        super.renderTooltip(matrixStack, x, y);
 
         for(Widget button : buttons) {
             if (button.isMouseOver(x,y) && button instanceof SlotButton)
-                if (!container.filterHandler.getStackInSlot(((SlotButton)button).slot).isEmpty())
-                    renderTooltip(matrixStack, container.filterHandler.getStackInSlot(((SlotButton)button).slot), x, y);
+                if (!menu.filterHandler.getStackInSlot(((SlotButton)button).slot).isEmpty())
+                    renderTooltip(matrixStack, menu.filterHandler.getStackInSlot(((SlotButton)button).slot), x, y);
         }
     }
 
@@ -97,20 +97,19 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
 
         @Override
         public void renderButton(@Nonnull MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
-            //RenderSystem.pushMatrix();
-            FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+            FontRenderer fontRenderer = Minecraft.getInstance().font;
 
             boolean hovered = mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
 
-            if (container.filterHandler != null && !container.filterHandler.getStackInSlot(slot).isEmpty()) {
-                ItemStack tmp = container.filterHandler.getStackInSlot(slot);
-                itemRenderer.zLevel = 100F;
+            if (menu.filterHandler != null && !menu.filterHandler.getStackInSlot(slot).isEmpty()) {
+                ItemStack tmp = menu.filterHandler.getStackInSlot(slot);
+                itemRenderer.blitOffset = 100F;
                 RenderSystem.enableDepthTest();
-                RenderHelper.enableStandardItemLighting();
-                itemRenderer.renderItemAndEffectIntoGUI(tmp, x, y);
-                itemRenderer.renderItemOverlayIntoGUI(fontRenderer, tmp, x, y, "");
-                itemRenderer.zLevel = 0F;
-                RenderHelper.disableStandardItemLighting();
+                RenderHelper.turnBackOn();
+                itemRenderer.renderAndDecorateItem(tmp, x, y);
+                itemRenderer.renderGuiItemDecorations(fontRenderer, tmp, x, y, "");
+                itemRenderer.blitOffset = 0F;
+                RenderHelper.turnOff();
                 RenderSystem.disableDepthTest();
             }
 
@@ -131,7 +130,7 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
         private final ResourceLocation on = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/switch_on.png");
         public boolean state;
         private final String textKey;
-        private final FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+        private final FontRenderer fontRenderer = Minecraft.getInstance().font;
 
         @Override
         public void renderButton(@Nonnull MatrixStack stack, int p_renderButton_1_, int p_renderButton_2_, float p_renderButton_3_) {
@@ -139,9 +138,9 @@ public class FilterGui extends ContainerScreen<FilterContainer> {
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-            getMinecraft().getTextureManager().bindTexture(state?on:off);
+            getMinecraft().getTextureManager().bind(state?on:off);
             blit(stack, x,y,width,height,0,0,32,16, 32 ,16);
-            fontRenderer.drawString(stack, I18n.format(textKey), x + 34, y + 4, 0x404040);
+            fontRenderer.draw(stack, I18n.get(textKey), x + 34, y + 4, 0x404040);
             RenderSystem.disableBlend();
         }
     }

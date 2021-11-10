@@ -21,13 +21,13 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
     }
 
     public CopyBackpackDataRecipe(ShapedRecipe shapedRecipe) {
-        super(shapedRecipe.getId(), shapedRecipe.getGroup(), shapedRecipe.getRecipeWidth(), shapedRecipe.getRecipeHeight(), shapedRecipe.getIngredients(), shapedRecipe.getRecipeOutput());
+        super(shapedRecipe.getId(), shapedRecipe.getGroup(), shapedRecipe.getRecipeWidth(), shapedRecipe.getRecipeHeight(), shapedRecipe.getIngredients(), shapedRecipe.getResultItem());
     }
 
     @Override
     @Nonnull
-    public ItemStack getCraftingResult(@Nonnull CraftingInventory inv) {
-        final ItemStack craftingResult = super.getCraftingResult(inv);
+    public ItemStack assemble(@Nonnull CraftingInventory inv) {
+        final ItemStack craftingResult = super.assemble(inv);
         TargetNBTIngredient donorIngredient = null;
         ItemStack dataSource = ItemStack.EMPTY;
         NonNullList<Ingredient> ingredients = getIngredients();
@@ -38,8 +38,8 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
             }
         }
         if (!craftingResult.isEmpty()) {
-            for (int i = 0; i < inv.getSizeInventory(); i++) {
-                final ItemStack item = inv.getStackInSlot(i);
+            for (int i = 0; i < inv.getContainerSize(); i++) {
+                final ItemStack item = inv.getItem(i);
                 if (!item.isEmpty() && donorIngredient.test(item)) {
                     dataSource = item;
                     break;
@@ -63,15 +63,15 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
     public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<CopyBackpackDataRecipe> {
         @Nullable
         @Override
-        public CopyBackpackDataRecipe read(@Nonnull ResourceLocation recipeId, @Nonnull PacketBuffer buffer) {
-            return new CopyBackpackDataRecipe(IRecipeSerializer.CRAFTING_SHAPED.read(recipeId, buffer));
+        public CopyBackpackDataRecipe fromNetwork(@Nonnull ResourceLocation recipeId, @Nonnull PacketBuffer buffer) {
+            return new CopyBackpackDataRecipe(IRecipeSerializer.SHAPED_RECIPE.fromNetwork(recipeId, buffer));
         }
 
         @Override
         @Nonnull
-        public CopyBackpackDataRecipe read(@Nonnull ResourceLocation recipeId, @Nonnull JsonObject json) {
+        public CopyBackpackDataRecipe fromJson(@Nonnull ResourceLocation recipeId, @Nonnull JsonObject json) {
             try {
-                return new CopyBackpackDataRecipe(IRecipeSerializer.CRAFTING_SHAPED.read(recipeId, json));
+                return new CopyBackpackDataRecipe(IRecipeSerializer.SHAPED_RECIPE.fromJson(recipeId, json));
             }
             catch (Exception exception) {
                 SimplyBackpacks.LOGGER.info("Error reading CopyBackpack Recipe from packet: ", exception);
@@ -80,9 +80,9 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
         }
 
         @Override
-        public void write(@Nonnull PacketBuffer buffer, @Nonnull CopyBackpackDataRecipe recipe) {
+        public void toNetwork(@Nonnull PacketBuffer buffer, @Nonnull CopyBackpackDataRecipe recipe) {
             try {
-                IRecipeSerializer.CRAFTING_SHAPED.write(buffer, recipe);
+                IRecipeSerializer.SHAPED_RECIPE.toNetwork(buffer, recipe);
             }
             catch (Exception exception) {
                 SimplyBackpacks.LOGGER.info("Error writing CopyBackpack Recipe to packet: ", exception);

@@ -73,7 +73,7 @@ public class BackpackData {
 
     public static Optional<BackpackData> fromNBT(CompoundNBT nbt) {
         if (nbt.contains("UUID")) {
-            UUID uuid = nbt.getUniqueId("UUID");
+            UUID uuid = nbt.getUUID("UUID");
             return Optional.of(new BackpackData(uuid, nbt));
         }
         return Optional.empty();
@@ -89,7 +89,7 @@ public class BackpackData {
     public CompoundNBT toNBT() {
         CompoundNBT nbt = new CompoundNBT();
 
-        nbt.putUniqueId("UUID", uuid);
+        nbt.putUUID("UUID", uuid);
         nbt.putInt("Tier", tier.ordinal());
 
         nbt.put("Inventory", inventory.serializeNBT());
