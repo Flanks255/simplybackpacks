@@ -1,6 +1,6 @@
 package com.flanks255.simplybackpacks.inventory;
 
-import com.flanks255.simplybackpacks.SimplyBackpacks;
+import com.flanks255.simplybackpacks.util.BackpackUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.ItemStackHandler;
@@ -30,7 +30,7 @@ public class SBItemHandler extends ItemStackHandler {
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-        if (!SimplyBackpacks.filterItem(stack))
+        if (!BackpackUtils.filterItem(stack))
             return stack;
 
         return super.insertItem(slot, stack, simulate);

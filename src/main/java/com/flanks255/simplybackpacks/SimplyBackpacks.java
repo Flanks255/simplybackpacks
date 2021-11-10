@@ -16,10 +16,10 @@ import com.flanks255.simplybackpacks.items.BackpackItem;
 import com.flanks255.simplybackpacks.network.OpenMessage;
 import com.flanks255.simplybackpacks.network.SBNetwork;
 import com.flanks255.simplybackpacks.network.ToggleMessage;
+import com.flanks255.simplybackpacks.util.BackpackUtils;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
@@ -65,8 +65,6 @@ public class SimplyBackpacks {
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static SimpleChannel NETWORK;
 
-    public static boolean curiosLoaded = false;
-
     //forge:holds_items
     public static final ITag.INamedTag<Item> HOLDS_ITEMS = ItemTags.makeWrapperTag(new ResourceLocation("forge", "holds_items").toString());
     public static final ITag.INamedTag<Item> CURIOS_BACK = ItemTags.makeWrapperTag(new ResourceLocation("curios", "back").toString());
@@ -109,11 +107,11 @@ public class SimplyBackpacks {
         MinecraftForge.EVENT_BUS.addListener(this::pickupEvent);
         MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
 
-        curiosLoaded = ModList.get().isLoaded("curios");
+        BackpackUtils.curiosLoaded = ModList.get().isLoaded("curios");
     }
 
     private void onEnqueueIMC(InterModEnqueueEvent event) {
-        if (curiosLoaded) {
+        if (BackpackUtils.curiosLoaded) {
             InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, () -> SlotTypePreset.BACK.getMessageBuilder().build());
         }
     }
@@ -133,7 +131,7 @@ public class SimplyBackpacks {
         if (event.getPlayer().openContainer instanceof SBContainer || event.getPlayer().isSneaking() || event.getItem().getItem().getItem() instanceof BackpackItem)
             return;
 
-        if (SimplyBackpacks.curiosLoaded) {
+        if (BackpackUtils.curiosLoaded) {
             ItemStack stack = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, event.getEntityLiving())
                 .map(ImmutableTriple::getRight).orElse(ItemStack.EMPTY);
 
@@ -153,32 +151,6 @@ public class SimplyBackpacks {
                 return;
             }
         }
-    }
-
-    public static ItemStack findBackpackForHotkeys(PlayerEntity player) {
-        if (player.getHeldItemMainhand().getItem() instanceof BackpackItem)
-            return player.getHeldItemMainhand();
-        if (player.getHeldItemOffhand().getItem() instanceof BackpackItem)
-            return player.getHeldItemOffhand();
-
-        if (curiosLoaded) {
-            ItemStack stack = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, player).map(data -> {
-                if (data.getRight().getItem() instanceof BackpackItem) {
-                    return data.getRight();
-                }
-                return ItemStack.EMPTY;
-            }).orElse(ItemStack.EMPTY);
-            if (!stack.isEmpty())
-                return stack;
-        }
-
-        PlayerInventory inventory = player.inventory;
-        for (int i = 0; i <= 35; i++) {
-            ItemStack stack = inventory.getStackInSlot(i);
-            if (stack.getItem() instanceof BackpackItem)
-                return stack;
-        }
-        return ItemStack.EMPTY;
     }
 
     private void onClientTick(TickEvent.ClientTickEvent event) {
@@ -202,16 +174,4 @@ public class SimplyBackpacks {
         ConfigCache.RefreshCache();
     }
 
-    public static boolean filterItem(ItemStack stack) {
-        //check the config whitelist, overrides all checks further.
-        if (ConfigCache.WHITELIST.contains(stack.getItem().getRegistryName()))
-            return true;
-
-        //check for forge:holds_items
-        if (stack.getItem().isIn(HOLDS_ITEMS))
-            return false;
-
-        // if all else fails, check the config blacklist
-        return !ConfigCache.BLACKLIST.contains(stack.getItem().getRegistryName());
-    }
 }

@@ -1,7 +1,7 @@
 package com.flanks255.simplybackpacks.network;
 
-import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.items.BackpackItem;
+import com.flanks255.simplybackpacks.util.BackpackUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -23,7 +23,7 @@ public class ToggleMessage {
                 PlayerEntity player = ctx.get().getSender();
                 if (player == null)
                     return;
-                ItemStack backpack = SimplyBackpacks.findBackpackForHotkeys(player);
+                ItemStack backpack = BackpackUtils.findBackpackForHotkeys(player);
                 BackpackItem.togglePickup(player, backpack);
             }
         );

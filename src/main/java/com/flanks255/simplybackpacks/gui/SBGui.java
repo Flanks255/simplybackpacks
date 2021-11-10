@@ -2,6 +2,7 @@ package com.flanks255.simplybackpacks.gui;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.items.Backpack;
+import com.flanks255.simplybackpacks.util.BackpackUtils;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -18,7 +19,10 @@ public class SBGui extends ContainerScreen<SBContainer> {
 
         Backpack tier = container.getTier();
 
-        if (tier == Backpack.ULTIMATE && Math.random() < 0.0001) {
+        //1 in 100, vs 1 in 10k
+        double chance = BackpackUtils.increasedAltChance(playerInventory.player.getUniqueID())? 0.01:0.0001;
+
+        if (tier == Backpack.ULTIMATE && Math.random() < chance) {
             playerInventory.player.playSound(SoundEvents.ENTITY_COW_HURT, 0.5f, 1f);
             if (Math.random() < 0.5)
                 GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/ultimate_alt.png");

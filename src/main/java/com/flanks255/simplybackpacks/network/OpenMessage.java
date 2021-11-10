@@ -1,10 +1,10 @@
 package com.flanks255.simplybackpacks.network;
 
-import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.gui.SBContainer;
 import com.flanks255.simplybackpacks.inventory.BackpackManager;
 import com.flanks255.simplybackpacks.items.BackpackItem;
 import com.flanks255.simplybackpacks.inventory.BackpackData;
+import com.flanks255.simplybackpacks.util.BackpackUtils;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.item.ItemStack;
@@ -26,7 +26,7 @@ public class OpenMessage {
     public static void handle(final OpenMessage message, final Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(()-> {
             ServerPlayerEntity player = ctx.get().getSender();
-            ItemStack backpack = SimplyBackpacks.findBackpackForHotkeys(player);
+            ItemStack backpack = BackpackUtils.findBackpackForHotkeys(player);
             if (backpack.getOrCreateTag().contains("UUID")) {
                 Optional<BackpackData> data = BackpackManager.get().getBackpack(backpack.getTag().getUniqueId("UUID"));
                 if (!backpack.isEmpty() && data.isPresent()) {

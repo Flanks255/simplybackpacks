@@ -183,7 +183,7 @@ public class BackpackItem extends Item {
     }
 
 
-    public static boolean filterItem(ItemStack item, ItemStack packItem) {
+    public static boolean applyFilter(ItemStack item, ItemStack packItem) {
         LazyOptional<IItemHandler> handlerOptional = packItem.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
 
         if (handlerOptional.isPresent() && handlerOptional.resolve().get() instanceof SBItemHandler) {
@@ -229,7 +229,7 @@ public class BackpackItem extends Item {
             if (!(handler instanceof SBItemHandler))
                 return false;
 
-            if (!filterItem(event.getItem().getItem(), stack))
+            if (!applyFilter(event.getItem().getItem(), stack))
                 return false;
 
             ItemStack pickedUp = event.getItem().getItem();

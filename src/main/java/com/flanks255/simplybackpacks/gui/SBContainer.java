@@ -1,9 +1,9 @@
 package com.flanks255.simplybackpacks.gui;
 
-import com.flanks255.simplybackpacks.SBContainerSlot;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.items.Backpack;
 import com.flanks255.simplybackpacks.items.BackpackItem;
+import com.flanks255.simplybackpacks.util.BackpackUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ClickType;
@@ -163,7 +163,7 @@ public class SBContainer extends Container {
             return playerEntity.getHeldItemOffhand();
         }
         else {
-            if (SimplyBackpacks.curiosLoaded) {
+            if (BackpackUtils.curiosLoaded) {
                 ItemStack stack = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, playerEntity).map(data -> {
                     if (data.getRight().getItem() instanceof BackpackItem) {
                         return data.getRight();

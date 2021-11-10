@@ -1,6 +1,7 @@
-package com.flanks255.simplybackpacks;
+package com.flanks255.simplybackpacks.gui;
 
 
+import com.flanks255.simplybackpacks.util.BackpackUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
@@ -19,7 +20,7 @@ public class SBContainerSlot extends SlotItemHandler {
 
     @Override
     public boolean isItemValid(@Nonnull ItemStack stack) {
-        return SimplyBackpacks.filterItem(stack);
+        return BackpackUtils.filterItem(stack);
     }
 
 }
