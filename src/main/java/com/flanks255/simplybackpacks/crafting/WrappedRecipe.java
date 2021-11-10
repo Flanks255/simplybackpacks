@@ -5,11 +5,12 @@ import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class WrappedRecipe implements IFinishedRecipe {
-    IFinishedRecipe inner;
+    final IFinishedRecipe inner;
     IRecipeSerializer<?> serializerOverride;
 
     public WrappedRecipe(IFinishedRecipe innerIn) {
@@ -26,11 +27,12 @@ public class WrappedRecipe implements IFinishedRecipe {
     }
 
     @Override
-    public void serialize(JsonObject json) {
+    public void serialize(@Nonnull JsonObject json) {
         inner.serialize(json);
     }
 
     @Override
+    @Nonnull
     public JsonObject getRecipeJson() {
         JsonObject jsonObject = new JsonObject();
 
@@ -43,11 +45,13 @@ public class WrappedRecipe implements IFinishedRecipe {
     }
 
     @Override
+    @Nonnull
     public ResourceLocation getID() {
         return inner.getID();
     }
 
     @Override
+    @Nonnull
     public IRecipeSerializer<?> getSerializer() {
         return serializerOverride != null? serializerOverride:inner.getSerializer();
     }

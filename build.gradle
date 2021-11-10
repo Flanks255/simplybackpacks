@@ -39,6 +39,8 @@ minecraft {
         client {
             workingDirectory project.file('run')
 
+            args '--width', '1280', '--height', '720'
+
             mods {
                 simplybackpacks {
                     source sourceSets.main

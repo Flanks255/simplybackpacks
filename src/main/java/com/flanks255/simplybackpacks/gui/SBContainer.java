@@ -15,6 +15,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import top.theillusivec4.curios.api.CuriosApi;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public class SBContainer extends Container {
@@ -27,9 +28,7 @@ public class SBContainer extends Container {
     public SBContainer(final int windowId, final PlayerInventory playerInventory, UUID uuid, IItemHandler handler) {
         super(SimplyBackpacks.SBCONTAINER.get(), windowId);
 
-        playerEntity = playerInventory.player;
-        playerInv = playerInventory;
-        this.uuid = uuid;
+        PlayerEntity playerEntity = playerInventory.player;
         this.handler = handler;
         ItemStack stack = findBackpack(playerEntity);
 
@@ -42,24 +41,21 @@ public class SBContainer extends Container {
 
         itemKey = stack.getTranslationKey();
 
-        addPlayerSlots(playerInv);
+        addPlayerSlots(playerInventory);
         addMySlots(stack);
     }
 
     private int slotID;
-    private final UUID uuid;
     public String itemKey = "";
-    private final PlayerInventory playerInv;
-    public IItemHandler handler;
+    public final IItemHandler handler;
     private Backpack tier;
-    private final PlayerEntity playerEntity;
 
     public Backpack getTier() {
         return tier;
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity playerIn) {
+    public boolean canInteractWith(@Nonnull PlayerEntity playerIn) {
         if (slotID == -106)
             return playerIn.getHeldItemOffhand().getItem() instanceof BackpackItem; //whoops guess you can...
         if (slotID == -768)
@@ -70,7 +66,8 @@ public class SBContainer extends Container {
 
 
     @Override
-    public ItemStack slotClick(int slot, int dragType, ClickType clickTypeIn, PlayerEntity player) {
+    @Nonnull
+    public ItemStack slotClick(int slot, int dragType, @Nonnull ClickType clickTypeIn, @Nonnull PlayerEntity player) {
         if (slot >= 0) {
             if (getSlot(slot).getStack().getItem() instanceof BackpackItem && slot == slotID)
                 return ItemStack.EMPTY;
@@ -107,19 +104,10 @@ public class SBContainer extends Container {
     private void addMySlots(ItemStack stack) {
         if (handler == null ) return;
 
-        int cols;
-        switch(tier.slots) {
-            case 18:
-                cols = 9;
-                break;
-            case 158:
-                cols = 16;
-                break;
-            default:
-                cols = 11;
-        }
-        int rows = tier.slots == 158? 13:tier.slots / cols;
-        int slotindex = 0;
+        int cols = tier.slotCols;
+        int rows = tier.slotRows;
+
+        int slot_index = 0;
 
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
@@ -129,9 +117,9 @@ public class SBContainer extends Container {
                 if (row > 7 && col > 2 && col < 13)
                     continue;
 
-                this.addSlot(new SBContainerSlot(handler, slotindex, x + 1, y + 1));
-                slotindex++;
-                if (slotindex >= tier.slots)
+                this.addSlot(new SBContainerSlot(handler, slot_index, x + 1, y + 1));
+                slot_index++;
+                if (slot_index >= tier.slots)
                     break;
             }
         }
@@ -139,7 +127,8 @@ public class SBContainer extends Container {
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+    @Nonnull
+    public ItemStack transferStackInSlot(@Nonnull PlayerEntity playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(index);
 
@@ -158,7 +147,7 @@ public class SBContainer extends Container {
         return itemstack;
 }
 
-    private ItemStack findBackpack(PlayerEntity playerEntity) {
+    private ItemStack findBackpack(@Nonnull PlayerEntity playerEntity) {
         PlayerInventory inv = playerEntity.inventory;
 
         if (playerEntity.getHeldItemMainhand().getItem() instanceof BackpackItem) {

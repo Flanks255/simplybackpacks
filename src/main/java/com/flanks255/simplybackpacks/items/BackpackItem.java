@@ -54,8 +54,8 @@ public class BackpackItem extends Item {
         this.tier = tier;
     }
 
-    String name;
-    Backpack tier;
+    final String name;
+    final Backpack tier;
 
     public static Backpack getTier(ItemStack stack) {
         if (!stack.isEmpty() && stack.getItem() instanceof BackpackItem)
@@ -82,17 +82,19 @@ public class BackpackItem extends Item {
     }
 
     @Override
-    public Rarity getRarity(ItemStack stack) {
+    @Nonnull
+    public Rarity getRarity(@Nonnull ItemStack stack) {
         return tier.rarity;
     }
 
     @Override
-    public ITextComponent getDisplayName(ItemStack stack) {
+    @Nonnull
+    public ITextComponent getDisplayName(@Nonnull ItemStack stack) {
         return new TranslationTextComponent(this.getTranslationKey(stack)).mergeStyle(this.tier == Backpack.ULTIMATE?TextFormatting.DARK_AQUA:TextFormatting.RESET);
     }
 
     @Override
-    public boolean isEnchantable(ItemStack stack) {
+    public boolean isEnchantable(@Nonnull ItemStack stack) {
         return false;
     }
 
@@ -102,7 +104,8 @@ public class BackpackItem extends Item {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
+    @Nonnull
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn,@Nonnull Hand handIn) {
         ItemStack backpack = playerIn.getHeldItem(handIn);
         if (!worldIn.isRemote && playerIn instanceof ServerPlayerEntity && backpack.getItem() instanceof BackpackItem) {
             BackpackData data = BackpackItem.getData(backpack);
@@ -144,7 +147,7 @@ public class BackpackItem extends Item {
         return new BackpackCaps(stack);
     }
 
-    class BackpackCaps implements ICapabilityProvider {
+    static class BackpackCaps implements ICapabilityProvider {
         private final ItemStack stack;
 
         public BackpackCaps(ItemStack stack) {
@@ -157,11 +160,9 @@ public class BackpackItem extends Item {
         @Override
         public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
             if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-                if(optional.isPresent())
-                    return optional.cast();
-                else {
-                    return BackpackManager.get().getCapability(stack).cast();
-                }
+                if(!optional.isPresent())
+                    optional = BackpackManager.get().getCapability(stack);
+                return optional.cast();
             }
             else
                 return LazyOptional.empty();
@@ -260,7 +261,7 @@ public class BackpackItem extends Item {
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn,@Nonnull List<ITextComponent> tooltip,@Nonnull ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
         String translationKey = getTranslationKey();
 

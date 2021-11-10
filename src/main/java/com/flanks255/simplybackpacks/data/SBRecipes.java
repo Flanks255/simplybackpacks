@@ -23,7 +23,7 @@ public class SBRecipes extends RecipeProvider {
     }
 
     @Override
-    protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
+    protected void registerRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
         InventoryChangeTrigger.Instance lul = hasItem(Items.AIR);
         ShapedRecipeBuilder.shapedRecipe(SimplyBackpacks.COMMONBACKPACK.get())
             .patternLine("A A")

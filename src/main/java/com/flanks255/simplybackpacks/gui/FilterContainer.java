@@ -16,21 +16,21 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public class FilterContainer  extends Container {
     @Override
-    public boolean canInteractWith(PlayerEntity playerIn) {
+    public boolean canInteractWith(@Nonnull PlayerEntity playerIn) {
         if (slotID == -106)
             return playerIn.getHeldItemOffhand().getItem() instanceof BackpackItem; //whoops guess you can...
         return playerIn.inventory.getStackInSlot(slotID).getItem() instanceof BackpackItem;
     }
 
-    public FilterItemHandler filterHandler;
+    public final FilterItemHandler filterHandler;
     private int slotID;
-    private PlayerEntity playerEntity;
-    private ItemStack stack;
-    private UUID uuid;
+    private final PlayerEntity playerEntity;
+    private final ItemStack stack;
 
     public static FilterContainer fromNetwork(final int windowId, final PlayerInventory playerInventory, PacketBuffer extra) {
         UUID uuid = extra.readUniqueId();
@@ -41,7 +41,6 @@ public class FilterContainer  extends Container {
         super(SimplyBackpacks.FILTERCONTAINER.get(), windowId);
 
         playerEntity = playerInventory.player;
-        this.uuid = uuid;
         stack = findBackpack(playerEntity);
         this.filterHandler = handlerIn;
 
@@ -83,7 +82,8 @@ public class FilterContainer  extends Container {
 
 
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity playerIn) {
+    @Nonnull
+    public ItemStack slotClick(int slotId, int dragType, @Nonnull ClickType clickTypeIn, @Nonnull PlayerEntity playerIn) {
         if (slotId >= 0 && getSlot(slotId).getStack() == playerIn.getHeldItemMainhand())
             return ItemStack.EMPTY;
 
@@ -163,7 +163,8 @@ public class FilterContainer  extends Container {
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+    @Nonnull
+    public ItemStack transferStackInSlot(@Nonnull PlayerEntity playerIn, int index) {
         return ItemStack.EMPTY;
     }
 }

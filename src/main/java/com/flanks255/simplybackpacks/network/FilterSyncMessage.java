@@ -10,8 +10,8 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public class FilterSyncMessage {
-    FilterItemHandler handler;
-    UUID uuid;
+    final FilterItemHandler handler;
+    final UUID uuid;
 
     public FilterSyncMessage(UUID uuid, FilterItemHandler filterItemHandler) { this.uuid = uuid; this.handler = filterItemHandler; }
 
@@ -34,9 +34,7 @@ public class FilterSyncMessage {
 
     }
     public static void consume(final FilterSyncMessage message, final Supplier<NetworkEvent .Context> ctx) {
-        ctx.get().enqueueWork(()-> {
-            BackpackManager.blankClient.getOrCreateBackpack(message.uuid, Backpack.COMMON).getFilter().deserializeNBT(message.handler.serializeNBT());
-        });
+        ctx.get().enqueueWork(()-> BackpackManager.blankClient.getOrCreateBackpack(message.uuid, Backpack.COMMON).getFilter().deserializeNBT(message.handler.serializeNBT()));
         ctx.get().setPacketHandled(true);
     }
 }

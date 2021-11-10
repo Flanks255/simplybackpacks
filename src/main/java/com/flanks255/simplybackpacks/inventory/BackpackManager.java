@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.thread.SidedThreadGroups;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.IItemHandler;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,7 +23,7 @@ public class BackpackManager extends WorldSavedData {
 
     private static final HashMap<UUID, BackpackData> data = new HashMap<>();
 
-    public static BackpackManager blankClient = new BackpackManager();
+    public static final BackpackManager blankClient = new BackpackManager();
 
     public BackpackManager() {
         super(NAME);
@@ -75,6 +76,7 @@ public class BackpackManager extends WorldSavedData {
     }
 
     @Override
+    @Nonnull
     public CompoundNBT write(CompoundNBT compound) {
         ListNBT backpacks = new ListNBT();
         data.forEach(((uuid, backpackData) -> backpacks.add(backpackData.toNBT())));

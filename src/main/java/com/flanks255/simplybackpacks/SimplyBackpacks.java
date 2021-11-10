@@ -183,9 +183,9 @@ public class SimplyBackpacks {
 
     private void onClientTick(TickEvent.ClientTickEvent event) {
         if (keyBinds.get(0).isPressed())
-            NETWORK.sendToServer(new ToggleMessage());
+            NETWORK.sendToServer(ToggleMessage.class);
         if (keyBinds.get(1).isPressed())
-            NETWORK.sendToServer(new OpenMessage());
+            NETWORK.sendToServer(OpenMessage.class);
     }
 
     private void clientStuff(final FMLClientSetupEvent event) {

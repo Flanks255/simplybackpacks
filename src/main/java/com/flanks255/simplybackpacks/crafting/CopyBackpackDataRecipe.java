@@ -12,6 +12,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class CopyBackpackDataRecipe extends ShapedRecipe {
@@ -24,7 +25,8 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
     }
 
     @Override
-    public ItemStack getCraftingResult(CraftingInventory inv) {
+    @Nonnull
+    public ItemStack getCraftingResult(@Nonnull CraftingInventory inv) {
         final ItemStack craftingResult = super.getCraftingResult(inv);
         TargetNBTIngredient donorIngredient = null;
         ItemStack dataSource = ItemStack.EMPTY;
@@ -53,6 +55,7 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
     }
 
     @Override
+    @Nonnull
     public IRecipeSerializer<?> getSerializer() {
         return SimplyBackpacks.COPYRECIPE.get();
     }
@@ -60,12 +63,13 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
     public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<CopyBackpackDataRecipe> {
         @Nullable
         @Override
-        public CopyBackpackDataRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
+        public CopyBackpackDataRecipe read(@Nonnull ResourceLocation recipeId, @Nonnull PacketBuffer buffer) {
             return new CopyBackpackDataRecipe(IRecipeSerializer.CRAFTING_SHAPED.read(recipeId, buffer));
         }
 
         @Override
-        public CopyBackpackDataRecipe read(ResourceLocation recipeId, JsonObject json) {
+        @Nonnull
+        public CopyBackpackDataRecipe read(@Nonnull ResourceLocation recipeId, @Nonnull JsonObject json) {
             try {
                 return new CopyBackpackDataRecipe(IRecipeSerializer.CRAFTING_SHAPED.read(recipeId, json));
             }
@@ -76,7 +80,7 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
         }
 
         @Override
-        public void write(PacketBuffer buffer, CopyBackpackDataRecipe recipe) {
+        public void write(@Nonnull PacketBuffer buffer, @Nonnull CopyBackpackDataRecipe recipe) {
             try {
                 IRecipeSerializer.CRAFTING_SHAPED.write(buffer, recipe);
             }

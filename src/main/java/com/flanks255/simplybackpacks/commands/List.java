@@ -44,12 +44,9 @@ public class List {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
 
-        backpacks.getMap().forEach( (uuid, backpack) -> {
-            ctx.getSource().sendFeedback(new StringTextComponent(
-                "Truncated-UUID: " + backpack.getUuid().toString().substring(0,8) + "\nCreated By: " + backpack.meta.getLastAccessedPlayer() + " On: " + sdf.format(new Date(backpack.meta.getFirstAccessedTime())) + "\nLast accessed by: " + backpack.meta.getLastAccessedPlayer() + " on: " + sdf.format(new Date(backpack.meta.getLastAccessedTime()))
-            ), false);
-
-        });
+        backpacks.getMap().forEach( (uuid, backpack) -> ctx.getSource().sendFeedback(new StringTextComponent(
+            "Truncated-UUID: " + backpack.getUuid().toString().substring(0,8) + "\nCreated By: " + backpack.meta.getLastAccessedPlayer() + " On: " + sdf.format(new Date(backpack.meta.getFirstAccessedTime())) + "\nLast accessed by: " + backpack.meta.getLastAccessedPlayer() + " on: " + sdf.format(new Date(backpack.meta.getLastAccessedTime()))
+        ), false));
 
         return 0;
     }
