@@ -1,5 +1,6 @@
 package com.flanks255.simplybackpacks.commands;
 
+import com.flanks255.simplybackpacks.gui.SBContainer;
 import com.flanks255.simplybackpacks.inventory.BackpackData;
 import com.flanks255.simplybackpacks.inventory.BackpackManager;
 import com.flanks255.simplybackpacks.util.BackpackUtils;
@@ -11,21 +12,22 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.inventory.container.SimpleNamedContainerProvider;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public class Recover {
+public class Open {
     public static ArgumentBuilder<CommandSource, ?> register() {
-        return Commands.literal("recover")
+        return Commands.literal("open")
             .requires(cs -> cs.hasPermission(1))
-            .then(Commands.argument("UUID", StringArgumentType.string()).suggests(((context, builder) -> ISuggestionProvider.suggest(BackpackUtils.getUUIDSuggestions(context), builder))).executes(cs -> recover(cs, StringArgumentType.getString(cs, "UUID"))));
+            .then(Commands.argument("UUID", StringArgumentType.string()).suggests(((context, builder) -> ISuggestionProvider.suggest(BackpackUtils.getUUIDSuggestions(context), builder))).executes(cs -> open(cs, StringArgumentType.getString(cs, "UUID"))));
     }
 
-    public static int recover(CommandContext<CommandSource> ctx, String stringUUID) throws CommandSyntaxException {
+    public static int open(CommandContext<CommandSource> ctx, String stringUUID) throws CommandSyntaxException {
         UUID uuid;
         try {
             uuid = UUID.fromString(stringUUID);
@@ -41,10 +43,7 @@ public class Recover {
             Optional<BackpackData> data = backpacks.getBackpack(uuid);
 
             data.ifPresent(backpack -> {
-                ItemStack stack = new ItemStack(backpack.getTier().item.get());
-                stack.getOrCreateTag().putUUID("UUID", backpack.getUuid());
-
-                ItemHandlerHelper.giveItemToPlayer(player, stack);
+                NetworkHooks.openGui(player, new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, uuid, backpack.getTier(), backpack.getHandler()), new StringTextComponent(backpack.getTier().name)), (buffer -> buffer.writeUUID(uuid).writeInt(backpack.getTier().ordinal())));
             });
         } else
             ctx.getSource().sendFailure(new TranslationTextComponent("simplebackpacks.invaliduuid"));

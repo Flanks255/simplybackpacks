@@ -10,11 +10,14 @@ public class SBCommands {
             Commands.literal("simplybackpacks")
                 .then(List.register())
                 .then(Recover.register())
+                .then(Open.register())
         );
 
         dispatcher.register(
             Commands.literal("sb")
                 .then(List.register())
-                .then(Recover.register()));
+                .then(Recover.register())
+                .then(Open.register())
+        );
     }
 }

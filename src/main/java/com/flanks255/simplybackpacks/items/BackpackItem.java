@@ -133,7 +133,7 @@ public class BackpackItem extends Item {
                 NetworkHooks.openGui(((ServerPlayerEntity) playerIn), new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new FilterContainer(windowId, playerInventory, data.getFilter()), backpack.getHoverName()), (buffer -> buffer.writeNbt(data.getFilter().serializeNBT())));
             } else {
                 //open
-                NetworkHooks.openGui(((ServerPlayerEntity) playerIn), new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, uuid, data.getHandler()), backpack.getHoverName()), (buffer -> buffer.writeUUID(uuid).writeInt(BackpackItem.getTier(backpack).slots)));
+                NetworkHooks.openGui(((ServerPlayerEntity) playerIn), new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, uuid, data.getTier(), data.getHandler()), backpack.getHoverName()), (buffer -> buffer.writeUUID(uuid).writeInt(data.getTier().ordinal())));
             }
         }
         return ActionResult.success(playerIn.getItemInHand(handIn));

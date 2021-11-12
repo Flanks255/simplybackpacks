@@ -17,9 +17,7 @@ public class FilterItemHandler extends ItemStackHandler {
     }
 
     public void setItem(int slot, ItemStack item) {
-        if (!BackpackUtils.filterItem(item))
-            return;
-        else {
+        if (BackpackUtils.filterItem(item)) {
             this.setStackInSlot(slot, item);
             onContentsChanged(slot);
         }

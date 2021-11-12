@@ -2,12 +2,19 @@ package com.flanks255.simplybackpacks.util;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.configuration.ConfigCache;
+import com.flanks255.simplybackpacks.inventory.BackpackManager;
 import com.flanks255.simplybackpacks.items.BackpackItem;
+import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import top.theillusivec4.curios.api.CuriosApi;
 
+import javax.annotation.Nonnull;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public class BackpackUtils {
@@ -52,10 +59,27 @@ public class BackpackUtils {
         return ItemStack.EMPTY;
     }
 
+    @Nonnull
+    public static Optional<UUID> getUUID(@Nonnull ItemStack stack) {
+        if (stack.getItem() instanceof BackpackItem && stack.hasTag() && stack.getTag().contains("UUID"))
+            return Optional.of(stack.getTag().getUUID("UUID"));
+        else
+            return Optional.empty();
+    }
+
     public static boolean increasedAltChance(UUID uuidIn) {
         if (uuidIn.compareTo(People.FLANKS255) == 0)
             return true;
 
         return uuidIn.compareTo(People.LONEZTAR) == 0;
+    }
+
+    public static Set<String> getUUIDSuggestions(CommandContext<CommandSource> commandSource) {
+        BackpackManager backpacks = BackpackManager.get();
+        Set<String> list = new HashSet<>();
+
+        backpacks.getMap().forEach((uuid, backpackData) -> list.add(uuid.toString()));
+
+        return list;
     }
 }

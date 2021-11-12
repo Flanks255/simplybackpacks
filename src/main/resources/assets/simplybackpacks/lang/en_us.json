@@ -11,6 +11,8 @@
   "simplybackpacks.whitelist":"Whitelist",
   "simplybackpacks.nbtdata":"NBT Tags",
 
+  "simplybackpacks.invaliduuid": "Unknown UUID",
+
   "item.simplybackpacks.commonbackpack": "Common Backpack",
   "item.simplybackpacks.commonbackpack.info":"The most simple backpack.",
   "item.simplybackpacks.commonbackpack.info2":"§fHolds 18 Stacks§r",

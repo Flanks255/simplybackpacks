@@ -52,7 +52,7 @@ public class FilterContainer extends Container {
         PlayerInventory inv = playerEntity.inventory;
 
         if (playerEntity.getMainHandItem().getItem() instanceof BackpackItem) {
-            for (int i = 0; i <= 35; i++) {
+            for (int i = 0; i <= 8; i++) {
                 ItemStack stack = inv.getItem(i);
                 if (stack == playerEntity.getMainHandItem()) {
                     slotID = i;
@@ -64,7 +64,7 @@ public class FilterContainer extends Container {
             return playerEntity.getOffhandItem();
         }
         else {
-            for (int i = 0; i <= 35; i++) {
+            for (int i = 0; i <= 8; i++) {
                 ItemStack stack = inv.getItem(i);
                 if (stack.getItem() instanceof BackpackItem) {
                     slotID = i;
@@ -161,7 +161,6 @@ public class FilterContainer extends Container {
     @Nonnull
     public ItemStack quickMoveStack(@Nonnull PlayerEntity playerIn, int index) {
         Slot slot = this.slots.get(index);
-
         for (int i = 0; i < filterHandler.getSlots(); i++) {
             if (filterHandler.getStackInSlot(i).isEmpty()) {
                 ItemStack fake = slot.getItem().copy();
