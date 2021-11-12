@@ -7,7 +7,6 @@ import com.flanks255.simplybackpacks.inventory.BackpackData;
 import com.flanks255.simplybackpacks.inventory.BackpackManager;
 import com.flanks255.simplybackpacks.inventory.FilterItemHandler;
 import com.flanks255.simplybackpacks.inventory.SBItemHandler;
-import com.flanks255.simplybackpacks.network.FilterSyncMessage;
 import com.flanks255.simplybackpacks.network.ToggleMessageMessage;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
@@ -131,8 +130,7 @@ public class BackpackItem extends Item {
 
             if (playerIn.isShiftKeyDown()) {
                 //filter
-                SimplyBackpacks.NETWORK.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) playerIn), new FilterSyncMessage(data.getUuid(), data.getFilter()));
-                NetworkHooks.openGui(((ServerPlayerEntity) playerIn), new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new FilterContainer(windowId, playerInventory, uuid, data.getFilter()), backpack.getHoverName()), (buffer -> buffer.writeUUID(uuid)));
+                NetworkHooks.openGui(((ServerPlayerEntity) playerIn), new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new FilterContainer(windowId, playerInventory, data.getFilter()), backpack.getHoverName()), (buffer -> buffer.writeNbt(data.getFilter().serializeNBT())));
             } else {
                 //open
                 NetworkHooks.openGui(((ServerPlayerEntity) playerIn), new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, uuid, data.getHandler()), backpack.getHoverName()), (buffer -> buffer.writeUUID(uuid).writeInt(BackpackItem.getTier(backpack).slots)));
@@ -253,12 +251,6 @@ public class BackpackItem extends Item {
         return !I18n.get(key).equals(key);
     }
 
-    private String fallbackString(String key, String fallback) {
-        String tmp = I18n.get(key);
-        return tmp.equals(key)?fallback:tmp;
-    }
-
-
     @OnlyIn(Dist.CLIENT)
     @Override
     public void appendHoverText(@Nonnull ItemStack stack, @Nullable World worldIn,@Nonnull List<ITextComponent> tooltip,@Nonnull ITooltipFlag flagIn) {
@@ -267,19 +259,19 @@ public class BackpackItem extends Item {
 
         boolean pickupEnabled = stack.getOrCreateTag().getBoolean("Pickup");
         if (pickupEnabled)
-            tooltip.add(new StringTextComponent(I18n.get("simplybackpacks.autopickupenabled")));
+            tooltip.add(new TranslationTextComponent("simplybackpacks.autopickupenabled"));
         else
-            tooltip.add(new StringTextComponent(I18n.get("simplybackpacks.autopickupdisabled")));
+            tooltip.add(new TranslationTextComponent("simplybackpacks.autopickupdisabled"));
 
         if (Screen.hasShiftDown()) {
-            tooltip.add(new StringTextComponent( I18n.get( translationKey + ".info") ));
+            tooltip.add(new TranslationTextComponent( translationKey + ".info"));
             if (hasTranslation(translationKey + ".info2"))
-                tooltip.add(new StringTextComponent( I18n.get(translationKey + ".info2")));
+                tooltip.add(new TranslationTextComponent( translationKey + ".info2"));
             if (hasTranslation(translationKey + ".info3"))
-                tooltip.add(new StringTextComponent( I18n.get(translationKey + ".info3")));
+                tooltip.add(new TranslationTextComponent( translationKey + ".info3"));
         }
         else {
-            tooltip.add(new StringTextComponent( fallbackString("simplybackpacks.shift", "Press <§6§oShift§r> for info.") ));
+            tooltip.add(new TranslationTextComponent( "simplybackpacks.shift" ));
         }
 
         if (flagIn.isAdvanced() && stack.getTag() != null && stack.getTag().contains("UUID")) {

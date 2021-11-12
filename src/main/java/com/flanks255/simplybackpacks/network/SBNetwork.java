@@ -20,7 +20,6 @@ public class SBNetwork {
         network.registerMessage(2, OpenMessage.class, OpenMessage::encode, OpenMessage::decode, OpenMessage::handle);
         network.registerMessage( 3, ToggleMessageMessage.class, ToggleMessageMessage::encode, ToggleMessageMessage::decode, ToggleMessageMessage::handle);
         network.registerMessage(4, FilterMessage.class, FilterMessage::encode, FilterMessage::decode, FilterMessage::handle);
-        network.registerMessage(5, FilterSyncMessage.class, FilterSyncMessage::encode, FilterSyncMessage::decode, FilterSyncMessage::consume);
 
         return network;
     }

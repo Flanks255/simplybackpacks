@@ -37,6 +37,7 @@ public class BackpackManager extends WorldSavedData {
         else
             return blankClient;
     }
+
     public Optional<BackpackData> getBackpack(UUID uuid) {
         if (data.containsKey(uuid))
             return Optional.of(data.get(uuid));
