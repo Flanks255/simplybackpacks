@@ -18,21 +18,17 @@ public class SBItemHandler extends ItemStackHandler {
     }
 
     public void upgrade(int slots) {
-        if (slots <= stacks.size())
+        if (slots <= this.stacks.size())
             return;
-        NonNullList<ItemStack> oldStacks = stacks;
-        stacks = NonNullList.withSize(slots, ItemStack.EMPTY);
+        NonNullList<ItemStack> oldStacks = this.stacks;
+        this.stacks = NonNullList.withSize(slots, ItemStack.EMPTY);
         for (int i = 0; i < oldStacks.size(); i++) {
-            stacks.set(i, oldStacks.get(i));
+            this.stacks.set(i, oldStacks.get(i));
         }
     }
 
-    @Nonnull
     @Override
-    public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-        if (!BackpackUtils.filterItem(stack))
-            return stack;
-
-        return super.insertItem(slot, stack, simulate);
+    public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+        return BackpackUtils.filterItem(stack);
     }
 }

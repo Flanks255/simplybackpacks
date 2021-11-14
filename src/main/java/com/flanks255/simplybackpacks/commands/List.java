@@ -4,7 +4,6 @@ import com.flanks255.simplybackpacks.inventory.BackpackManager;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.ISuggestionProvider;
@@ -18,10 +17,10 @@ import java.util.Set;
 public class List {
     public static ArgumentBuilder<CommandSource, ?> register() {
         return Commands.literal("list").requires(cs -> cs.hasPermission(1)).executes(List::list)
-            .then(Commands.literal("firstOpened").then(Commands.argument("PlayerName", StringArgumentType.string())
+            .then(Commands.literal("firstOpenedBy").then(Commands.argument("PlayerName", StringArgumentType.string())
                 .suggests((cs, builder) -> ISuggestionProvider.suggest(getPlayerSuggestions(cs), builder))
                 .executes(cs -> first(cs, StringArgumentType.getString(cs, "PlayerName")))))
-            .then(Commands.literal("lastOpened").then(Commands.argument("PlayerName", StringArgumentType.string())
+            .then(Commands.literal("lastOpenedBy").then(Commands.argument("PlayerName", StringArgumentType.string())
                 .suggests((cs, builder) -> ISuggestionProvider.suggest(getPlayerSuggestions(cs), builder))
                 .executes(cs -> last(cs, StringArgumentType.getString(cs, "PlayerName")))));
     }
@@ -33,7 +32,7 @@ public class List {
         return list;
     }
 
-    public static int list(CommandContext<CommandSource> ctx) throws CommandSyntaxException {
+    public static int list(CommandContext<CommandSource> ctx) {
         BackpackManager backpacks = BackpackManager.get();
 
         if (backpacks.getMap().size() == 0) {
@@ -51,7 +50,7 @@ public class List {
         return 0;
     }
 
-    public static int first(CommandContext<CommandSource> ctx, String playerName) throws CommandSyntaxException {
+    public static int first(CommandContext<CommandSource> ctx, String playerName) {
         BackpackManager backpacks = BackpackManager.get();
 
         if (backpacks.getMap().size() == 0) {
@@ -73,7 +72,7 @@ public class List {
         return 0;
     }
 
-    public static int last(CommandContext<CommandSource> ctx, String playerName) throws CommandSyntaxException {
+    public static int last(CommandContext<CommandSource> ctx, String playerName) {
         BackpackManager backpacks = BackpackManager.get();
 
         if (backpacks.getMap().size() == 0) {

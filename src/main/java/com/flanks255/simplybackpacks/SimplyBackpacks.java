@@ -67,7 +67,9 @@ public class SimplyBackpacks {
 
     //forge:holds_items
     public static final ITag.INamedTag<Item> HOLDS_ITEMS = ItemTags.bind(new ResourceLocation("forge", "holds_items").toString());
+    //curios:back
     public static final ITag.INamedTag<Item> CURIOS_BACK = ItemTags.bind(new ResourceLocation("curios", "back").toString());
+    //forge:soulbound
     public static final ITag.INamedTag<Enchantment> SOULBOUND = ForgeTagHandler.makeWrapperTag(ForgeRegistries.ENCHANTMENTS, new ResourceLocation("forge", "soulbound"));
 
 
@@ -128,7 +130,7 @@ public class SimplyBackpacks {
     }
 
     private void pickupEvent(EntityItemPickupEvent event) {
-        if (event.getPlayer().containerMenu instanceof SBContainer || event.getPlayer().isShiftKeyDown() || event.getItem().getItem().getItem() instanceof BackpackItem)
+        if (event.getPlayer().containerMenu instanceof SBContainer || event.getPlayer().isCrouching() || event.getItem().getItem().getItem() instanceof BackpackItem)
             return;
 
         if (BackpackUtils.curiosLoaded) {
@@ -154,9 +156,9 @@ public class SimplyBackpacks {
     }
 
     private void onClientTick(TickEvent.ClientTickEvent event) {
-        if (keyBinds.get(0).consumeClick())
+        if (this.keyBinds.get(0).consumeClick())
             NETWORK.sendToServer(new ToggleMessage());
-        if (keyBinds.get(1).consumeClick())
+        if (this.keyBinds.get(1).consumeClick())
             NETWORK.sendToServer(new OpenMessage());
     }
 
@@ -164,10 +166,10 @@ public class SimplyBackpacks {
         ScreenManager.register(SBCONTAINER.get(), SBGui::new);
         ScreenManager.register(FILTERCONTAINER.get(), FilterGui::new);
 
-        keyBinds.add(0, new KeyBinding("key.simplybackpacks.backpackpickup.desc", -1, "key.simplybackpacks.category"));
-        keyBinds.add(1, new KeyBinding("key.simplybackpacks.backpackopen.desc", -1, "key.simplybackpacks.category"));
-        ClientRegistry.registerKeyBinding(keyBinds.get(0));
-        ClientRegistry.registerKeyBinding(keyBinds.get(1));
+        this.keyBinds.add(0, new KeyBinding("key.simplybackpacks.backpackpickup.desc", -1, "key.simplybackpacks.category"));
+        this.keyBinds.add(1, new KeyBinding("key.simplybackpacks.backpackopen.desc", -1, "key.simplybackpacks.category"));
+        ClientRegistry.registerKeyBinding(this.keyBinds.get(0));
+        ClientRegistry.registerKeyBinding(this.keyBinds.get(1));
     }
 
     private void onConfigReload(ModConfig.ModConfigEvent event) {
