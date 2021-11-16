@@ -17,6 +17,7 @@ import com.flanks255.simplybackpacks.network.OpenMessage;
 import com.flanks255.simplybackpacks.network.SBNetwork;
 import com.flanks255.simplybackpacks.network.ToggleMessage;
 import com.flanks255.simplybackpacks.util.BackpackUtils;
+import com.flanks255.simplybackpacks.util.RecipeUnlocker;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.enchantment.Enchantment;
@@ -110,6 +111,7 @@ public class SimplyBackpacks {
         MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
 
         BackpackUtils.curiosLoaded = ModList.get().isLoaded("curios");
+        RecipeUnlocker.register(MODID, MinecraftForge.EVENT_BUS, 1);
     }
 
     private void onEnqueueIMC(InterModEnqueueEvent event) {

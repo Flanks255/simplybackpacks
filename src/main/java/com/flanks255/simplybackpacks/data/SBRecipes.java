@@ -76,7 +76,7 @@ public class SBRecipes extends RecipeProvider {
             .pattern("EBE")
             .pattern("CDC")
             .define('A', Tags.Items.INGOTS_NETHERITE)
-            .define('B', TargetNBTIngredient.of(SimplyBackpacks.RAREBACKPACK.get()))
+            .define('B', TargetNBTIngredient.of(SimplyBackpacks.EPICBACKPACK.get()))
             .define('C', Tags.Items.CHESTS)
             .define('D', Tags.Items.STORAGE_BLOCKS_NETHERITE)
             .define('E', Tags.Items.NETHER_STARS)

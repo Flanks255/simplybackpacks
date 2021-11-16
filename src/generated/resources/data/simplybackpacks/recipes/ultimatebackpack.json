@@ -10,7 +10,7 @@
       "tag": "forge:ingots/netherite"
     },
     "B": {
-      "item": "simplybackpacks:rarebackpack",
+      "item": "simplybackpacks:epicbackpack",
       "type": "simplybackpacks:nbt_target"
     },
     "C": {
