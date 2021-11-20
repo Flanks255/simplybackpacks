@@ -1,17 +1,18 @@
 package com.flanks255.simplybackpacks.network;
 
-import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.gui.SBContainer;
+import com.flanks255.simplybackpacks.inventory.BackpackData;
+import com.flanks255.simplybackpacks.inventory.BackpackManager;
+import com.flanks255.simplybackpacks.items.BackpackItem;
+import com.flanks255.simplybackpacks.util.BackpackUtils;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class OpenMessage {
@@ -25,19 +26,13 @@ public class OpenMessage {
     public static void handle(final OpenMessage message, final Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(()-> {
             ServerPlayer player = ctx.get().getSender();
-            if (!SimplyBackpacks.findBackpack(player).isEmpty()) {
-                player.openMenu(new MenuProvider() {
-                    @Override
-                    public Component getDisplayName() {
-                        return SimplyBackpacks.findBackpack(player).getHoverName();
-                    }
-
-                    @Nullable
-                    @Override
-                    public AbstractContainerMenu createMenu(int p_createMenu_1_, Inventory p_createMenu_2_, Player p_createMenu_3_) {
-                        return new SBContainer(p_createMenu_1_, p_createMenu_3_.level, p_createMenu_3_.blockPosition(), p_createMenu_2_, p_createMenu_3_);
-                    }
-                });
+            ItemStack backpack = BackpackUtils.findBackpackForHotkeys(player);
+            if (backpack.getOrCreateTag().contains("UUID")) {
+                Optional<BackpackData> data = BackpackManager.get().getBackpack(backpack.getTag().getUUID("UUID"));
+                if (!backpack.isEmpty() && data.isPresent()) {
+                    data.get().updateAccessRecords(player.getName().getString(), System.currentTimeMillis());
+                    NetworkHooks.openGui(player, new SimpleMenuProvider((windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, data.get().getUuid(), data.get().getTier(), data.get().getHandler()), backpack.getHoverName()), (buffer) -> buffer.writeUUID(data.get().getUuid()).writeInt(BackpackItem.getTier(backpack).ordinal()));
+                }
             }
         });
         ctx.get().setPacketHandled(true);

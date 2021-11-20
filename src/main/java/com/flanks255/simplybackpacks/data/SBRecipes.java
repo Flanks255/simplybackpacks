@@ -27,7 +27,7 @@ public class SBRecipes extends RecipeProvider {
     }
 
     @Override
-    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
+    protected void buildCraftingRecipes(@Nonnull Consumer<FinishedRecipe> consumer) {
         InventoryChangeTrigger.TriggerInstance lul = has(Items.AIR);
         ShapedRecipeBuilder.shaped(SimplyBackpacks.COMMONBACKPACK.get())
             .pattern("A A")
@@ -72,6 +72,18 @@ public class SBRecipes extends RecipeProvider {
             .define('C', Tags.Items.CHESTS)
             .define('D', Tags.Items.NETHER_STARS)
             .define('E', Items.IRON_BARS)
+            .unlockedBy("", lul)
+            .save(WrappedRecipe.Inject(consumer, SimplyBackpacks.COPYRECIPE.get()));
+
+        ShapedRecipeBuilder.shaped(SimplyBackpacks.ULTIMATEBACKPACK.get())
+            .pattern("A A")
+            .pattern("EBE")
+            .pattern("CDC")
+            .define('A', Tags.Items.INGOTS_NETHERITE)
+            .define('B', TargetNBTIngredient.of(SimplyBackpacks.EPICBACKPACK.get()))
+            .define('C', Tags.Items.CHESTS)
+            .define('D', Tags.Items.STORAGE_BLOCKS_NETHERITE)
+            .define('E', Tags.Items.NETHER_STARS)
             .unlockedBy("", lul)
             .save(WrappedRecipe.Inject(consumer, SimplyBackpacks.COPYRECIPE.get()));
     }

@@ -12,7 +12,7 @@ public class ToggleMessageMessage {
     public ToggleMessageMessage(boolean enabled) {
         this.enabled = enabled;
     }
-    private boolean enabled;
+    private final boolean enabled;
     public static ToggleMessageMessage decode(final FriendlyByteBuf buffer) {
         boolean en = buffer.readBoolean();
         return new ToggleMessageMessage(en);
@@ -23,8 +23,7 @@ public class ToggleMessageMessage {
     public static void handle(final ToggleMessageMessage message, final Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide().isClient())
             ctx.get().enqueueWork(() -> {
-                boolean Pickup = message.enabled;
-                Minecraft.getInstance().player.displayClientMessage(new TextComponent(I18n.get(Pickup?"simplybackpacks.autopickupenabled":"simplybackpacks.autopickupdisabled")),true);
+                Minecraft.getInstance().player.displayClientMessage(new TextComponent(I18n.get(message.enabled ?"simplybackpacks.autopickupenabled":"simplybackpacks.autopickupdisabled")),true);
             } );
         ctx.get().setPacketHandled(true);
     }

@@ -1,107 +1,78 @@
 package com.flanks255.simplybackpacks.gui;
 
-import com.flanks255.simplybackpacks.BackpackItemHandler;
-import com.flanks255.simplybackpacks.SBContainerSlot;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
-import com.flanks255.simplybackpacks.items.ItemBackpackBase;
-import net.minecraft.world.entity.player.Player;
+import com.flanks255.simplybackpacks.items.Backpack;
+import com.flanks255.simplybackpacks.util.BackpackUtils;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
+
+import javax.annotation.Nonnull;
+import java.util.Optional;
+import java.util.UUID;
 
 public class SBContainer extends AbstractContainerMenu {
-    public SBContainer(final int windowId, final Inventory playerInventory, FriendlyByteBuf extra) {
-        this(windowId, playerInventory.player.level, playerInventory.player.blockPosition(), playerInventory, playerInventory.player);
+    public final IItemHandler handler;
+    private final Backpack tier;
+    private final UUID uuid;
+
+
+    public static SBContainer fromNetwork(final int windowId, final Inventory playerInventory, FriendlyByteBuf data) {
+        UUID uuidIn = data.readUUID();
+        Backpack tier = Backpack.values()[data.readInt()];
+        return new SBContainer(windowId, playerInventory, uuidIn, tier, new ItemStackHandler(tier.slots));
     }
 
-    public SBContainer(int windowId, Level world, BlockPos pos, Inventory playerInventory, Player playerEntity) {
+    public SBContainer(final int windowId, final Inventory playerInventory, UUID uuidIn, Backpack tierIn, IItemHandler handler) {
         super(SimplyBackpacks.SBCONTAINER.get(), windowId);
 
-        playerInv = playerInventory;
-        ItemStack stack = findBackpack(playerEntity);
+        this.uuid = uuidIn;
+        this.handler = handler;
 
-        if (stack == null || stack.isEmpty()) {
-            playerEntity.closeContainer();
-            return;
-        }
-
-        IItemHandler tmp = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
+        this.tier = tierIn;
 
 
-        if (tmp instanceof BackpackItemHandler) {
-            handler = (BackpackItemHandler)tmp;
-            handler.load();
-            slotcount = tmp.getSlots();
-            itemKey = stack.getDescriptionId();
-
-
-
-            addMySlots(stack);
-            addPlayerSlots(playerInv);
-        }
-        else
-            playerEntity.closeContainer();
+        addPlayerSlots(playerInventory);
+        addMySlots();
     }
 
-    public SBContainer(int openType, int windowId, Level world, BlockPos pos, Inventory playerInventory, Player playerEntity) {
-        this(windowId, world, pos, playerInventory, playerEntity);
+    public Backpack getTier() {
+        return this.tier;
     }
-
-    public int slotcount = 0;
-
-    private int slotID;
-    public String itemKey = "";
-    private Inventory playerInv;
-    public BackpackItemHandler handler;
 
     @Override
-    public boolean stillValid(Player playerIn) {
-        if (slotID == -106)
-            return playerIn.getOffhandItem().getItem() instanceof ItemBackpackBase; //whoops guess you can...
-        return playerIn.getInventory().getItem(slotID).getItem() instanceof ItemBackpackBase;
+    public boolean stillValid(@Nonnull Player playerIn) {
+        return true;
     }
 
 
 
     @Override
-    public void clicked(int slot, int dragType, ClickType clickTypeIn, Player player) {
-        if (slot >= 0) {
-            if (getSlot(slot).getItem().getItem() instanceof ItemBackpackBase)
-                return;
-        }
+    @Nonnull
+    public void clicked(int slot, int dragType, @Nonnull ClickType clickTypeIn, @Nonnull Player player) {
         if (clickTypeIn == ClickType.SWAP)
             return;
-
         if (slot >= 0) getSlot(slot).container.setChanged();
         super.clicked(slot, dragType, clickTypeIn, player);
     }
 
     private void addPlayerSlots(Inventory playerInventory) {
-        int originX = 0;
-        int originY = 0;
-        switch(slotcount) {
-            case 18:
-                originX = 7;
-                originY = 67;
-                break;
-            case 33:
-                originX = 25;
-                originY = 85;
-                break;
-            case 66:
-                originX = 25;
-                originY = 139;
-                break;
-            default:
-                originX = 25;
-                originY = 193;
+        int originX = this.tier.slotXOffset;
+        int originY = this.tier.slotYOffset;
+
+        //Hotbar
+        for (int col = 0; col < 9; col++) {
+            int x = originX + col * 18;
+            int y = originY + 58;
+            Optional<UUID> uuidOptional = BackpackUtils.getUUID(playerInventory.items.get(col));
+            boolean lockMe = uuidOptional.map(id -> id.compareTo(this.uuid) == 0).orElse(false);
+            this.addSlot(new LockableSlot(playerInventory, col, x+1, y+1, lockMe));
         }
 
         //Player Inventory
@@ -110,33 +81,32 @@ public class SBContainer extends AbstractContainerMenu {
                 int x = originX + col * 18;
                 int y = originY + row * 18;
                 int index = (col + row * 9) + 9;
-                this.addSlot(new Slot(playerInventory, index, x+1, y+1));
+                Optional<UUID> uuidOptional = BackpackUtils.getUUID(playerInventory.items.get(index));
+                boolean lockMe = uuidOptional.map(id -> id.compareTo(this.uuid) == 0).orElse(false);
+                this.addSlot(new LockableSlot(playerInventory, index, x+1, y+1, lockMe));
             }
-        }
-
-        //Hotbar
-        for (int col = 0; col < 9; col++) {
-            int x = originX + col * 18;
-            int y = originY + 58;
-            this.addSlot(new Slot(playerInventory, col, x+1, y+1));
         }
     }
 
-    private void addMySlots(ItemStack stack) {
-        if (handler == null ) return;
+    private void addMySlots() {
+        if (this.handler == null) return;
 
-        int cols = slotcount == 18? 9:11;
-        int rows = slotcount / cols;
-        int slotindex = 0;
+        int cols = this.tier.slotCols;
+        int rows = this.tier.slotRows;
+
+        int slot_index = 0;
 
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
                 int x = 7 + col * 18;
                 int y = 17 + row * 18;
 
-                this.addSlot(new SBContainerSlot(handler, slotindex, x + 1, y + 1));
-                slotindex++;
-                if (slotindex >= slotcount)
+                if (row > 7 && col > 2 && col < 13 && this.tier == Backpack.ULTIMATE)
+                    continue;
+
+                this.addSlot(new SBContainerSlot(this.handler, slot_index, x + 1, y + 1));
+                slot_index++;
+                if (slot_index >= this.tier.slots)
                     break;
             }
         }
@@ -144,49 +114,23 @@ public class SBContainer extends AbstractContainerMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(Player playerIn, int index) {
-            ItemStack itemstack = ItemStack.EMPTY;
-            Slot slot = this.slots.get(index);
+    @Nonnull
+    public ItemStack quickMoveStack(@Nonnull Player playerIn, int index) {
+        ItemStack itemstack = ItemStack.EMPTY;
+        Slot slot = this.slots.get(index);
 
-            if (slot != null && slot.hasItem()) {
-                int bagslotcount = slots.size() - playerIn.getInventory().items.size();
-                ItemStack itemstack1 = slot.getItem();
-                itemstack = itemstack1.copy();
-                if (index < bagslotcount) {
-                    if (!this.moveItemStackTo(itemstack1, bagslotcount, this.slots.size(), true))
-                        return ItemStack.EMPTY;
-                } else if (!this.moveItemStackTo(itemstack1, 0, bagslotcount, false)) {
+        if (slot != null && slot.hasItem()) {
+            int bagslotcount = this.slots.size();
+            ItemStack itemstack1 = slot.getItem();
+            itemstack = itemstack1.copy();
+            if (index < playerIn.getInventory().items.size()) {
+                if (!this.moveItemStackTo(itemstack1, playerIn.getInventory().items.size(), bagslotcount, false))
                     return ItemStack.EMPTY;
-                }
-                if (itemstack1.isEmpty()) slot.set(ItemStack.EMPTY); else slot.setChanged();
+            } else if (!this.moveItemStackTo(itemstack1, 0, playerIn.getInventory().items.size(), false)) {
+                return ItemStack.EMPTY;
             }
-            return itemstack;
-    }
-
-    private ItemStack findBackpack(Player playerEntity) {
-        Inventory inv = playerEntity.getInventory();
-
-        if (playerEntity.getMainHandItem().getItem() instanceof ItemBackpackBase) {
-            for (int i = 0; i <= 35; i++) {
-                ItemStack stack = inv.getItem(i);
-                if (stack == playerEntity.getMainHandItem()) {
-                    slotID = i;
-                    return stack;
-                }
-            }
-        } else if (playerEntity.getOffhandItem().getItem() instanceof ItemBackpackBase) {
-            slotID = -106;
-            return playerEntity.getOffhandItem();
+            if (itemstack1.isEmpty()) slot.set(ItemStack.EMPTY); else slot.setChanged();
         }
-        else {
-            for (int i = 0; i <= 35; i++) {
-                ItemStack stack = inv.getItem(i);
-                if (stack.getItem() instanceof ItemBackpackBase) {
-                    slotID = i;
-                    return stack;
-                }
-            }
-        }
-        return ItemStack.EMPTY;
+        return itemstack;
     }
 }

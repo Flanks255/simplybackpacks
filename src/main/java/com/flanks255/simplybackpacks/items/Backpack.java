@@ -1,35 +1,47 @@
 package com.flanks255.simplybackpacks.items;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
+import net.minecraftforge.fmllegacy.RegistryObject;
 
 /**
- * Represents a singleton instance of a backpack. Sets up each backpack in it's own way
+ * Represents a singleton instance of a backpack. Sets up each backpack in its own way
  */
 public enum Backpack {
-    COMMON(Rarity.COMMON, 18, "common_gui.png", 176, 150, 7, 67),
-    UNCOMMON(Rarity.UNCOMMON, 33, "uncommon_gui.png", 212, 168, 25, 85),
-    RARE(Rarity.RARE, 66, "rare_gui.png", 212, 222, 25, 139),
-    EPIC(Rarity.EPIC, 99, "epic_gui.png", 212, 276, 25, 193),
-    ULTIMATE(Rarity.EPIC, 256, "",1,1,25,190);
+    COMMON("Common", Rarity.COMMON, 18, 2, 9, "common_gui.png", 176, 150, 7, 67, SimplyBackpacks.COMMONBACKPACK),
+    UNCOMMON("Uncommon", Rarity.UNCOMMON, 33, 3, 11, "uncommon_gui.png", 212, 168, 25, 85, SimplyBackpacks.UNCOMMONBACKPACK),
+    RARE("Rare", Rarity.RARE, 66, 6, 11, "rare_gui.png", 212, 222, 25, 139, SimplyBackpacks.RAREBACKPACK),
+    EPIC("Epic", Rarity.EPIC, 99, 9, 11,"epic_gui.png", 212, 276, 25, 193, SimplyBackpacks.EPICBACKPACK),
+    ULTIMATE("Ultimate", Rarity.EPIC, 158, 13, 16, "ultimate_gui.png",302,258,71,175, SimplyBackpacks.ULTIMATEBACKPACK);
 
-    public Rarity rarity;
-    public int slots;
+    public final Rarity rarity;
+    public final int slots;
 
-    public ResourceLocation location;
-    public int xSize;
-    public int ySize;
-    public int slotXOffset;
-    public int slotYOffset;
+    public final ResourceLocation texture;
+    public final int xSize;
+    public final int ySize;
+    //offset from left edge of texture, to left edge of first player inventory slot.
+    public final int slotXOffset;
+    //offset from left edge of texture, to left edge of first player inventory slot.
+    public final int slotYOffset;
+    public final int slotRows;
+    public final int slotCols;
+    public final String name;
+    public final RegistryObject<Item> item;
 
-    Backpack(Rarity rarity, int slots, String location, int xSize, int ySize, int slotXOffset, int slotYOffset) {
+    Backpack(String name, Rarity rarity, int slots, int rows, int cols, String location, int xSize, int ySize, int slotXOffset, int slotYOffset, RegistryObject<Item> itemIn) {
+        this.name = name;
         this.rarity = rarity;
         this.slots = slots;
-        this.location = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/" + location);
+        this.slotRows = rows;
+        this.slotCols = cols;
+        this.texture = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/" + location);
         this.xSize = xSize;
         this.ySize = ySize;
         this.slotXOffset = slotXOffset;
         this.slotYOffset = slotYOffset;
+        this.item = itemIn;
     }
 }

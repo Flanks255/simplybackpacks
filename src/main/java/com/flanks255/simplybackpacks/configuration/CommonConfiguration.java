@@ -8,13 +8,13 @@ import java.util.List;
 
 public class CommonConfiguration {
     private static final ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
-    public static ForgeConfigSpec COMMON_CONFIG;
+    public static final ForgeConfigSpec COMMON_CONFIG;
 
-    public static ForgeConfigSpec.ConfigValue<List<? extends String>> ITEM_BLACKLIST;
-    public static ForgeConfigSpec.ConfigValue<List<? extends String>> ITEM_WHITELIST;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ITEM_BLACKLIST;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ITEM_WHITELIST;
 
-    private static List<String> DEFAULT_BLACKLIST = Collections.EMPTY_LIST;
-    private static List<String> DEFAULT_WHITELIST = Collections.EMPTY_LIST;
+    private static final List<String> DEFAULT_BLACKLIST = Collections.EMPTY_LIST;
+    private static final List<String> DEFAULT_WHITELIST = Collections.EMPTY_LIST;
 
 
     static {

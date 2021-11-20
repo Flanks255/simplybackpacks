@@ -11,6 +11,8 @@
   "simplybackpacks.whitelist":"Whitelist",
   "simplybackpacks.nbtdata":"NBT Tags",
 
+  "simplybackpacks.invaliduuid": "Unknown UUID",
+
   "item.simplybackpacks.commonbackpack": "Common Backpack",
   "item.simplybackpacks.commonbackpack.info":"The most simple backpack.",
   "item.simplybackpacks.commonbackpack.info2":"§fHolds 18 Stacks§r",
@@ -24,6 +26,10 @@
   "item.simplybackpacks.rarebackpack.info2":"§bHolds 66 Stacks§r",
 
   "item.simplybackpacks.epicbackpack":"Epic Backpack",
-  "item.simplybackpacks.epicbackpack.info":"The Ultimate backpack.",
-  "item.simplybackpacks.epicbackpack.info2":"§dHolds 99 Stacks§r"
+  "item.simplybackpacks.epicbackpack.info":"A pretty epic backpack.",
+  "item.simplybackpacks.epicbackpack.info2":"§dHolds 99 Stacks§r",
+
+  "item.simplybackpacks.ultimatebackpack":"Ultimate Backpack",
+  "item.simplybackpacks.ultimatebackpack.info":"The Ultimate backpack.",
+  "item.simplybackpacks.ultimatebackpack.info2":"§dHolds 158 Stacks§r"
 }

@@ -1,86 +1,73 @@
 package com.flanks255.simplybackpacks.gui;
 
-import com.flanks255.simplybackpacks.BackpackItemHandler;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
-import com.flanks255.simplybackpacks.items.ItemBackpackBase;
+import com.flanks255.simplybackpacks.inventory.FilterItemHandler;
+import com.flanks255.simplybackpacks.items.BackpackItem;
 import com.flanks255.simplybackpacks.network.FilterMessage;
 import com.flanks255.simplybackpacks.network.ToggleMessage;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+
+import javax.annotation.Nonnull;
 
 public class FilterContainer extends AbstractContainerMenu {
-    @Override
-    public boolean stillValid(Player playerIn) {
-        if (slotID == -106)
-            return playerIn.getOffhandItem().getItem() instanceof ItemBackpackBase; //whoops guess you can...
-        return playerIn.getInventory().getItem(slotID).getItem() instanceof ItemBackpackBase;
-    }
+    public final FilterItemHandler filterHandler;
 
-    public BackpackItemHandler itemHandler;
     private int slotID;
-    private Player player;
-    private ItemStack item;
+    private final Player playerEntity;
+    private final ItemStack stack;
+    public static FilterContainer fromNetwork(final int windowId, final Inventory playerInventory, FriendlyByteBuf extra) {
+        CompoundTag nbt = extra.readAnySizeNbt();
 
-    public FilterContainer(final int windowId, final Inventory playerInventory, FriendlyByteBuf extra) {
-        this(windowId, playerInventory.player.level, playerInventory.player.blockPosition(), playerInventory, playerInventory.player);
+        FilterItemHandler handler = new FilterItemHandler();
+        handler.deserializeNBT(nbt);
+        return new FilterContainer(windowId, playerInventory, handler);
     }
 
-    public FilterContainer(int windowId, Level world, BlockPos pos, Inventory playerInventory, Player playerEntity) {
+    public FilterContainer(int windowId, Inventory playerInventory, FilterItemHandler handlerIn) {
         super(SimplyBackpacks.FILTERCONTAINER.get(), windowId);
 
-        item = findBackpack(playerEntity);
-
-        if (item == null || item.isEmpty()) {
-            playerEntity.closeContainer();
-            return;
-        }
-
-        IItemHandler tmp = item.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElse(null);
-        if (tmp == null)
-            return;
-
-        if (tmp instanceof BackpackItemHandler) {
-            itemHandler = (BackpackItemHandler)tmp;
-            itemHandler.load();
-            player = playerEntity;
-        } else {
-            playerEntity.closeContainer();
-        }
+        this.playerEntity = playerInventory.player;
+        this.stack = findBackpack(this.playerEntity);
+        this.filterHandler = handlerIn;
 
 
         addPlayerSlots(playerInventory);
     }
 
+    @Override
+    public boolean stillValid(@Nonnull Player playerIn) {
+        if (this.slotID == -106)
+            return playerIn.getOffhandItem().getItem() instanceof BackpackItem; //whoops guess you can...
+        return playerIn.getInventory().getItem(this.slotID).getItem() instanceof BackpackItem;
+    }
+
     private ItemStack findBackpack(Player playerEntity) {
         Inventory inv = playerEntity.getInventory();
 
-        if (playerEntity.getMainHandItem().getItem() instanceof ItemBackpackBase) {
-            for (int i = 0; i <= 35; i++) {
+        if (playerEntity.getMainHandItem().getItem() instanceof BackpackItem) {
+            for (int i = 0; i <= 8; i++) {
                 ItemStack stack = inv.getItem(i);
                 if (stack == playerEntity.getMainHandItem()) {
-                    slotID = i;
+                    this.slotID = i;
                     return stack;
                 }
             }
-        } else if (playerEntity.getOffhandItem().getItem() instanceof ItemBackpackBase) {
-            slotID = -106;
+        } else if (playerEntity.getOffhandItem().getItem() instanceof BackpackItem) {
+            this.slotID = -106;
             return playerEntity.getOffhandItem();
         }
         else {
-            for (int i = 0; i <= 35; i++) {
+            for (int i = 0; i <= 8; i++) {
                 ItemStack stack = inv.getItem(i);
-                if (stack.getItem() instanceof ItemBackpackBase) {
-                    slotID = i;
+                if (stack.getItem() instanceof BackpackItem) {
+                    this.slotID = i;
                     return stack;
                 }
             }
@@ -90,7 +77,8 @@ public class FilterContainer extends AbstractContainerMenu {
 
 
     @Override
-    public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player playerIn) {
+    @Nonnull
+    public void clicked(int slotId, int dragType, @Nonnull ClickType clickTypeIn, @Nonnull Player playerIn) {
         if (slotId >= 0 && getSlot(slotId).getItem() == playerIn.getMainHandItem())
             return;
 
@@ -102,37 +90,37 @@ public class FilterContainer extends AbstractContainerMenu {
     }
 
     public int getFilterOpts() {
-        return item.getOrCreateTag().getInt("Filter-OPT");
+        return this.stack.getOrCreateTag().getInt("Filter-OPT");
     }
 
     public boolean getPickup() {
-        return item.getOrCreateTag().getBoolean("Pickup");
+        return this.stack.getOrCreateTag().getBoolean("Pickup");
     }
 
     public boolean togglePickup() {
-        CompoundTag nbt = item.getOrCreateTag();
+        CompoundTag nbt = this.stack.getOrCreateTag();
 
         boolean Pickup = !nbt.getBoolean("Pickup");
         nbt.putBoolean("Pickup",Pickup);
 
-        if (player.getCommandSenderWorld().isClientSide)
+        if (this.playerEntity.getCommandSenderWorld().isClientSide)
             SimplyBackpacks.NETWORK.sendToServer(new ToggleMessage());
         return Pickup;
     }
 
     public int setFilterOpts(int newOpts) {
-        CompoundTag nbt = item.getOrCreateTag();
+        CompoundTag nbt = this.stack.getOrCreateTag();
         nbt.putInt("Filter-OPT", newOpts);
-        item.setTag(nbt);
-        if (player.getCommandSenderWorld().isClientSide)
+        this.stack.setTag(nbt);
+        if (this.playerEntity.getCommandSenderWorld().isClientSide)
             SimplyBackpacks.NETWORK.sendToServer(new FilterMessage(newOpts));
         return newOpts;
     }
 
     public void saveFilter(int newOpts) {
-        CompoundTag nbt = item.getOrCreateTag();
+        CompoundTag nbt = this.stack.getOrCreateTag();
         nbt.putInt("Filter-OPT", newOpts);
-        item.setTag(nbt);
+        this.stack.setTag(nbt);
     }
 
 
@@ -159,19 +147,29 @@ public class FilterContainer extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player playerIn, int id) {
-        //SimplyBackpacks.LOGGER.info("EnchantPacket: " + id);
         if (getCarried().isEmpty())
-            itemHandler.filter.removeItem(id);
+            this.filterHandler.removeItem(id);
         else {
             ItemStack fake = getCarried().copy();
             fake.setCount(1);
-            itemHandler.filter.setItem(id, fake);
+            this.filterHandler.setItem(id, fake);
         }
         return true;
     }
 
     @Override
-    public ItemStack quickMoveStack(Player playerIn, int index) {
+    @Nonnull
+    public ItemStack quickMoveStack(@Nonnull Player playerIn, int index) {
+        Slot slot = this.slots.get(index);
+        for (int i = 0; i < this.filterHandler.getSlots(); i++) {
+            if (this.filterHandler.getStackInSlot(i).isEmpty()) {
+                ItemStack fake = slot.getItem().copy();
+                fake.setCount(1);
+                this.filterHandler.setItem(i, fake);
+                break;
+            }
+        }
+
         return ItemStack.EMPTY;
     }
 }

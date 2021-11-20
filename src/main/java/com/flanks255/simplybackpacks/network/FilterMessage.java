@@ -11,7 +11,7 @@ public class FilterMessage {
     public FilterMessage(int opts) {
         this.opts = opts;
     }
-    private int opts;
+    private final int opts;
     public static FilterMessage decode(final FriendlyByteBuf buffer) {
         return new FilterMessage(buffer.readInt());
     }

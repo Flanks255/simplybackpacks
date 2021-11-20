@@ -1,0 +1,29 @@
+{
+  "type": "simplybackpacks:backpack_upgrade",
+  "pattern": [
+    "A A",
+    "EBE",
+    "CDC"
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:ingots/netherite"
+    },
+    "B": {
+      "item": "simplybackpacks:epicbackpack",
+      "type": "simplybackpacks:nbt_target"
+    },
+    "C": {
+      "tag": "forge:chests"
+    },
+    "D": {
+      "tag": "forge:storage_blocks/netherite"
+    },
+    "E": {
+      "tag": "forge:nether_stars"
+    }
+  },
+  "result": {
+    "item": "simplybackpacks:ultimatebackpack"
+  }
+}

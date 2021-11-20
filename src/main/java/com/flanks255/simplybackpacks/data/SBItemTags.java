@@ -1,11 +1,11 @@
 package com.flanks255.simplybackpacks.data;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
-import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.tags.ItemTagsProvider;
-import net.minecraft.world.item.Items;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nullable;
@@ -17,7 +17,6 @@ public class SBItemTags extends ItemTagsProvider {
 
     @Override
     protected void addTags() {
-        tagBackpacks();
         tagShulkers();
         tagQuantumBags();
         tagKrates();
@@ -41,6 +40,11 @@ public class SBItemTags extends ItemTagsProvider {
 
         this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("forcecraft", "force_pack"));
 
+        this.tag(SimplyBackpacks.CURIOS_BACK).add(SimplyBackpacks.COMMONBACKPACK.get());
+        this.tag(SimplyBackpacks.CURIOS_BACK).add(SimplyBackpacks.UNCOMMONBACKPACK.get());
+        this.tag(SimplyBackpacks.CURIOS_BACK).add(SimplyBackpacks.RAREBACKPACK.get());
+        this.tag(SimplyBackpacks.CURIOS_BACK).add(SimplyBackpacks.EPICBACKPACK.get());
+        this.tag(SimplyBackpacks.CURIOS_BACK).add(SimplyBackpacks.ULTIMATEBACKPACK.get());
     }
 
     private void tagKrates() {
@@ -52,13 +56,6 @@ public class SBItemTags extends ItemTagsProvider {
 
     private void TagOtherModsItem(String modid, String item) {
         this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation(modid, item));
-    }
-
-    private void tagBackpacks() {
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).add(SimplyBackpacks.COMMONBACKPACK.get());
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).add(SimplyBackpacks.UNCOMMONBACKPACK.get());
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).add(SimplyBackpacks.RAREBACKPACK.get());
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).add(SimplyBackpacks.EPICBACKPACK.get());
     }
 
     private void tagShulkers() {

@@ -1,7 +1,5 @@
 package com.flanks255.simplybackpacks.data;
 
-import com.flanks255.simplybackpacks.SimplyBackpacks;
-import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
@@ -12,7 +10,7 @@ public class Generator {
         generator.addProvider(new ItemModels(generator, event.getExistingFileHelper()));
         SBBlockTags blockTags = new SBBlockTags(generator, event.getExistingFileHelper());
         generator.addProvider(new SBItemTags(generator, blockTags, event.getExistingFileHelper()));
-        generator.addProvider(new SBEnchantmentGen(generator, Registry.ENCHANTMENT, SimplyBackpacks.MODID, event.getExistingFileHelper()));
+        generator.addProvider(new SBEnchantmentGen(generator, event.getExistingFileHelper()));
         generator.addProvider(new SBRecipes(generator));
     }
 }

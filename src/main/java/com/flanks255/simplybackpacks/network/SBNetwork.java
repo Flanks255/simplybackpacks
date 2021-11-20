@@ -11,31 +11,15 @@ public class SBNetwork {
 
     public static SimpleChannel register() {
         final SimpleChannel network = NetworkRegistry.ChannelBuilder.named(channelName)
-                .clientAcceptedVersions(version -> true)
-                .serverAcceptedVersions(version -> true)
-                .networkProtocolVersion(() -> networkVersion)
-                .simpleChannel();
+            .clientAcceptedVersions(version -> true)
+            .serverAcceptedVersions(version -> true)
+            .networkProtocolVersion(() -> networkVersion)
+            .simpleChannel();
 
-        network.messageBuilder(ToggleMessage.class, 1)
-                .decoder(ToggleMessage::decode)
-                .encoder(ToggleMessage::encode)
-                .consumer(ToggleMessage::handle)
-                .add();
-        network.messageBuilder(OpenMessage.class, 2)
-                .decoder(OpenMessage::decode)
-                .encoder(OpenMessage::encode)
-                .consumer(OpenMessage::handle)
-                .add();
-        network.messageBuilder(ToggleMessageMessage.class, 3)
-                .decoder(ToggleMessageMessage::decode)
-                .encoder(ToggleMessageMessage::encode)
-                .consumer(ToggleMessageMessage::handle)
-                .add();
-        network.messageBuilder(FilterMessage.class, 4)
-                .decoder(FilterMessage::decode)
-                .encoder(FilterMessage::encode)
-                .consumer(FilterMessage::handle)
-                .add();
+        network.registerMessage(1, ToggleMessage.class, ToggleMessage::encode, ToggleMessage::decode, ToggleMessage::handle);
+        network.registerMessage(2, OpenMessage.class, OpenMessage::encode, OpenMessage::decode, OpenMessage::handle);
+        network.registerMessage( 3, ToggleMessageMessage.class, ToggleMessageMessage::encode, ToggleMessageMessage::decode, ToggleMessageMessage::handle);
+        network.registerMessage(4, FilterMessage.class, FilterMessage::encode, FilterMessage::decode, FilterMessage::handle);
 
         return network;
     }

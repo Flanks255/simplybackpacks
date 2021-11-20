@@ -1,7 +1,7 @@
 modLoader="javafml"
 loaderVersion="[37,)"
 license="MIT"
-issueTrackerURL="http://my.issue.tracker/"
+issueTrackerURL="https://github.com/Flanks255/simplylight/issues"
 [[mods]]
 modId="simplybackpacks"
 version="${file.jarVersion}"

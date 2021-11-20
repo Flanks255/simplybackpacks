@@ -1,5 +1,6 @@
 package com.flanks255.simplybackpacks.configuration;
 
+
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
