@@ -1,6 +1,7 @@
 package com.flanks255.simplybackpacks.gui;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -21,19 +22,20 @@ public class FilterGui extends AbstractContainerScreen<FilterContainer> {
     public FilterGui(FilterContainer container, Inventory playerInventory, Component name) {
         super(container, playerInventory, name);
 
+        inventory = playerInventory;
         this.imageWidth = 176;
         this.imageHeight = 166;
     }
 
-    private Inventory inventory;
+    private final Inventory inventory;
 
     @Override
     protected void init() {
         super.init();
 
         Button.OnPress slotClick = button -> {
-            Minecraft.getInstance().gameMode.handleInventoryButtonClick(this.menu.containerId, ((SlotButton)button).slot);
-            this.menu.clickMenuButton(this.inventory.player, ((SlotButton)button).slot);
+            Minecraft.getInstance().gameMode.handleInventoryButtonClick(menu.containerId, ((SlotButton)button).slot);
+            menu.clickMenuButton(inventory.player, ((SlotButton)button).slot);
         };
 
         int slot = 0;
@@ -97,20 +99,22 @@ public class FilterGui extends AbstractContainerScreen<FilterContainer> {
         public void renderButton(@Nonnull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
             Font fontRenderer = Minecraft.getInstance().font;
 
-            boolean hovered = mouseX >= this.x && mouseX < this.x + FilterGui.this.width && mouseY >= this.y && mouseY < this.y + FilterGui.this.height;
+            boolean hovered = mouseX >= this.x && mouseX < this.x + this.width && mouseY >= this.y && mouseY < this.y + this.height;
 
-            if (FilterGui.this.menu.filterHandler != null && !FilterGui.this.menu.filterHandler.getStackInSlot(this.slot).isEmpty()) {
-                ItemStack tmp = FilterGui.this.menu.filterHandler.getStackInSlot(this.slot);
-                FilterGui.this.itemRenderer.blitOffset = 100F;
+            if (menu.filterHandler != null && !menu.filterHandler.getStackInSlot(this.slot).isEmpty()) {
+                ItemStack tmp = menu.filterHandler.getStackInSlot(this.slot);
+                itemRenderer.blitOffset = 100F;
                 RenderSystem.enableDepthTest();
-                FilterGui.this.itemRenderer.renderAndDecorateItem(tmp, this.x, this.y);
-                FilterGui.this.itemRenderer.renderGuiItemDecorations(fontRenderer, tmp, this.x, this.y, "");
-                FilterGui.this.itemRenderer.blitOffset = 0F;
+                Lighting.setupForFlatItems();
+                itemRenderer.renderAndDecorateItem(tmp, this.x, this.y);
+                itemRenderer.renderGuiItemDecorations(fontRenderer, tmp, this.x, this.y, "");
+                itemRenderer.blitOffset = 0F;
+                Lighting.setupFor3DItems();
                 RenderSystem.disableDepthTest();
             }
 
             if (hovered)
-                fill(stack, this.x, this.y, this.x + FilterGui.this.width - 1, this.y + FilterGui.this.height - 1, -2130706433);
+                fill(stack, this.x, this.y, this.x + this.width-1, this.y + this.height-1, -2130706433);
         }
     }
 
