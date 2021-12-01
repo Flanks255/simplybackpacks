@@ -32,12 +32,10 @@ version = "${minecraft_version}-{mod_version}-build.${ENV.GITHUB_RUN_NUMBER ?: 9
 group = 'com.flanks255'
 archivesBaseName = 'simplybackpacks'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
     mappings channel: 'parchment', version: "$mappings_version"
-
-    //accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
         client {
@@ -81,12 +79,12 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     minecraft "net.minecraftforge:forge:$forge_version"
 
-    compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
-    runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
+    //compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
+    //runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
 
-    runtimeOnly fg.deobf("com.flanks255:simplylight:1.17.1-1.+")
+    runtimeOnly fg.deobf("com.flanks255:simplylight:1.18-1.3.+")
 
-    compileOnly fg.deobf("curse.maven:TOP-245211:3430022")
+    //compileOnly fg.deobf("curse.maven:TOP-245211:3430022")
 
     runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
     compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
@@ -140,9 +138,9 @@ if (ENV.CURSEFORGE_KEY) {
         apiKey = ENV.CURSEFORGE_KEY
         project {
             id = project.curseforge_id
-            releaseType = "beta"
+            releaseType = "release"
             addGameVersion "Forge"
-            addGameVersion "1.17.1"
+            addGameVersion "1.18"
             mainArtifact(jar)
             changelog = getGitChangelog
             changelogType = 'markdown'

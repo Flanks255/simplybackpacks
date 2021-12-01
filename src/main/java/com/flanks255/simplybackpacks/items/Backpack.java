@@ -4,7 +4,7 @@ import com.flanks255.simplybackpacks.SimplyBackpacks;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 
 /**
  * Represents a singleton instance of a backpack. Sets up each backpack in its own way

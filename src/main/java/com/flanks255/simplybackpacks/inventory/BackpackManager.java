@@ -4,14 +4,14 @@ import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.items.Backpack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.util.thread.SidedThreadGroups;
-import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -66,7 +66,7 @@ public class BackpackManager extends SavedData {
 
     public static BackpackManager load(CompoundTag nbt) {
         if (nbt.contains("Backpacks")) {
-            ListTag list = nbt.getList("Backpacks", Constants.NBT.TAG_COMPOUND);
+            ListTag list = nbt.getList("Backpacks", Tag.TAG_COMPOUND);
             list.forEach((backpackNBT) -> BackpackData.fromNBT((CompoundTag) backpackNBT).ifPresent((backpack) -> data.put(backpack.getUuid(), backpack)));
         }
         return new BackpackManager();
