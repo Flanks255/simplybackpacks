@@ -27,7 +27,7 @@ repositories {
 }
 
 def ENV = System.getenv()
-version = "${mod_version}-build.${ENV.GITHUB_RUN_NUMBER ?: 9999}"
+version = "${minecraft_version}-${mod_version}-build.${ENV.GITHUB_RUN_NUMBER ?: 9999}"
 group = 'com.flanks255'
 archivesBaseName = 'simplybackpacks'
 
