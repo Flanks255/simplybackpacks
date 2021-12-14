@@ -107,6 +107,9 @@ public class BackpackItem extends Item {
 
             //Old backpack, lets migrate
             if (backpack.getOrCreateTag().contains("Inventory")) {
+                // Fixes FTBTeam/FTB-Modpack-Issues #478
+                if (backpack.getTag().getCompound("Inventory").contains("Size"))
+                    backpack.getTag().getCompound("Inventory").remove("Size");
                 ((SBItemHandler) data.getHandler()).deserializeNBT(backpack.getTag().getCompound("Inventory"));
                 if (backpack.getTag().contains("Filter")) {
                     data.getFilter().deserializeNBT(backpack.getTag().getCompound("Filter"));

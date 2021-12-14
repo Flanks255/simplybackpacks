@@ -71,6 +71,9 @@ public class BackpackUtils {
         if (uuidIn.compareTo(People.FLANKS255) == 0)
             return true;
 
+        if (uuidIn.compareTo(People.ELLPECK) == 0)
+            return true;
+
         return uuidIn.compareTo(People.LONEZTAR) == 0;
     }
 
