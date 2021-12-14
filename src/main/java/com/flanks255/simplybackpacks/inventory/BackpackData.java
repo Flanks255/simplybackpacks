@@ -58,6 +58,12 @@ public class BackpackData {
         this.tier = Backpack.values()[Math.min(incomingNBT.getInt("Tier"), Backpack.ULTIMATE.ordinal())];
 
         this.inventory = new SBItemHandler(this.tier.slots);
+
+        // Fixes FTBTeam/FTB-Modpack-Issues #478 Part 2
+        if (incomingNBT.getCompound("Inventory").contains("Size")) {
+            if (incomingNBT.getCompound("Inventory").getInt("Size") != tier.slots)
+                incomingNBT.getCompound("Inventory").putInt("Size", tier.slots);
+        }
         this.inventory.deserializeNBT(incomingNBT.getCompound("Inventory"));
         this.filter = new FilterItemHandler();
         this.filter.deserializeNBT(incomingNBT.getCompound("Filter"));
