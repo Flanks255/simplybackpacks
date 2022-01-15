@@ -3,9 +3,12 @@ package com.flanks255.simplybackpacks.network;
 import com.flanks255.simplybackpacks.gui.SBContainer;
 import com.flanks255.simplybackpacks.inventory.BackpackData;
 import com.flanks255.simplybackpacks.inventory.BackpackManager;
+import com.flanks255.simplybackpacks.items.Backpack;
 import com.flanks255.simplybackpacks.items.BackpackItem;
 import com.flanks255.simplybackpacks.util.BackpackUtils;
+import net.minecraft.Util;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.item.ItemStack;
@@ -30,8 +33,13 @@ public class OpenMessage {
             if (backpack.getOrCreateTag().contains("UUID")) {
                 Optional<BackpackData> data = BackpackManager.get().getBackpack(backpack.getTag().getUUID("UUID"));
                 if (!backpack.isEmpty() && data.isPresent()) {
+                    Backpack itemTier = BackpackItem.getTier(backpack);
+                    if (data.get().getTier().ordinal() < itemTier.ordinal()) {
+                        data.get().upgrade(itemTier);
+                        ctx.get().getSender().sendMessage(new TextComponent("Backpack upgraded to " + itemTier.name), Util.NIL_UUID);
+                    }
                     data.get().updateAccessRecords(player.getName().getString(), System.currentTimeMillis());
-                    NetworkHooks.openGui(player, new SimpleMenuProvider((windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, data.get().getUuid(), data.get().getTier(), data.get().getHandler()), backpack.getHoverName()), (buffer) -> buffer.writeUUID(data.get().getUuid()).writeInt(BackpackItem.getTier(backpack).ordinal()));
+                    NetworkHooks.openGui(player, new SimpleMenuProvider((windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, data.get().getUuid(), data.get().getTier(), data.get().getHandler()), backpack.getHoverName()), (buffer) -> buffer.writeUUID(data.get().getUuid()).writeInt(itemTier.ordinal()));
                 }
             }
         });
