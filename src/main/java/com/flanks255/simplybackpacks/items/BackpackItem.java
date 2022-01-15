@@ -128,8 +128,10 @@ public class BackpackItem extends Item {
 
             data.updateAccessRecords(playerIn.getName().getString(), System.currentTimeMillis());
 
-            if (data.getTier().ordinal() < itemTier.ordinal())
+            if (data.getTier().ordinal() < itemTier.ordinal()) {
                 data.upgrade(itemTier);
+                playerIn.sendMessage(new StringTextComponent("Backpack upgraded to " + itemTier.name), Util.NIL_UUID);
+            }
 
             if (playerIn.isShiftKeyDown()) {
                 //filter
@@ -221,7 +223,7 @@ public class BackpackItem extends Item {
             return false;
 
         if (!nbt.getBoolean("Pickup"))
-                return false;
+            return false;
 
         LazyOptional<IItemHandler> optional = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
         if (optional.isPresent()) {
