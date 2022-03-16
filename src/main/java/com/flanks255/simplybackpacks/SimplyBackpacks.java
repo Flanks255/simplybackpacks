@@ -18,12 +18,13 @@ import com.flanks255.simplybackpacks.network.SBNetwork;
 import com.flanks255.simplybackpacks.network.ToggleMessage;
 import com.flanks255.simplybackpacks.util.BackpackUtils;
 import com.flanks255.simplybackpacks.util.RecipeUnlocker;
+import com.flanks255.simplybackpacks.util.TagLookup;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
@@ -31,7 +32,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.client.ClientRegistry;
-import net.minecraftforge.common.ForgeTagHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.extensions.IForgeMenuType;
@@ -68,11 +68,12 @@ public class SimplyBackpacks {
     public static SimpleChannel NETWORK;
 
     //forge:holds_items
-    public static final Tag.Named<Item> HOLDS_ITEMS = ItemTags.bind(new ResourceLocation("forge", "holds_items").toString());
+    public static final TagKey<Item> HOLDS_ITEMS = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation("forge", "holds_items"));
     //curios:back
-    public static final Tag.Named<Item> CURIOS_BACK = ItemTags.bind(new ResourceLocation("curios", "back").toString());
+    public static final TagKey<Item> CURIOS_BACK = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation("curios", "back"));
     //forge:soulbound
-    public static final Tag.Named<Enchantment> SOULBOUND = ForgeTagHandler.makeWrapperTag(ForgeRegistries.ENCHANTMENTS, new ResourceLocation("forge", "soulbound"));
+    public static final TagKey<Enchantment> SOULBOUND = TagKey.create(Registry.ENCHANTMENT_REGISTRY, new ResourceLocation("forge", "soulbound"));
+    public static final TagLookup<Enchantment> SOULBOUND_LOOKUP = new TagLookup<>(ForgeRegistries.ENCHANTMENTS, SOULBOUND);
 
 
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);

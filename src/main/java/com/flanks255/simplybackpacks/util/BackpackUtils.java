@@ -6,6 +6,7 @@ import com.flanks255.simplybackpacks.inventory.BackpackManager;
 import com.flanks255.simplybackpacks.items.BackpackItem;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -16,6 +17,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class BackpackUtils {
     public static boolean curiosLoaded = false;
@@ -27,6 +29,10 @@ public class BackpackUtils {
 
         //check for forge:holds_items
         if (stack.is(SimplyBackpacks.HOLDS_ITEMS))
+            return false;
+
+        //vanilla method
+        if (!stack.getItem().canFitInsideContainerItems())
             return false;
 
         // if all else fails, check the config blacklist
@@ -67,6 +73,15 @@ public class BackpackUtils {
             return Optional.empty();
     }
 
+    public static Set<String> getUUIDSuggestions(CommandContext<CommandSourceStack> commandSource) {
+        BackpackManager backpacks = BackpackManager.get();
+        Set<String> list = new HashSet<>();
+
+        backpacks.getMap().forEach((uuid, backpackData) -> list.add(uuid.toString()));
+
+        return list;
+    }
+
     public static boolean increasedAltChance(UUID uuidIn) {
         if (uuidIn.compareTo(People.FLANKS255) == 0)
             return true;
@@ -77,12 +92,20 @@ public class BackpackUtils {
         return uuidIn.compareTo(People.LONEZTAR) == 0;
     }
 
-    public static Set<String> getUUIDSuggestions(CommandContext<CommandSourceStack> commandSource) {
-        BackpackManager backpacks = BackpackManager.get();
-        Set<String> list = new HashSet<>();
+    public static void ifTag(ItemStack stack, Consumer<CompoundTag> consumer) {
+        if (stack.hasTag())
+            consumer.accept(stack.getTag());
+    }
 
-        backpacks.getMap().forEach((uuid, backpackData) -> list.add(uuid.toString()));
+    public static void ifTagContains(ItemStack stack, String child, Consumer<CompoundTag> consumer) {
+        if (stack.hasTag())
+            if (stack.getTag().contains(child))
+                consumer.accept(stack.getTag());
+    }
 
-        return list;
+    public static Optional<CompoundTag> getTag(ItemStack stack) {
+        if (stack.hasTag())
+            return Optional.of(stack.getTag());
+        return Optional.empty();
     }
 }

@@ -82,9 +82,9 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
     runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
 
-    runtimeOnly fg.deobf("com.flanks255:simplylight:1.18-1.3.+")
+    runtimeOnly fg.deobf("com.flanks255:simplylight:1.18.2-1.4.+")
 
-    runtimeOnly fg.deobf("curse.maven:TOP-245211:3606616")
+    runtimeOnly fg.deobf("curse.maven:TOP-245211:3671753")
 
     runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
     compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
@@ -138,10 +138,9 @@ if (ENV.CURSEFORGE_KEY) {
         apiKey = ENV.CURSEFORGE_KEY
         project {
             id = project.curseforge_id
-            releaseType = "release"
+            releaseType = "beta"
             addGameVersion "Forge"
-            addGameVersion "1.18"
-            addGameVersion "1.18.1"
+            addGameVersion "1.18.2"
             mainArtifact(jar)
             changelog = getGitChangelog
             changelogType = 'markdown'

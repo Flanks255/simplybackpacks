@@ -8,6 +8,7 @@ import com.flanks255.simplybackpacks.inventory.BackpackManager;
 import com.flanks255.simplybackpacks.inventory.FilterItemHandler;
 import com.flanks255.simplybackpacks.inventory.SBItemHandler;
 import com.flanks255.simplybackpacks.network.ToggleMessageMessage;
+import com.flanks255.simplybackpacks.util.BackpackUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.gui.screens.Screen;
@@ -56,7 +57,7 @@ public class BackpackItem extends Item {
         if (!stack.isEmpty() && stack.getItem() instanceof BackpackItem)
             return ((BackpackItem) stack.getItem()).tier;
         else
-        return Backpack.COMMON;
+            return Backpack.COMMON;
     }
 
     public static BackpackData getData(ItemStack stack) {
@@ -95,7 +96,7 @@ public class BackpackItem extends Item {
 
     @Override
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        return enchantment.is(SimplyBackpacks.SOULBOUND);
+        return SimplyBackpacks.SOULBOUND_LOOKUP.contains(enchantment);
     }
 
     @Override
@@ -106,19 +107,19 @@ public class BackpackItem extends Item {
             BackpackData data = BackpackItem.getData(backpack);
 
             //Old backpack, lets migrate
-            if (backpack.getOrCreateTag().contains("Inventory")) {
+            BackpackUtils.ifTagContains(backpack, "Inventory", tag -> {
                 // Fixes FTBTeam/FTB-Modpack-Issues #478
-                if (backpack.getTag().getCompound("Inventory").contains("Size"))
-                    backpack.getTag().getCompound("Inventory").remove("Size");
-                ((SBItemHandler) data.getHandler()).deserializeNBT(backpack.getTag().getCompound("Inventory"));
-                if (backpack.getTag().contains("Filter")) {
-                    data.getFilter().deserializeNBT(backpack.getTag().getCompound("Filter"));
-                    backpack.getTag().remove("Filter");
+                if (tag.getCompound("Inventory").contains("Size"))
+                    tag.getCompound("Inventory").remove("Size");
+                ((SBItemHandler) data.getHandler()).deserializeNBT(tag.getCompound("Inventory"));
+                if (tag.contains("Filter")) {
+                    data.getFilter().deserializeNBT(tag.getCompound("Filter"));
+                    tag.remove("Filter");
                 }
                 playerIn.sendMessage(new TextComponent("Backpack Migrated"), Util.NIL_UUID);
 
-                backpack.getTag().remove("Inventory");
-            }
+                tag.remove("Inventory");
+            });
             Backpack itemTier = ((BackpackItem) backpack.getItem()).tier;
             UUID uuid = data.getUuid();
 

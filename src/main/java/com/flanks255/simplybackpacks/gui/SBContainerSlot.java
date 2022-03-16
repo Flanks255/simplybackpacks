@@ -7,10 +7,18 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
+import java.util.function.Predicate;
 
 public class SBContainerSlot extends SlotItemHandler {
+    private Predicate<ItemStack> filterPredicate = BackpackUtils::filterItem;
+
     public SBContainerSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
         super(itemHandler, index, xPosition, yPosition);
+    }
+
+    public SBContainerSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition, Predicate<ItemStack> filterPredicate) {
+        super(itemHandler, index, xPosition, yPosition);
+        this.filterPredicate = filterPredicate;
     }
 
     @Override
@@ -20,7 +28,9 @@ public class SBContainerSlot extends SlotItemHandler {
 
     @Override
     public boolean mayPlace(@Nonnull ItemStack stack) {
-        return BackpackUtils.filterItem(stack);
+        if(!super.mayPlace(stack))
+            return false;
+        return filterPredicate.test(stack);
     }
 
 }

@@ -58,9 +58,9 @@ public class SBGui extends AbstractContainerScreen<SBContainer> {
     }
 
     @Override
-    public void render(@Nonnull PoseStack matrixStack, int p_render_1_, int p_render_2_, float p_render_3_) {
+    public void render(@Nonnull PoseStack matrixStack, int pMouseX, int pMouseY, float pPartialTicks) {
         this.renderBackground(matrixStack);
-        super.render(matrixStack,p_render_1_, p_render_2_, p_render_3_);
-        this.renderTooltip(matrixStack, p_render_1_, p_render_2_);
+        super.render(matrixStack,pMouseX, pMouseY, pPartialTicks);
+        this.renderTooltip(matrixStack, pMouseX, pMouseY);
     }
 }
