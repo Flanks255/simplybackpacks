@@ -1,9 +1,9 @@
 #simplybackpacks
 ![](https://i.imgur.com/XTAbQ1d.png "Simply Backpacks")
 
-[![Curse Forge](http://cf.way2muchnoise.eu/simply-backpacks.svg)](https://minecraft.curseforge.com/projects/simply-backpacks)
-[![Curse Forge](http://cf.way2muchnoise.eu/versions/simply-backpacks.svg)](https://minecraft.curseforge.com/projects/simply-backpacks)
-[![Curse Forge](http://cf.way2muchnoise.eu/packs/short_simply-backpacks.svg)](https://minecraft.curseforge.com/projects/simply-backpacks)
+[![Curse Forge](http://cf.way2muchnoise.eu/311595.svg)](https://minecraft.curseforge.com/projects/simply-backpacks)
+[![Curse Forge](http://cf.way2muchnoise.eu/versions/311595.svg)](https://minecraft.curseforge.com/projects/simply-backpacks)
+[![Build and deploy](https://github.com/Flanks255/simplybackpacks/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/Flanks255/simplybackpacks/actions/workflows/build.yml)
 
 A simple tiered backpack mod, for your item storage needs.
 
