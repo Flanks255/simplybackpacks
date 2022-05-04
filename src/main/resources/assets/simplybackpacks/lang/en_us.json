@@ -12,6 +12,7 @@
   "simplybackpacks.nbtdata":"NBT Tags",
 
   "simplybackpacks.invaliduuid": "Unknown UUID",
+  "simplybackpacks.notsetup": "Open in hand to setup.",
 
   "item.simplybackpacks.commonbackpack": "Common Backpack",
   "item.simplybackpacks.commonbackpack.info":"The most simple backpack.",
