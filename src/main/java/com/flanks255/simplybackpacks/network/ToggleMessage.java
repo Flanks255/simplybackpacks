@@ -23,7 +23,7 @@ public class ToggleMessage {
                 Player player = ctx.get().getSender();
                 if (player == null)
                     return;
-                ItemStack backpack = BackpackUtils.findBackpackForHotkeys(player);
+                ItemStack backpack = BackpackUtils.findBackpackForHotkeys(player, true);
                 BackpackItem.togglePickup(player, backpack);
             }
         );

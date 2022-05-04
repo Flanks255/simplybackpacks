@@ -29,7 +29,7 @@ public class OpenMessage {
     public static void handle(final OpenMessage message, final Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(()-> {
             ServerPlayer player = ctx.get().getSender();
-            ItemStack backpack = BackpackUtils.findBackpackForHotkeys(player);
+            ItemStack backpack = BackpackUtils.findBackpackForHotkeys(player, false);
             if (backpack.getOrCreateTag().contains("UUID")) {
                 Optional<BackpackData> data = BackpackManager.get().getBackpack(backpack.getTag().getUUID("UUID"));
                 if (!backpack.isEmpty() && data.isPresent()) {
