@@ -262,11 +262,17 @@ public class BackpackItem extends Item {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         String translationKey = getDescriptionId();
 
-        boolean pickupEnabled = stack.getOrCreateTag().getBoolean("Pickup");
-        if (pickupEnabled)
-            tooltip.add(new TranslationTextComponent("simplybackpacks.autopickupenabled"));
-        else
-            tooltip.add(new TranslationTextComponent("simplybackpacks.autopickupdisabled"));
+        if (!stack.hasTag() || (stack.hasTag() && !stack.getTag().contains("UUID"))) {
+            tooltip.add(new TranslationTextComponent("simplybackpacks.notsetup").withStyle(TextFormatting.UNDERLINE).withStyle(TextFormatting.GOLD));
+        }
+
+        if (stack.hasTag()) {
+            boolean pickupEnabled = stack.getOrCreateTag().getBoolean("Pickup");
+            if (pickupEnabled)
+                tooltip.add(new TranslationTextComponent("simplybackpacks.autopickupenabled"));
+            else
+                tooltip.add(new TranslationTextComponent("simplybackpacks.autopickupdisabled"));
+        }
 
         if (Screen.hasShiftDown()) {
             tooltip.add(new TranslationTextComponent( translationKey + ".info"));
