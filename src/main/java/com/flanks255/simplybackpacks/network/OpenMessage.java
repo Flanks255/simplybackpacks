@@ -29,7 +29,7 @@ public class OpenMessage {
     public static void handle(final OpenMessage message, final Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(()-> {
             ServerPlayerEntity player = ctx.get().getSender();
-            ItemStack backpack = BackpackUtils.findBackpackForHotkeys(player);
+            ItemStack backpack = BackpackUtils.findBackpackForHotkeys(player, false);
             if (backpack.getOrCreateTag().contains("UUID")) {
                 Optional<BackpackData> data = BackpackManager.get().getBackpack(backpack.getTag().getUUID("UUID"));
                 if (!backpack.isEmpty() && data.isPresent()) {
@@ -42,7 +42,7 @@ public class OpenMessage {
                     NetworkHooks.openGui(player, new SimpleNamedContainerProvider((windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, data.get().getUuid(), data.get().getTier(), data.get().getHandler()), backpack.getHoverName()), (buffer) -> buffer.writeUUID(data.get().getUuid()).writeInt(BackpackItem.getTier(backpack).ordinal()));
                 }
             }
+            ctx.get().setPacketHandled(true);
         });
-        ctx.get().setPacketHandled(true);
     }
 }

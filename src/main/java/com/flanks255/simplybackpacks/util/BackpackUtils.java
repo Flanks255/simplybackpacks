@@ -33,10 +33,10 @@ public class BackpackUtils {
         return !ConfigCache.BLACKLIST.contains(stack.getItem().getRegistryName());
     }
 
-    public static ItemStack findBackpackForHotkeys(PlayerEntity player) {
-        if (player.getMainHandItem().getItem() instanceof BackpackItem)
+    public static ItemStack findBackpackForHotkeys(PlayerEntity player, boolean includeHands) {
+        if (includeHands && player.getMainHandItem().getItem() instanceof BackpackItem)
             return player.getMainHandItem();
-        if (player.getOffhandItem().getItem() instanceof BackpackItem)
+        if (includeHands && player.getOffhandItem().getItem() instanceof BackpackItem)
             return player.getOffhandItem();
 
         if (curiosLoaded) {
