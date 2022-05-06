@@ -11,6 +11,7 @@ public class SBCommands {
                 .then(List.register())
                 .then(Recover.register())
                 .then(Open.register())
+                .then(Delete.register())
         );
 
         dispatcher.register(
@@ -18,6 +19,7 @@ public class SBCommands {
                 .then(List.register())
                 .then(Recover.register())
                 .then(Open.register())
+                .then(Delete.register())
         );
     }
 }

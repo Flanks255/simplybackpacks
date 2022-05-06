@@ -12,10 +12,7 @@ import net.minecraft.item.ItemStack;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class BackpackUtils {
     public static boolean curiosLoaded = false;
@@ -81,5 +78,46 @@ public class BackpackUtils {
         backpacks.getMap().forEach((uuid, backpackData) -> list.add(uuid.toString()));
 
         return list;
+    }
+
+    public static class Confirmation{
+        private final String code;
+        private final UUID player;
+        private final UUID backpack;
+        public Confirmation(String code, UUID player, UUID backpack) {
+            this.code = code;
+            this.player = player;
+            this.backpack = backpack;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public UUID getPlayer() {
+            return player;
+        }
+
+        public UUID getBackpack() {
+            return backpack;
+        }
+    }
+
+    public static String generateCode(Random random) {
+        return String.format("%08x", random.nextInt(Integer.MAX_VALUE));
+    }
+
+    private static final HashMap<String, Confirmation> confirmationMap = new HashMap<>();
+
+    public static void addConfirmation(String code, UUID player, UUID backpack) {
+        confirmationMap.put(code, new Confirmation(code, player, backpack));
+    }
+
+    public static void removeConfirmation(String code) {
+        confirmationMap.remove(code);
+    }
+
+    public static Optional<Confirmation> getConfirmation(String code) {
+        return Optional.ofNullable(confirmationMap.get(code));
     }
 }
