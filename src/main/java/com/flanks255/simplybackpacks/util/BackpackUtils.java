@@ -13,10 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class BackpackUtils {
@@ -107,5 +104,25 @@ public class BackpackUtils {
         if (stack.hasTag())
             return Optional.of(stack.getTag());
         return Optional.empty();
+    }
+
+    public record Confirmation(String code, UUID player, UUID backpack){}
+
+    public static String generateCode(Random random) {
+        return "%08x".formatted(random.nextInt(Integer.MAX_VALUE));
+    }
+
+    private static final HashMap<String, Confirmation> confirmationMap = new HashMap<>();
+
+    public static void addConfirmation(String code, UUID player, UUID backpack) {
+        confirmationMap.put(code, new Confirmation(code, player, backpack));
+    }
+
+    public static void removeConfirmation(String code) {
+        confirmationMap.remove(code);
+    }
+
+    public static Optional<Confirmation> getConfirmation(String code) {
+        return Optional.ofNullable(confirmationMap.get(code));
     }
 }

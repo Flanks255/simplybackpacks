@@ -47,6 +47,14 @@ public class BackpackManager extends SavedData {
         });
     }
 
+    public void removeBackpack(UUID uuid) {
+        getBackpack(uuid).ifPresent(backpack -> {
+            backpack.getOptional().invalidate();
+            data.remove(uuid);
+            setDirty();
+        });
+    }
+
     public LazyOptional<IItemHandler> getCapability(UUID uuid) {
         if (data.containsKey(uuid))
             return data.get(uuid).getOptional();

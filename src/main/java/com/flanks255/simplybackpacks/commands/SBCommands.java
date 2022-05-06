@@ -7,18 +7,14 @@ import net.minecraft.commands.Commands;
 
 public class SBCommands {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(
+        var cmds = dispatcher.register(
             Commands.literal("simplybackpacks")
                 .then(List.register())
                 .then(Recover.register())
                 .then(Open.register())
+                .then(Delete.register())
         );
 
-        dispatcher.register(
-            Commands.literal("sb")
-                .then(List.register())
-                .then(Recover.register())
-                .then(Open.register())
-        );
+        dispatcher.register(Commands.literal("sb").redirect(cmds));
     }
 }
