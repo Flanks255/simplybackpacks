@@ -84,9 +84,7 @@ public class List {
             return 0;
         }
 
-        backpacks.getMap().forEach( (uuid, backpack) -> {
-            sendBackpack(player, backpack);
-    });
+        backpacks.getMap().forEach( (uuid, backpack) -> sendBackpack(player, backpack));
 
         return 0;
     }

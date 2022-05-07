@@ -7,8 +7,10 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -49,7 +51,7 @@ public class Delete {
             data.ifPresentOrElse(backpack -> {
                 String code = BackpackUtils.generateCode(player.level.random);
                 BackpackUtils.addConfirmation(code, player.getUUID(), backpack.getUuid());
-                ctx.getSource().sendSuccess(new TranslatableComponent("simplybackpacks.delete.confirmation", code), false);
+                ctx.getSource().sendSuccess(new TranslatableComponent("simplybackpacks.delete.confirmation", new TextComponent(code).withStyle(ChatFormatting.GOLD)), false);
             }, () -> ctx.getSource().sendFailure(new TranslatableComponent("simplybackpacks.invaliduuid")));
 
             ;
