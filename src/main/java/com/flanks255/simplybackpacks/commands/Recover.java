@@ -47,7 +47,7 @@ public class Recover {
                 ItemHandlerHelper.giveItemToPlayer(player, stack);
             });
         } else
-            ctx.getSource().sendFailure(new TranslationTextComponent("simplebackpacks.invaliduuid"));
+            ctx.getSource().sendFailure(new TranslationTextComponent("simplybackpacks.invaliduuid"));
         return 0;
     }
 }

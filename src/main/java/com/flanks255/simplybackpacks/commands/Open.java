@@ -46,7 +46,7 @@ public class Open {
                 NetworkHooks.openGui(player, new SimpleNamedContainerProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, uuid, backpack.getTier(), backpack.getHandler()), new StringTextComponent(backpack.getTier().name)), (buffer -> buffer.writeUUID(uuid).writeInt(backpack.getTier().ordinal())));
             });
         } else
-            ctx.getSource().sendFailure(new TranslationTextComponent("simplebackpacks.invaliduuid"));
+            ctx.getSource().sendFailure(new TranslationTextComponent("simplybackpacks.invaliduuid"));
         return 0;
     }
 }
