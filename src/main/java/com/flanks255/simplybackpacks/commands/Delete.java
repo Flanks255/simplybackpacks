@@ -10,6 +10,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Optional;
@@ -49,7 +51,7 @@ public class Delete {
         data.ifPresent(backpack -> {
             String code = BackpackUtils.generateCode(player.level.random);
             BackpackUtils.addConfirmation(code, player.getUUID(), backpack.getUuid());
-            ctx.getSource().sendSuccess(new TranslationTextComponent("simplybackpacks.delete.confirmation", code), false);
+            ctx.getSource().sendSuccess(new TranslationTextComponent("simplybackpacks.delete.confirmation", new StringTextComponent(code).withStyle(TextFormatting.GOLD)), false);
         });
 
         if (!data.isPresent()) {

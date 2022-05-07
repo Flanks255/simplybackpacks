@@ -148,8 +148,6 @@ if (ENV.CURSEFORGE_KEY) {
             releaseType = "release"
             addGameVersion "Forge"
             addGameVersion "1.16.5"
-            addGameVersion "1.16.4"
-            addGameVersion "1.16.3"
             mainArtifact(jar)
             changelog = getGitChangelog
             changelogType = 'markdown'
