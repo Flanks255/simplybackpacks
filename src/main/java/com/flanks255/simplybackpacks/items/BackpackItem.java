@@ -85,6 +85,7 @@ public class BackpackItem extends Item {
 
 
     @Override
+    @Nonnull
     public Component getDescription() {
         return new TranslatableComponent(this.getDescriptionId()).withStyle(this.tier == Backpack.ULTIMATE? ChatFormatting.DARK_AQUA:ChatFormatting.RESET);
     }

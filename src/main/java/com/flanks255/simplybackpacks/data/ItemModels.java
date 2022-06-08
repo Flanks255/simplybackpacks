@@ -5,6 +5,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class ItemModels extends ItemModelProvider {
 
@@ -26,7 +27,7 @@ public class ItemModels extends ItemModelProvider {
     }
 
     private void simpleItem(Item item) {
-        String name = item.getRegistryName().getPath();
+        String name = ForgeRegistries.ITEMS.getKey(item).getPath();
         singleTexture(name, mcLoc("item/handheld"), "layer0", modLoc("item/" + name));
     }
 }

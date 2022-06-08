@@ -7,6 +7,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class WrappedRecipe implements FinishedRecipe {
@@ -36,10 +37,7 @@ public class WrappedRecipe implements FinishedRecipe {
     public JsonObject serializeRecipe() {
         JsonObject jsonObject = new JsonObject();
 
-        if (this.serializerOverride != null)
-            jsonObject.addProperty("type", this.serializerOverride.getRegistryName().toString());
-        else
-            jsonObject.addProperty("type", this.inner.getType().getRegistryName().toString());
+        jsonObject.addProperty("type", Objects.requireNonNullElseGet(this.serializerOverride, this.inner::getType).getRegistryName().toString());
         serializeRecipeData(jsonObject);
         return jsonObject;
     }
