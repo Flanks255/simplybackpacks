@@ -7,13 +7,12 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
@@ -46,33 +45,33 @@ public class List {
     }
 
     public static void sendBackpack(Player player, BackpackData backpack) {
-        player.sendMessage(new TextComponent("===========================").withStyle(ChatFormatting.DARK_GRAY), Util.NIL_UUID);
-        player.sendMessage(new TextComponent(
+        player.sendSystemMessage(Component.literal("===========================").withStyle(ChatFormatting.DARK_GRAY));
+        player.sendSystemMessage(Component.literal(
             backpack.getUuid().toString().substring(0,8) + "...\nFirst: " + backpack.meta.getFirstAccessedPlayer() + "\n" + SDF.format(new Date(backpack.meta.getFirstAccessedTime())) +
                 "\nLast: " + backpack.meta.getLastAccessedPlayer() + "\n" + SDF.format(new Date(backpack.meta.getLastAccessedTime()))
-        ), Util.NIL_UUID);
+        ));
 
 
-        var open_link = new TextComponent("Open");
+        var open_link = Component.literal("Open");
         open_link.withStyle(style -> style
             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sb open " + backpack.getUuid().toString()))
-            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Open Backpack")))
+            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Open Backpack")))
             .withColor(ChatFormatting.BLUE)
             .withUnderlined(true));
-        var recover_link = new TextComponent("Recover");
+        var recover_link = Component.literal("Recover");
         recover_link.withStyle(style -> style
             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sb recover " + backpack.getUuid().toString()))
-            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Recover Backpack")))
+            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Recover Backpack")))
             .withColor(ChatFormatting.GREEN)
             .withUnderlined(true));
-        var delete_link = new TextComponent("Delete");
+        var delete_link = Component.literal("Delete");
         delete_link.withStyle(style -> style
             .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/sb delete " + backpack.getUuid().toString()))
-            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Delete Backpack")))
+            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Delete Backpack")))
             .withColor(ChatFormatting.RED)
             .withUnderlined(true));
 
-        player.sendMessage(new TextComponent("[").append(open_link).append("] - [").append(recover_link).append("] - [").append(delete_link).append("]"), Util.NIL_UUID);
+        player.sendSystemMessage(Component.literal("[").append(open_link).append("] - [").append(recover_link).append("] - [").append(delete_link).append("]"));
     }
 
     public static int list(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
@@ -80,7 +79,7 @@ public class List {
         ServerPlayer player = ctx.getSource().getPlayerOrException();
 
         if (backpacks.getMap().size() == 0) {
-            ctx.getSource().sendSuccess(new TextComponent("[ ]"), false);
+            ctx.getSource().sendSuccess(Component.literal("[ ]"), false);
             return 0;
         }
 
@@ -94,7 +93,7 @@ public class List {
         ServerPlayer player = ctx.getSource().getPlayerOrException();
 
         if (backpacks.getMap().size() == 0) {
-            ctx.getSource().sendSuccess(new TextComponent("[ ]"), false);
+            ctx.getSource().sendSuccess(Component.literal("[ ]"), false);
             return 0;
         }
 
@@ -112,7 +111,7 @@ public class List {
         ServerPlayer player = ctx.getSource().getPlayerOrException();
 
         if (backpacks.getMap().size() == 0) {
-            ctx.getSource().sendSuccess(new TextComponent("[ ]"), false);
+            ctx.getSource().sendSuccess(Component.literal("[ ]"), false);
             return 0;
         }
 

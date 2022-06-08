@@ -5,8 +5,8 @@ import com.flanks255.simplybackpacks.crafting.TargetNBTIngredient;
 import com.flanks255.simplybackpacks.crafting.WrappedRecipe;
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
+import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.HashCache;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
@@ -22,7 +22,7 @@ public class SBRecipes extends RecipeProvider {
         super(generatorIn);
     }
     @Override
-    protected void saveAdvancement(@Nonnull HashCache cache, @Nonnull JsonObject cache2, @Nonnull Path advancementJson) {
+    protected void saveAdvancement(CachedOutput cachedOutput, JsonObject object, Path path) {
         // No thank you, good day sir.
     }
 

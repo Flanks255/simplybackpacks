@@ -7,10 +7,10 @@ public class Generator {
     public static void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
 
-        generator.addProvider(new ItemModels(generator, event.getExistingFileHelper()));
+        generator.addProvider(true, new ItemModels(generator, event.getExistingFileHelper()));
         SBBlockTags blockTags = new SBBlockTags(generator, event.getExistingFileHelper());
-        generator.addProvider(new SBItemTags(generator, blockTags, event.getExistingFileHelper()));
-        generator.addProvider(new SBEnchantmentGen(generator, event.getExistingFileHelper()));
-        generator.addProvider(new SBRecipes(generator));
+        generator.addProvider(true, new SBItemTags(generator, blockTags, event.getExistingFileHelper()));
+        generator.addProvider(true, new SBEnchantmentGen(generator, event.getExistingFileHelper()));
+        generator.addProvider(true, new SBRecipes(generator));
     }
 }

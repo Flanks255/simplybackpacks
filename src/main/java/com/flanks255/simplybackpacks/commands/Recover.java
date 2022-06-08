@@ -10,7 +10,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -47,7 +47,7 @@ public class Recover {
                 ItemHandlerHelper.giveItemToPlayer(player, stack);
             });
         } else
-            ctx.getSource().sendFailure(new TranslatableComponent("simplybackpacks.invaliduuid"));
+            ctx.getSource().sendFailure(Component.translatable("simplybackpacks.invaliduuid"));
         return 0;
     }
 }

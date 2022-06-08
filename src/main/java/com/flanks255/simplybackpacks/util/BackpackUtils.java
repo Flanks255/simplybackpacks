@@ -7,9 +7,13 @@ import com.flanks255.simplybackpacks.items.BackpackItem;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import javax.annotation.Nonnull;
@@ -19,9 +23,13 @@ import java.util.function.Consumer;
 public class BackpackUtils {
     public static boolean curiosLoaded = false;
 
+    public static ResourceLocation getRegistryName(Item item) {
+        return ForgeRegistries.ITEMS.getKey(item);
+    }
+
     public static boolean filterItem(ItemStack stack) {
         //check the config whitelist, overrides all checks further.
-        if (ConfigCache.WHITELIST.contains(stack.getItem().getRegistryName()))
+        if (ConfigCache.WHITELIST.contains(getRegistryName(stack.getItem())))
             return true;
 
         //check for forge:holds_items
@@ -33,7 +41,7 @@ public class BackpackUtils {
             return false;
 
         // if all else fails, check the config blacklist
-        return !ConfigCache.BLACKLIST.contains(stack.getItem().getRegistryName());
+        return !ConfigCache.BLACKLIST.contains(getRegistryName(stack.getItem()));
     }
 
     public static ItemStack findBackpackForHotkeys(Player player, boolean includeHands) {
@@ -108,7 +116,7 @@ public class BackpackUtils {
 
     public record Confirmation(String code, UUID player, UUID backpack){}
 
-    public static String generateCode(Random random) {
+    public static String generateCode(RandomSource random) {
         return "%08x".formatted(random.nextInt(Integer.MAX_VALUE));
     }
 

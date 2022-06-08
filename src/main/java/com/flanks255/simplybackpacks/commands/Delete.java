@@ -10,8 +10,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Optional;
@@ -34,7 +33,7 @@ public class Delete {
                 if (player.getUUID().equals(confirmation.player())) {
                     backpacks.removeBackpack(confirmation.backpack());
                     BackpackUtils.removeConfirmation(stringUUID);
-                    ctx.getSource().sendSuccess(new TranslatableComponent("simplybackpacks.delete.finished", confirmation.backpack()), false);
+                    ctx.getSource().sendSuccess(Component.translatable("simplybackpacks.delete.finished", confirmation.backpack()), false);
                 }
             });
         }
@@ -51,8 +50,8 @@ public class Delete {
             data.ifPresentOrElse(backpack -> {
                 String code = BackpackUtils.generateCode(player.level.random);
                 BackpackUtils.addConfirmation(code, player.getUUID(), backpack.getUuid());
-                ctx.getSource().sendSuccess(new TranslatableComponent("simplybackpacks.delete.confirmation", new TextComponent(code).withStyle(ChatFormatting.GOLD)), false);
-            }, () -> ctx.getSource().sendFailure(new TranslatableComponent("simplybackpacks.invaliduuid")));
+                ctx.getSource().sendSuccess(Component.translatable("simplybackpacks.delete.confirmation", Component.literal(code).withStyle(ChatFormatting.GOLD)), false);
+            }, () -> ctx.getSource().sendFailure(Component.translatable("simplybackpacks.invaliduuid")));
 
             ;
         return 0;

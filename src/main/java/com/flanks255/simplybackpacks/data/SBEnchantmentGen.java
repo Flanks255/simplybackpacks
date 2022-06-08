@@ -13,10 +13,11 @@ import javax.annotation.Nullable;
 import java.nio.file.Path;
 
 public class SBEnchantmentGen extends TagsProvider<Enchantment> {
-
+    private final DataGenerator generator;
 
     protected SBEnchantmentGen(DataGenerator generatorIn, @Nullable ExistingFileHelper existingFileHelper) {
         super(generatorIn, Registry.ENCHANTMENT, SimplyBackpacks.MODID, existingFileHelper);
+        generator = generatorIn;
     }
 
     @Override

@@ -4,6 +4,7 @@ package com.flanks255.simplybackpacks.gui;
 import com.flanks255.simplybackpacks.util.BackpackUtils;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
@@ -11,9 +12,10 @@ import java.util.function.Predicate;
 
 public class SBContainerSlot extends SlotItemHandler {
     private Predicate<ItemStack> filterPredicate = BackpackUtils::filterItem;
-
+    private int index;
     public SBContainerSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
         super(itemHandler, index, xPosition, yPosition);
+        this.index = index;
     }
 
     public SBContainerSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition, Predicate<ItemStack> filterPredicate) {
@@ -33,4 +35,9 @@ public class SBContainerSlot extends SlotItemHandler {
         return filterPredicate.test(stack);
     }
 
+    //bandage till forge PR fixes this
+    @Override
+    public void initialize(ItemStack itemStack) {
+        ((IItemHandlerModifiable) this.getItemHandler()).setStackInSlot(index, itemStack);
+    }
 }

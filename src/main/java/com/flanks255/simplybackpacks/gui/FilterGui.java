@@ -11,7 +11,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -89,7 +88,7 @@ public class FilterGui extends AbstractContainerScreen<FilterContainer> {
 
     class SlotButton extends Button {
         public SlotButton(int x, int y, int width, int height, int slotIn, OnPress pressable) {
-            super(x,y,width,height,new TextComponent(""), pressable);
+            super(x,y,width,height,Component.empty(), pressable);
 
             this.slot = slotIn;
         }
@@ -121,7 +120,7 @@ public class FilterGui extends AbstractContainerScreen<FilterContainer> {
 
     class SwitchButton extends Button {
         public SwitchButton(int x, int y, String text, boolean initial, OnPress pressable) {
-            super(x,y,32,16,new TextComponent(""), pressable);
+            super(x,y,32,16, Component.empty(), pressable);
             this.textKey = text;
             this.state = initial;
         }

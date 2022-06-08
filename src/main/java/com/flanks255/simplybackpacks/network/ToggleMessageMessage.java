@@ -1,9 +1,8 @@
 package com.flanks255.simplybackpacks.network;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -23,7 +22,7 @@ public class ToggleMessageMessage {
     public static void handle(final ToggleMessageMessage message, final Supplier<NetworkEvent.Context> ctx) {
         if (ctx.get().getDirection().getReceptionSide().isClient())
             ctx.get().enqueueWork(() -> {
-                Minecraft.getInstance().player.displayClientMessage(new TextComponent(I18n.get(message.enabled ?"simplybackpacks.autopickupenabled":"simplybackpacks.autopickupdisabled")),true);
+                Minecraft.getInstance().player.displayClientMessage(Component.translatable(message.enabled?"simplybackpacks.autopickupenabled":"simplybackpacks.autopickupdisabled"),true);
             } );
         ctx.get().setPacketHandled(true);
     }

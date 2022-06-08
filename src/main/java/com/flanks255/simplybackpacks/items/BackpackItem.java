@@ -8,16 +8,12 @@ import com.flanks255.simplybackpacks.inventory.BackpackManager;
 import com.flanks255.simplybackpacks.inventory.FilterItemHandler;
 import com.flanks255.simplybackpacks.inventory.SBItemHandler;
 import com.flanks255.simplybackpacks.network.ToggleMessageMessage;
-import com.flanks255.simplybackpacks.util.BackpackUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -87,7 +83,7 @@ public class BackpackItem extends Item {
     @Override
     @Nonnull
     public Component getDescription() {
-        return new TranslatableComponent(this.getDescriptionId()).withStyle(this.tier == Backpack.ULTIMATE? ChatFormatting.DARK_AQUA:ChatFormatting.RESET);
+        return Component.translatable(this.getDescriptionId()).withStyle(this.tier == Backpack.ULTIMATE? ChatFormatting.DARK_AQUA:ChatFormatting.RESET);
     }
 
     @Override
@@ -107,20 +103,6 @@ public class BackpackItem extends Item {
         if (!worldIn.isClientSide && playerIn instanceof ServerPlayer && backpack.getItem() instanceof BackpackItem) {
             BackpackData data = BackpackItem.getData(backpack);
 
-            //Old backpack, lets migrate
-            BackpackUtils.ifTagContains(backpack, "Inventory", tag -> {
-                // Fixes FTBTeam/FTB-Modpack-Issues #478
-                if (tag.getCompound("Inventory").contains("Size"))
-                    tag.getCompound("Inventory").remove("Size");
-                ((SBItemHandler) data.getHandler()).deserializeNBT(tag.getCompound("Inventory"));
-                if (tag.contains("Filter")) {
-                    data.getFilter().deserializeNBT(tag.getCompound("Filter"));
-                    tag.remove("Filter");
-                }
-                playerIn.sendMessage(new TextComponent("Backpack Migrated"), Util.NIL_UUID);
-
-                tag.remove("Inventory");
-            });
             Backpack itemTier = ((BackpackItem) backpack.getItem()).tier;
             UUID uuid = data.getUuid();
 
@@ -128,7 +110,7 @@ public class BackpackItem extends Item {
 
             if (data.getTier().ordinal() < itemTier.ordinal()) {
                 data.upgrade(itemTier);
-                playerIn.sendMessage(new TextComponent("Backpack upgraded to " + itemTier.name), Util.NIL_UUID);
+                playerIn.sendSystemMessage(Component.literal("Backpack upgraded to " + itemTier.name));
             }
 
             if (playerIn.isShiftKeyDown()) {
@@ -179,7 +161,7 @@ public class BackpackItem extends Item {
         if (playerEntity instanceof ServerPlayer)
             SimplyBackpacks.NETWORK.send(PacketDistributor.PLAYER.with(()-> (ServerPlayer) playerEntity), new ToggleMessageMessage(Pickup));
         else
-            playerEntity.displayClientMessage(new TextComponent(I18n.get(Pickup?"simplybackpacks.autopickupenabled":"simplybackpacks.autopickupdisabled")), true);
+            playerEntity.displayClientMessage(Component.translatable(Pickup?"simplybackpacks.autopickupenabled":"simplybackpacks.autopickupdisabled"), true);
 
     }
 
@@ -261,31 +243,31 @@ public class BackpackItem extends Item {
         String translationKey = getDescriptionId();
 
         if (!stack.hasTag() || (stack.hasTag() && !stack.getTag().contains("UUID"))) {
-            tooltip.add(new TranslatableComponent("simplybackpacks.notsetup").withStyle(ChatFormatting.UNDERLINE).withStyle(ChatFormatting.GOLD));
+            tooltip.add(Component.translatable("simplybackpacks.notsetup").withStyle(ChatFormatting.UNDERLINE).withStyle(ChatFormatting.GOLD));
         }
 
         if (stack.hasTag()) {
             boolean pickupEnabled = stack.getTag().getBoolean("Pickup");
             if (pickupEnabled)
-                tooltip.add(new TranslatableComponent("simplybackpacks.autopickupenabled"));
+                tooltip.add(Component.translatable("simplybackpacks.autopickupenabled"));
             else
-                tooltip.add(new TranslatableComponent("simplybackpacks.autopickupdisabled"));
+                tooltip.add(Component.translatable("simplybackpacks.autopickupdisabled"));
         }
 
         if (Screen.hasShiftDown()) {
-            tooltip.add(new TranslatableComponent( translationKey + ".info"));
+            tooltip.add(Component.translatable( translationKey + ".info"));
             if (hasTranslation(translationKey + ".info2"))
-                tooltip.add(new TranslatableComponent( translationKey + ".info2"));
+                tooltip.add(Component.translatable( translationKey + ".info2"));
             if (hasTranslation(translationKey + ".info3"))
-                tooltip.add(new TranslatableComponent( translationKey + ".info3"));
+                tooltip.add(Component.translatable( translationKey + ".info3"));
         }
         else {
-            tooltip.add(new TranslatableComponent( "simplybackpacks.shift" ));
+            tooltip.add(Component.translatable( "simplybackpacks.shift" ));
         }
 
         if (flagIn.isAdvanced() && stack.getTag() != null && stack.getTag().contains("UUID")) {
             UUID uuid = stack.getTag().getUUID("UUID");
-            tooltip.add(new TextComponent("ID: " + uuid.toString().substring(0,8)).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+            tooltip.add(Component.literal("ID: " + uuid.toString().substring(0,8)).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         }
     }
 }

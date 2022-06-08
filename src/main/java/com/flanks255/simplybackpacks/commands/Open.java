@@ -11,8 +11,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraftforge.network.NetworkHooks;
@@ -43,10 +42,10 @@ public class Open {
             Optional<BackpackData> data = backpacks.getBackpack(uuid);
 
             data.ifPresent(backpack -> {
-                NetworkHooks.openGui(player, new SimpleMenuProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, uuid, backpack.getTier(), backpack.getHandler()), new TextComponent(backpack.getTier().name)), (buffer -> buffer.writeUUID(uuid).writeInt(backpack.getTier().ordinal())));
+                NetworkHooks.openGui(player, new SimpleMenuProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, uuid, backpack.getTier(), backpack.getHandler()), Component.literal(backpack.getTier().name)), (buffer -> buffer.writeUUID(uuid).writeInt(backpack.getTier().ordinal())));
             });
         } else
-            ctx.getSource().sendFailure(new TranslatableComponent("simplyebackpacks.invaliduuid"));
+            ctx.getSource().sendFailure(Component.translatable("simplyebackpacks.invaliduuid"));
         return 0;
     }
 }
