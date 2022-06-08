@@ -5,7 +5,7 @@ cb200301583c8281b54a6758e8cc4d2a8ac49c89 assets/simplybackpacks/models/item/ulti
 130d922ff679b660915ac07d9c381f3f6c3c553e assets/simplybackpacks/models/item/uncommonbackpack.json
 5c91f7d38b365a5f20f70fcf6598fc33fb33963b data/curios/tags/items/back.json
 2fa3acc9181561f59ced54459a8cbc834f930088 data/forge/tags/enchantments/soulbound.json
-5dad7a5edcb8daadae4b7e3c9187e14187724644 data/forge/tags/items/holds_items.json
+b66ac6a271b9b8b662b6e83df0ca29f47ac3e204 data/forge/tags/items/holds_items.json
 7620dd9c14600c9e6c0931ffd11443e45821deee data/simplybackpacks/recipes/commonbackpack.json
 58608772565cfbc4dd71bc7ff6274d000c5295a2 data/simplybackpacks/recipes/epicbackpack.json
 f54f5ed6eb2efc618a3a6fde0b2e80153f1609ac data/simplybackpacks/recipes/rarebackpack.json

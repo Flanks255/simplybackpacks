@@ -103,6 +103,10 @@
       "required": false
     },
     {
+      "id": "mekanism:personal_barrel",
+      "required": false
+    },
+    {
       "id": "rftoolsstorage:modular_storage",
       "required": false
     },

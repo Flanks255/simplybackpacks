@@ -22,23 +22,20 @@ public class SBItemTags extends ItemTagsProvider {
         tagKrates();
 
 
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("mekanism", "personal_chest"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("rftoolsstorage", "modular_storage"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("rftoolsstorage", "modular_storage"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("rftoolsstorage", "storage_module0"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("rftoolsstorage", "storage_module1"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("rftoolsstorage", "storage_module2"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("rftoolsstorage", "storage_module3"));
-
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("immersiveengineering", "crate"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("immersiveengineering", "reinforced_crate"));
-
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("industrialforegoing", "infinity_backpack"));
-
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("pneumaticcraft", "reinforced_chest"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("pneumaticcraft", "smart_chest"));
-
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("forcecraft", "force_pack"));
+        TagOtherModsItem("mekanism", "personal_chest");
+        TagOtherModsItem("mekanism", "personal_barrel");
+        TagOtherModsItem("rftoolsstorage", "modular_storage");
+        TagOtherModsItem("rftoolsstorage", "modular_storage");
+        TagOtherModsItem("rftoolsstorage", "storage_module0");
+        TagOtherModsItem("rftoolsstorage", "storage_module1");
+        TagOtherModsItem("rftoolsstorage", "storage_module2");
+        TagOtherModsItem("rftoolsstorage", "storage_module3");
+        TagOtherModsItem("immersiveengineering", "crate");
+        TagOtherModsItem("immersiveengineering", "reinforced_crate");
+        TagOtherModsItem("industrialforegoing", "infinity_backpack");
+        TagOtherModsItem("pneumaticcraft", "reinforced_chest");
+        TagOtherModsItem("pneumaticcraft", "smart_chest");
+        TagOtherModsItem("forcecraft", "force_pack");
 
         this.tag(SimplyBackpacks.CURIOS_BACK).add(SimplyBackpacks.COMMONBACKPACK.get());
         this.tag(SimplyBackpacks.CURIOS_BACK).add(SimplyBackpacks.UNCOMMONBACKPACK.get());
@@ -79,22 +76,22 @@ public class SBItemTags extends ItemTagsProvider {
     }
 
     private void tagQuantumBags() {
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("quantumstorage", "quantum_bag_white"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("quantumstorage", "quantum_bag_orange"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("quantumstorage", "quantum_bag_magenta"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("quantumstorage", "quantum_bag_light_blue"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("quantumstorage", "quantum_bag_yellow"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("quantumstorage", "quantum_bag_lime"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("quantumstorage", "quantum_bag_pink"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("quantumstorage", "quantum_bag_gray"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("quantumstorage", "quantum_bag_light_gray"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("quantumstorage", "quantum_bag_cyan"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("quantumstorage", "quantum_bag_purple"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("quantumstorage", "quantum_bag_blue"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("quantumstorage", "quantum_bag_brown"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("quantumstorage", "quantum_bag_green"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("quantumstorage", "quantum_bag_red"));
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation("quantumstorage", "quantum_bag_black"));
+        TagOtherModsItem("quantumstorage", "quantum_bag_white");
+        TagOtherModsItem("quantumstorage", "quantum_bag_orange");
+        TagOtherModsItem("quantumstorage", "quantum_bag_magenta");
+        TagOtherModsItem("quantumstorage", "quantum_bag_light_blue");
+        TagOtherModsItem("quantumstorage", "quantum_bag_yellow");
+        TagOtherModsItem("quantumstorage", "quantum_bag_lime");
+        TagOtherModsItem("quantumstorage", "quantum_bag_pink");
+        TagOtherModsItem("quantumstorage", "quantum_bag_gray");
+        TagOtherModsItem("quantumstorage", "quantum_bag_light_gray");
+        TagOtherModsItem("quantumstorage", "quantum_bag_cyan");
+        TagOtherModsItem("quantumstorage", "quantum_bag_purple");
+        TagOtherModsItem("quantumstorage", "quantum_bag_blue");
+        TagOtherModsItem("quantumstorage", "quantum_bag_brown");
+        TagOtherModsItem("quantumstorage", "quantum_bag_green");
+        TagOtherModsItem("quantumstorage", "quantum_bag_red");
+        TagOtherModsItem("quantumstorage", "quantum_bag_black");
     }
 
 }
