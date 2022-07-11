@@ -31,7 +31,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraftforge.client.ClientRegistry;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.extensions.IForgeMenuType;
@@ -106,6 +106,7 @@ public class SimplyBackpacks {
 
         bus.addListener(this::setup);
         bus.addListener(this::clientStuff);
+        bus.addListener(this::registerKeyBinding);
         bus.addListener(Generator::gatherData);
         bus.addListener(this::onEnqueueIMC);
 
@@ -166,14 +167,16 @@ public class SimplyBackpacks {
             NETWORK.sendToServer(new OpenMessage());
     }
 
+    private void registerKeyBinding(final RegisterKeyMappingsEvent event) {
+        this.keyBinds.add(0, new KeyMapping("key.simplybackpacks.backpackpickup.desc", -1, "key.simplybackpacks.category"));
+        this.keyBinds.add(1, new KeyMapping("key.simplybackpacks.backpackopen.desc", -1, "key.simplybackpacks.category"));
+        event.register(this.keyBinds.get(0));
+        event.register(this.keyBinds.get(1));
+    }
+
     private void clientStuff(final FMLClientSetupEvent event) {
         MenuScreens.register(SBCONTAINER.get(), SBGui::new);
         MenuScreens.register(FILTERCONTAINER.get(), FilterGui::new);
-
-        this.keyBinds.add(0, new KeyMapping("key.simplybackpacks.backpackpickup.desc", -1, "key.simplybackpacks.category"));
-        this.keyBinds.add(1, new KeyMapping("key.simplybackpacks.backpackopen.desc", -1, "key.simplybackpacks.category"));
-        ClientRegistry.registerKeyBinding(this.keyBinds.get(0));
-        ClientRegistry.registerKeyBinding(this.keyBinds.get(1));
     }
 
     private void onConfigReload(ModConfigEvent event) {

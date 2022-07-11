@@ -1,17 +1,12 @@
 {
   "type": "simplybackpacks:backpack_upgrade",
-  "pattern": [
-    "A A",
-    "EBE",
-    "CDC"
-  ],
   "key": {
     "A": {
       "tag": "forge:dyes/magenta"
     },
     "B": {
-      "item": "simplybackpacks:rarebackpack",
-      "type": "simplybackpacks:nbt_target"
+      "type": "simplybackpacks:nbt_target",
+      "item": "simplybackpacks:rarebackpack"
     },
     "C": {
       "tag": "forge:chests"
@@ -23,6 +18,11 @@
       "item": "minecraft:iron_bars"
     }
   },
+  "pattern": [
+    "A A",
+    "EBE",
+    "CDC"
+  ],
   "result": {
     "item": "simplybackpacks:epicbackpack"
   }

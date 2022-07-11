@@ -1,17 +1,12 @@
 {
   "type": "simplybackpacks:backpack_upgrade",
-  "pattern": [
-    "A A",
-    "EBE",
-    "CDC"
-  ],
   "key": {
     "A": {
       "tag": "forge:ingots/gold"
     },
     "B": {
-      "item": "simplybackpacks:commonbackpack",
-      "type": "simplybackpacks:nbt_target"
+      "type": "simplybackpacks:nbt_target",
+      "item": "simplybackpacks:commonbackpack"
     },
     "C": {
       "tag": "forge:chests"
@@ -23,6 +18,11 @@
       "tag": "forge:dyes/yellow"
     }
   },
+  "pattern": [
+    "A A",
+    "EBE",
+    "CDC"
+  ],
   "result": {
     "item": "simplybackpacks:uncommonbackpack"
   }
