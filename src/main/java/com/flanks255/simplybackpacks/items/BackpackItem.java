@@ -115,10 +115,10 @@ public class BackpackItem extends Item {
 
             if (playerIn.isShiftKeyDown()) {
                 //filter
-                NetworkHooks.openGui(((ServerPlayer) playerIn), new SimpleMenuProvider( (windowId, playerInventory, playerEntity) -> new FilterContainer(windowId, playerInventory, data.getFilter()), backpack.getHoverName()), (buffer -> buffer.writeNbt(data.getFilter().serializeNBT())));
+                NetworkHooks.openScreen(((ServerPlayer) playerIn), new SimpleMenuProvider( (windowId, playerInventory, playerEntity) -> new FilterContainer(windowId, playerInventory, data.getFilter()), backpack.getHoverName()), (buffer -> buffer.writeNbt(data.getFilter().serializeNBT())));
             } else {
                 //open
-                NetworkHooks.openGui(((ServerPlayer) playerIn), new SimpleMenuProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, uuid, data.getTier(), data.getHandler()), backpack.getHoverName()), (buffer -> buffer.writeUUID(uuid).writeInt(data.getTier().ordinal())));
+                NetworkHooks.openScreen(((ServerPlayer) playerIn), new SimpleMenuProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, uuid, data.getTier(), data.getHandler()), backpack.getHoverName()), (buffer -> buffer.writeUUID(uuid).writeInt(data.getTier().ordinal())));
             }
         }
         return InteractionResultHolder.success(playerIn.getItemInHand(handIn));

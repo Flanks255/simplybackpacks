@@ -23,11 +23,13 @@ public class RecipeUnlocker {
     }
 
     private static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        CompoundTag tag = event.getPlayer().getPersistentData();
-        if (tag.contains(modtag) && tag.getInt(modtag) >= version)
-            return;
+        Player player = event.getEntity();
 
-        Player player = event.getPlayer();
+        CompoundTag tag = player.getPersistentData();
+        if (tag.contains(modtag) && tag.getInt(modtag) >= version) {
+            return;
+        }
+
         if (player instanceof ServerPlayer) {
             MinecraftServer server = player.getServer();
             if (server != null) {

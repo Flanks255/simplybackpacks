@@ -54,7 +54,6 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import top.theillusivec4.curios.api.CuriosApi;
@@ -77,7 +76,7 @@ public class SimplyBackpacks {
 
 
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-    private static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MODID);
+    private static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MODID);
     private static final DeferredRegister<RecipeSerializer<?>> RECIPES = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
 
     public static final RegistryObject<RecipeSerializer<?>> COPYRECIPE = RECIPES.register("backpack_upgrade", CopyBackpackDataRecipe.Serializer::new);
@@ -135,14 +134,18 @@ public class SimplyBackpacks {
     }
 
     private void pickupEvent(EntityItemPickupEvent event) {
-        if (event.getPlayer().containerMenu instanceof SBContainer || event.getPlayer().isCrouching() || event.getItem().getItem().getItem() instanceof BackpackItem)
+        if (event.getEntity().containerMenu instanceof SBContainer || event.getEntity().isCrouching() || event.getItem().getItem().getItem() instanceof BackpackItem)
             return;
 
         if (BackpackUtils.curiosLoaded) {
-            ItemStack stack = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, event.getEntityLiving())
-                .map(ImmutableTriple::getRight).orElse(ItemStack.EMPTY);
+            //ItemStack stack = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, event.getEntity())
+            var curioslot = CuriosApi.getCuriosHelper().findFirstCurio(event.getEntity(), BackpackItem::isBackpack);
+//            ItemStack stack = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, event.getEntity())
+//                .map(ImmutableTriple::getRight).orElse(ItemStack.EMPTY);
 
-            if (!stack.isEmpty()) {
+
+            if (curioslot.isPresent()) {
+                ItemStack stack = curioslot.get().stack();
                 if (BackpackItem.pickupEvent(event, stack)) {
                     event.setResult(Event.Result.ALLOW);
                     return;
@@ -150,7 +153,7 @@ public class SimplyBackpacks {
             }
         }
 
-        Inventory playerInv = event.getPlayer().getInventory();
+        Inventory playerInv = event.getEntity().getInventory();
         for (int i = 0; i <= 8; i++) {
             ItemStack stack = playerInv.getItem(i);
             if (stack.getItem() instanceof BackpackItem && BackpackItem.pickupEvent(event, stack)) {

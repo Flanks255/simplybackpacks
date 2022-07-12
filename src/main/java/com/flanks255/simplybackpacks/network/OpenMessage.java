@@ -38,7 +38,7 @@ public class OpenMessage {
                         ctx.get().getSender().sendSystemMessage(Component.literal("Backpack upgraded to " + itemTier.name));
                     }
                     data.get().updateAccessRecords(player.getName().getString(), System.currentTimeMillis());
-                    NetworkHooks.openGui(player, new SimpleMenuProvider((windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, data.get().getUuid(), data.get().getTier(), data.get().getHandler()), backpack.getHoverName()), (buffer) -> buffer.writeUUID(data.get().getUuid()).writeInt(itemTier.ordinal()));
+                    NetworkHooks.openScreen(player, new SimpleMenuProvider((windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, data.get().getUuid(), data.get().getTier(), data.get().getHandler()), backpack.getHoverName()), (buffer) -> buffer.writeUUID(data.get().getUuid()).writeInt(itemTier.ordinal()));
                 }
             }
         });

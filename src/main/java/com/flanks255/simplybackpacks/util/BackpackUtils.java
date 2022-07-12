@@ -51,9 +51,9 @@ public class BackpackUtils {
             return player.getOffhandItem();
 
         if (curiosLoaded) {
-            ItemStack stack = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, player).map(data -> {
-                if (data.getRight().getItem() instanceof BackpackItem) {
-                    return data.getRight();
+            ItemStack stack = CuriosApi.getCuriosHelper().findFirstCurio(player, BackpackItem::isBackpack).map( slot -> {
+                if (slot.stack().getItem() instanceof BackpackItem) {
+                    return slot.stack();
                 }
                 return ItemStack.EMPTY;
             }).orElse(ItemStack.EMPTY);

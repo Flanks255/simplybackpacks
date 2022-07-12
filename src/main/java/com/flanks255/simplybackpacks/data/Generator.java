@@ -1,7 +1,7 @@
 package com.flanks255.simplybackpacks.data;
 
 import net.minecraft.data.DataGenerator;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.data.event.GatherDataEvent;
 
 public class Generator {
     public static void gatherData(GatherDataEvent event) {
