@@ -31,6 +31,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -40,6 +41,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -105,9 +107,11 @@ public class SimplyBackpacks {
 
         bus.addListener(this::setup);
         bus.addListener(this::clientStuff);
-        bus.addListener(this::registerKeyBinding);
         bus.addListener(Generator::gatherData);
         bus.addListener(this::onEnqueueIMC);
+
+        //grumble grumble
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> bus.addListener(this::registerKeyBinding));
 
         MinecraftForge.EVENT_BUS.addListener(this::pickupEvent);
         MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
