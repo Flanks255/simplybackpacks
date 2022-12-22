@@ -19,6 +19,7 @@ import com.flanks255.simplybackpacks.network.ToggleMessage;
 import com.flanks255.simplybackpacks.util.BackpackUtils;
 import com.flanks255.simplybackpacks.util.RecipeUnlocker;
 import com.flanks255.simplybackpacks.util.TagLookup;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.NonNullList;
@@ -33,25 +34,24 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -101,20 +101,19 @@ public class SimplyBackpacks {
 
         //Configs
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfiguration.COMMON_CONFIG);
-        bus.addListener(this::onConfigReload);
-
-        MinecraftForge.EVENT_BUS.addListener(this::onCommandsRegister);
+        bus.addListener(ConfigCache::listen);
+        MinecraftForge.EVENT_BUS.addListener(SBCommands::listen);
 
         bus.addListener(this::setup);
-        bus.addListener(this::clientStuff);
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            bus.addListener(this::clientStuff);
+            bus.addListener(this::registerKeyBinding);
+            MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
+        }
         bus.addListener(Generator::gatherData);
         bus.addListener(this::onEnqueueIMC);
 
-        //grumble grumble
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> bus.addListener(this::registerKeyBinding));
-
         MinecraftForge.EVENT_BUS.addListener(this::pickupEvent);
-        MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
 
         BackpackUtils.curiosLoaded = ModList.get().isLoaded("curios");
         RecipeUnlocker.register(MODID, MinecraftForge.EVENT_BUS, 2);
@@ -133,20 +132,12 @@ public class SimplyBackpacks {
         NETWORK = SBNetwork.register();
     }
 
-    private void onCommandsRegister(RegisterCommandsEvent event) {
-        SBCommands.register(event.getDispatcher());
-    }
-
     private void pickupEvent(EntityItemPickupEvent event) {
         if (event.getEntity().containerMenu instanceof SBContainer || event.getEntity().isCrouching() || event.getItem().getItem().getItem() instanceof BackpackItem)
             return;
 
         if (BackpackUtils.curiosLoaded) {
-            //ItemStack stack = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, event.getEntity())
             var curioslot = CuriosApi.getCuriosHelper().findFirstCurio(event.getEntity(), BackpackItem::isBackpack);
-//            ItemStack stack = CuriosApi.getCuriosHelper().findEquippedCurio(BackpackItem::isBackpack, event.getEntity())
-//                .map(ImmutableTriple::getRight).orElse(ItemStack.EMPTY);
-
 
             if (curioslot.isPresent()) {
                 ItemStack stack = curioslot.get().stack();
@@ -175,8 +166,8 @@ public class SimplyBackpacks {
     }
 
     private void registerKeyBinding(final RegisterKeyMappingsEvent event) {
-        this.keyBinds.add(0, new KeyMapping("key.simplybackpacks.backpackpickup.desc", -1, "key.simplybackpacks.category"));
-        this.keyBinds.add(1, new KeyMapping("key.simplybackpacks.backpackopen.desc", -1, "key.simplybackpacks.category"));
+        this.keyBinds.add(0, new KeyMapping("key.simplybackpacks.backpackpickup.desc", KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, -1, "key.simplybackpacks.category"));
+        this.keyBinds.add(1, new KeyMapping("key.simplybackpacks.backpackopen.desc", KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, -1, "key.simplybackpacks.category"));
         event.register(this.keyBinds.get(0));
         event.register(this.keyBinds.get(1));
     }
@@ -185,9 +176,4 @@ public class SimplyBackpacks {
         MenuScreens.register(SBCONTAINER.get(), SBGui::new);
         MenuScreens.register(FILTERCONTAINER.get(), FilterGui::new);
     }
-
-    private void onConfigReload(ModConfigEvent event) {
-        ConfigCache.RefreshCache();
-    }
-
 }

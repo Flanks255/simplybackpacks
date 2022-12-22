@@ -70,6 +70,7 @@ public class BackpackUtils {
         return ItemStack.EMPTY;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Nonnull
     public static Optional<UUID> getUUID(@Nonnull ItemStack stack) {
         if (stack.getItem() instanceof BackpackItem && stack.hasTag() && stack.getTag().contains("UUID"))
@@ -102,12 +103,14 @@ public class BackpackUtils {
             consumer.accept(stack.getTag());
     }
 
+    @SuppressWarnings("ConstantConditions")
     public static void ifTagContains(ItemStack stack, String child, Consumer<CompoundTag> consumer) {
         if (stack.hasTag())
             if (stack.getTag().contains(child))
                 consumer.accept(stack.getTag());
     }
 
+    @SuppressWarnings("ConstantConditions")
     public static Optional<CompoundTag> getTag(ItemStack stack) {
         if (stack.hasTag())
             return Optional.of(stack.getTag());
