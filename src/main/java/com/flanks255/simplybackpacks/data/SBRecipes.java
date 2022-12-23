@@ -8,28 +8,30 @@ import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nonnull;
-import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class SBRecipes extends RecipeProvider {
     public SBRecipes(DataGenerator generatorIn) {
-        super(generatorIn);
+        super(generatorIn.getPackOutput());
     }
     @Override
-    protected void saveAdvancement(CachedOutput cachedOutput, JsonObject object, Path path) {
-        // No thank you, good day sir.
+    protected CompletableFuture<?> saveAdvancement(@Nonnull CachedOutput output, @Nonnull FinishedRecipe finishedRecipe, @Nonnull JsonObject advancementJson) {
+        // Nope, don't want none of this...
+        return null;
     }
 
     @Override
-    protected void buildCraftingRecipes(@Nonnull Consumer<FinishedRecipe> consumer) {
+    protected void buildRecipes(@Nonnull Consumer<FinishedRecipe> consumer) {
         InventoryChangeTrigger.TriggerInstance lul = has(Items.AIR);
-        ShapedRecipeBuilder.shaped(SimplyBackpacks.COMMONBACKPACK.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, SimplyBackpacks.COMMONBACKPACK.get())
             .pattern("A A")
             .pattern("DBD")
             .pattern("BCB")
@@ -39,7 +41,7 @@ public class SBRecipes extends RecipeProvider {
             .define('D', Tags.Items.DYES_WHITE)
             .unlockedBy("", lul).save(consumer);
 
-        ShapedRecipeBuilder.shaped(SimplyBackpacks.UNCOMMONBACKPACK.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, SimplyBackpacks.UNCOMMONBACKPACK.get())
             .pattern("A A")
             .pattern("EBE")
             .pattern("CDC")
@@ -51,7 +53,7 @@ public class SBRecipes extends RecipeProvider {
             .unlockedBy("", lul)
             .save(WrappedRecipe.Inject(consumer, SimplyBackpacks.COPYRECIPE.get()));
 
-        ShapedRecipeBuilder.shaped(SimplyBackpacks.RAREBACKPACK.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, SimplyBackpacks.RAREBACKPACK.get())
             .pattern("A A")
             .pattern("DBD")
             .pattern("CEC")
@@ -63,7 +65,7 @@ public class SBRecipes extends RecipeProvider {
             .unlockedBy("", lul)
             .save(WrappedRecipe.Inject(consumer, SimplyBackpacks.COPYRECIPE.get()));
 
-        ShapedRecipeBuilder.shaped(SimplyBackpacks.EPICBACKPACK.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, SimplyBackpacks.EPICBACKPACK.get())
             .pattern("A A")
             .pattern("EBE")
             .pattern("CDC")
@@ -75,7 +77,7 @@ public class SBRecipes extends RecipeProvider {
             .unlockedBy("", lul)
             .save(WrappedRecipe.Inject(consumer, SimplyBackpacks.COPYRECIPE.get()));
 
-        ShapedRecipeBuilder.shaped(SimplyBackpacks.ULTIMATEBACKPACK.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, SimplyBackpacks.ULTIMATEBACKPACK.get())
             .pattern("A A")
             .pattern("EBE")
             .pattern("CDC")

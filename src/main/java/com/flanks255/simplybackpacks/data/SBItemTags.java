@@ -1,22 +1,25 @@
 package com.flanks255.simplybackpacks.data;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.common.data.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.concurrent.CompletableFuture;
 
 public class SBItemTags extends ItemTagsProvider {
-    public SBItemTags(DataGenerator dataGenerator, BlockTagsProvider blockTagProvider, @Nullable ExistingFileHelper existingFileHelper) {
-        super(dataGenerator, blockTagProvider, SimplyBackpacks.MODID, existingFileHelper);
+    public SBItemTags(DataGenerator dataGenerator, CompletableFuture<HolderLookup.Provider> something, BlockTagsProvider blockTagProvider, @Nullable ExistingFileHelper existingFileHelper) {
+        super(dataGenerator.getPackOutput(), something, blockTagProvider, SimplyBackpacks.MODID, existingFileHelper);
     }
 
     @Override
-    protected void addTags() {
+    protected void addTags(@Nonnull HolderLookup.Provider something) {
         tagShulkers();
         tagQuantumBags();
         tagKrates();

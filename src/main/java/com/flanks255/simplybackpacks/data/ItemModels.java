@@ -10,7 +10,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class ItemModels extends ItemModelProvider {
 
     public ItemModels(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-        super(generator, SimplyBackpacks.MODID, existingFileHelper);
+        super(generator.getPackOutput(), SimplyBackpacks.MODID, existingFileHelper);
     }
 
     @Override

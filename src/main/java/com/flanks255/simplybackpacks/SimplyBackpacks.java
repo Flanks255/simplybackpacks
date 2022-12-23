@@ -23,11 +23,12 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -38,6 +39,7 @@ import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.extensions.IForgeMenuType;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -69,11 +71,11 @@ public class SimplyBackpacks {
     public static SimpleChannel NETWORK;
 
     //forge:holds_items
-    public static final TagKey<Item> HOLDS_ITEMS = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation("forge", "holds_items"));
+    public static final TagKey<Item> HOLDS_ITEMS = TagKey.create(Registries.ITEM, new ResourceLocation("forge", "holds_items"));
     //curios:back
-    public static final TagKey<Item> CURIOS_BACK = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation("curios", "back"));
+    public static final TagKey<Item> CURIOS_BACK = TagKey.create(Registries.ITEM, new ResourceLocation("curios", "back"));
     //forge:soulbound
-    public static final TagKey<Enchantment> SOULBOUND = TagKey.create(Registry.ENCHANTMENT_REGISTRY, new ResourceLocation("forge", "soulbound"));
+    public static final TagKey<Enchantment> SOULBOUND = TagKey.create(Registries.ENCHANTMENT, new ResourceLocation("forge", "soulbound"));
     public static final TagLookup<Enchantment> SOULBOUND_LOOKUP = new TagLookup<>(ForgeRegistries.ENCHANTMENTS, SOULBOUND);
 
 
@@ -109,6 +111,7 @@ public class SimplyBackpacks {
             bus.addListener(this::clientStuff);
             bus.addListener(this::registerKeyBinding);
             MinecraftForge.EVENT_BUS.addListener(this::onClientTick);
+            bus.addListener(this::creativeTabEvent);
         }
         bus.addListener(Generator::gatherData);
         bus.addListener(this::onEnqueueIMC);
@@ -170,6 +173,16 @@ public class SimplyBackpacks {
         this.keyBinds.add(1, new KeyMapping("key.simplybackpacks.backpackopen.desc", KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, -1, "key.simplybackpacks.category"));
         event.register(this.keyBinds.get(0));
         event.register(this.keyBinds.get(1));
+    }
+
+    private void creativeTabEvent(final CreativeModeTabEvent.BuildContents event) {
+        if (event.getTab() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+            event.accept(COMMONBACKPACK.get());
+            event.accept(UNCOMMONBACKPACK.get());
+            event.accept(RAREBACKPACK.get());
+            event.accept(EPICBACKPACK.get());
+            event.accept(ULTIMATEBACKPACK.get());
+        }
     }
 
     private void clientStuff(final FMLClientSetupEvent event) {

@@ -24,7 +24,7 @@ repositories {
     maven { url "https://www.cursemaven.com" }
     maven { url = "https://maven.theillusivec4.top/" }
     maven { url "https://dvs1.progwml6.com/files/maven" }
-    maven { url = "https://maven.saps.dev/minecraft" }
+    maven { url = "https://maven.saps.dev/releases" }
 }
 
 def ENV = System.getenv()
@@ -86,7 +86,7 @@ dependencies {
 /*    compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
     runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")*/
 
-    runtimeOnly fg.deobf("com.flanks255:simplylight:1.19-1.4.+")
+    //runtimeOnly fg.deobf("com.flanks255:simplylight:1.19.3-1.4.+")
 
     //runtimeOnly fg.deobf("curse.maven:TOP-245211:3671753")
 
@@ -127,7 +127,7 @@ publishing {
     repositories {
         if (ENV.SAPS_TOKEN) {
             maven {
-                url "https://maven.saps.dev/minecraft"
+                url "https://maven.saps.dev/releases"
                 credentials {
                     username = "flanks"
                     password = "${ENV.SAPS_TOKEN}"
@@ -144,7 +144,7 @@ if (ENV.CURSEFORGE_KEY) {
             id = project.curseforge_id
             releaseType = "beta"
             addGameVersion "Forge"
-            addGameVersion "1.19"
+            addGameVersion "1.19.3"
             mainArtifact(jar)
             changelog = getGitChangelog
             changelogType = 'markdown'

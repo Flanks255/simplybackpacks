@@ -1,5 +1,6 @@
 {
   "type": "simplybackpacks:backpack_upgrade",
+  "category": "misc",
   "key": {
     "A": {
       "tag": "forge:ingots/gold"

@@ -88,7 +88,7 @@ public class FilterGui extends AbstractContainerScreen<FilterContainer> {
 
     class SlotButton extends Button {
         public SlotButton(int x, int y, int width, int height, int slotIn, OnPress pressable) {
-            super(x,y,width,height,Component.empty(), pressable);
+            super(x,y,width,height,Component.empty(), pressable, Button.DEFAULT_NARRATION);
 
             this.slot = slotIn;
         }
@@ -98,29 +98,29 @@ public class FilterGui extends AbstractContainerScreen<FilterContainer> {
         public void renderButton(@Nonnull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
             Font fontRenderer = Minecraft.getInstance().font;
 
-            boolean hovered = mouseX >= this.x && mouseX < this.x + this.width && mouseY >= this.y && mouseY < this.y + this.height;
+            boolean hovered = mouseX >= this.getX() && mouseX < this.getX() + this.width && mouseY >= this.getY() && mouseY < this.getY() + this.height;
 
             if (menu.filterHandler != null && !menu.filterHandler.getStackInSlot(this.slot).isEmpty()) {
                 ItemStack tmp = menu.filterHandler.getStackInSlot(this.slot);
                 itemRenderer.blitOffset = 100F;
                 RenderSystem.enableDepthTest();
                 Lighting.setupForFlatItems();
-                itemRenderer.renderAndDecorateItem(tmp, this.x, this.y);
-                itemRenderer.renderGuiItemDecorations(fontRenderer, tmp, this.x, this.y, "");
+                itemRenderer.renderAndDecorateItem(tmp, this.getX(), this.getY());
+                itemRenderer.renderGuiItemDecorations(fontRenderer, tmp, this.getX(), this.getY(), "");
                 itemRenderer.blitOffset = 0F;
                 Lighting.setupFor3DItems();
                 RenderSystem.disableDepthTest();
             }
 
             if (hovered)
-                fill(stack, this.x, this.y, this.x + this.width-1, this.y + this.height-1, -2130706433);
+                fill(stack, this.getX(), this.getY(), this.getX() + this.width-1, this.getY() + this.height-1, -2130706433);
         }
     }
 
 
     class SwitchButton extends Button {
         public SwitchButton(int x, int y, String text, boolean initial, OnPress pressable) {
-            super(x,y,32,16, Component.empty(), pressable);
+            super(x,y,32,16, Component.empty(), pressable, Button.DEFAULT_NARRATION);
             this.textKey = text;
             this.state = initial;
         }
@@ -134,8 +134,8 @@ public class FilterGui extends AbstractContainerScreen<FilterContainer> {
         @Override
         public void renderButton(@Nonnull PoseStack stack, int p_renderButton_1_, int p_renderButton_2_, float p_renderButton_3_) {
             RenderSystem.setShaderTexture(0, this.state ? this.on : this.off);
-            blit(stack, this.x, this.y, this.width, this.height,0,0,32,16, 32 ,16);
-            this.fontRenderer.draw(stack, I18n.get(this.textKey), this.x + 34, this.y + 4, 0x404040);
+            blit(stack, this.getX(), this.getY(), this.width, this.height,0,0,32,16, 32 ,16);
+            this.fontRenderer.draw(stack, I18n.get(this.textKey), this.getX() + 34, this.getY() + 4, 0x404040);
         }
     }
 }

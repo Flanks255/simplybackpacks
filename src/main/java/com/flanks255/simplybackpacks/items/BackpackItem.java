@@ -19,16 +19,19 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.network.NetworkHooks;
@@ -41,7 +44,7 @@ import java.util.UUID;
 
 public class BackpackItem extends Item {
     public BackpackItem(String name, Backpack tier) {
-        super(new Item.Properties().stacksTo(1).tab(CreativeModeTab.TAB_TOOLS).fireResistant());
+        super(new Item.Properties().stacksTo(1).fireResistant());
         this.name = name;
         this.tier = tier;
     }
@@ -142,7 +145,7 @@ public class BackpackItem extends Item {
         @Nonnull
         @Override
         public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-            if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            if (cap == ForgeCapabilities.ITEM_HANDLER) {
                 if(!this.optional.isPresent())
                     this.optional = BackpackManager.get().getCapability(this.stack);
                 return this.optional.cast();
@@ -167,7 +170,7 @@ public class BackpackItem extends Item {
 
 
     public static boolean applyFilter(ItemStack item, ItemStack packItem) {
-        LazyOptional<IItemHandler> handlerOptional = packItem.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+        LazyOptional<IItemHandler> handlerOptional = packItem.getCapability(ForgeCapabilities.ITEM_HANDLER);
 
         if (handlerOptional.isPresent() && handlerOptional.resolve().get() instanceof SBItemHandler) {
             BackpackData data = BackpackItem.getData(packItem);
@@ -205,7 +208,7 @@ public class BackpackItem extends Item {
         if (!nbt.getBoolean("Pickup"))
             return false;
 
-        LazyOptional<IItemHandler> optional = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+        LazyOptional<IItemHandler> optional = stack.getCapability(ForgeCapabilities.ITEM_HANDLER);
         if (optional.isPresent()) {
             IItemHandler handler = optional.resolve().get();
 
