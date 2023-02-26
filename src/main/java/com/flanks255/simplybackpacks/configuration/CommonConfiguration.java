@@ -20,7 +20,7 @@ public class CommonConfiguration {
     static {
         COMMON_BUILDER.comment("Anti-Nesting").push("antinesting");
             ITEM_BLACKLIST = COMMON_BUILDER.comment("List of Resource Locations for items to be blocked").defineList("itemBlacklist", DEFAULT_BLACKLIST, obj -> obj instanceof String && ResourceLocation.isValidResourceLocation((String) obj));
-            ITEM_WHITELIST = COMMON_BUILDER.comment("List of Resource Locations for items to be allowed despite matching other blocking checks.").defineList("itemWhitelist", DEFAULT_WHITELIST, obj -> obj instanceof String && ResourceLocation.isValidResourceLocation((String) obj));
+            ITEM_WHITELIST = COMMON_BUILDER.comment("List of Resource Locations for items to be allowed despite matching other blocking checks.").defineList("itemWhitelist", DEFAULT_WHITELIST, obj -> obj instanceof String && ResourceLocation.tryParse((String) obj) != null);
         COMMON_BUILDER.pop();
 
 
