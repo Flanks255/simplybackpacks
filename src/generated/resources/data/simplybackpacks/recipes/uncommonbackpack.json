@@ -26,5 +26,6 @@
   ],
   "result": {
     "item": "simplybackpacks:uncommonbackpack"
-  }
+  },
+  "show_notification": false
 }

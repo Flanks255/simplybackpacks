@@ -39,6 +39,7 @@ public class SBRecipes extends RecipeProvider {
             .define('B', Tags.Items.LEATHER)
             .define('C', Tags.Items.CHESTS)
             .define('D', Tags.Items.DYES_WHITE)
+            .showNotification(false)
             .unlockedBy("", lul).save(consumer);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, SimplyBackpacks.UNCOMMONBACKPACK.get())
@@ -50,6 +51,7 @@ public class SBRecipes extends RecipeProvider {
             .define('C', Tags.Items.CHESTS)
             .define('D', Tags.Items.STORAGE_BLOCKS_GOLD)
             .define('E', Tags.Items.DYES_YELLOW)
+            .showNotification(false)
             .unlockedBy("", lul)
             .save(WrappedRecipe.Inject(consumer, SimplyBackpacks.COPYRECIPE.get()));
 
@@ -62,6 +64,7 @@ public class SBRecipes extends RecipeProvider {
             .define('C', Tags.Items.CHESTS)
             .define('D', Tags.Items.DYES_BLUE)
             .define('E', Tags.Items.STORAGE_BLOCKS_DIAMOND)
+            .showNotification(false)
             .unlockedBy("", lul)
             .save(WrappedRecipe.Inject(consumer, SimplyBackpacks.COPYRECIPE.get()));
 
@@ -74,6 +77,7 @@ public class SBRecipes extends RecipeProvider {
             .define('C', Tags.Items.CHESTS)
             .define('D', Tags.Items.NETHER_STARS)
             .define('E', Items.IRON_BARS)
+            .showNotification(false)
             .unlockedBy("", lul)
             .save(WrappedRecipe.Inject(consumer, SimplyBackpacks.COPYRECIPE.get()));
 
@@ -86,6 +90,7 @@ public class SBRecipes extends RecipeProvider {
             .define('C', Tags.Items.CHESTS)
             .define('D', Tags.Items.STORAGE_BLOCKS_NETHERITE)
             .define('E', Tags.Items.NETHER_STARS)
+            .showNotification(false)
             .unlockedBy("", lul)
             .save(WrappedRecipe.Inject(consumer, SimplyBackpacks.COPYRECIPE.get()));
     }

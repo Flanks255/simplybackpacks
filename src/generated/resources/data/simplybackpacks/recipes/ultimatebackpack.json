@@ -26,5 +26,6 @@
   ],
   "result": {
     "item": "simplybackpacks:ultimatebackpack"
-  }
+  },
+  "show_notification": false
 }

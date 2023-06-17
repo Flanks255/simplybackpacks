@@ -21,9 +21,9 @@ apply from: 'https://files.saps.dev/ci/git-md-changelog.gradle'
 apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
 
 repositories {
+    maven { url = 'https://maven.creeperhost.net/' }
     maven { url "https://www.cursemaven.com" }
     maven { url = "https://maven.theillusivec4.top/" }
-    maven { url "https://dvs1.progwml6.com/files/maven" }
     maven { url = "https://maven.saps.dev/releases" }
 }
 
@@ -45,6 +45,8 @@ minecraft {
         client {
             workingDirectory project.file('run')
 
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
             mods {
                 simplybackpacks {
                     source sourceSets.main
@@ -56,7 +58,8 @@ minecraft {
             workingDirectory project.file('run')
 
             args 'nogui'
-
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
             mods {
                 simplybackpacks {
                     source sourceSets.main
@@ -68,7 +71,8 @@ minecraft {
             workingDirectory project.file('run')
 
             args '--mod', 'simplybackpacks', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
             mods {
                 simplybackpacks {
                     source sourceSets.main
@@ -83,8 +87,9 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     minecraft "net.minecraftforge:forge:$minecraft_version-$forge_version"
 
-/*    compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
-    runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")*/
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}") //new
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
+    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 
     //runtimeOnly fg.deobf("com.flanks255:simplylight:1.19.3-1.4.+")
 
@@ -144,7 +149,7 @@ if (ENV.CURSEFORGE_KEY) {
             id = project.curseforge_id
             releaseType = "beta"
             addGameVersion "Forge"
-            addGameVersion "1.19.3"
+            addGameVersion "1.19.4"
             mainArtifact(jar)
             changelog = getGitChangelog
             changelogType = 'markdown'

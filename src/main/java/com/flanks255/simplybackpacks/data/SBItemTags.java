@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class SBItemTags extends ItemTagsProvider {
     public SBItemTags(DataGenerator dataGenerator, CompletableFuture<HolderLookup.Provider> something, BlockTagsProvider blockTagProvider, @Nullable ExistingFileHelper existingFileHelper) {
-        super(dataGenerator.getPackOutput(), something, blockTagProvider, SimplyBackpacks.MODID, existingFileHelper);
+        super(dataGenerator.getPackOutput(), something, blockTagProvider.contentsGetter(), SimplyBackpacks.MODID, existingFileHelper);
     }
 
     @Override

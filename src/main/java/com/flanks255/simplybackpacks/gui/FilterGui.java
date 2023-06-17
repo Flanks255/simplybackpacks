@@ -95,19 +95,19 @@ public class FilterGui extends AbstractContainerScreen<FilterContainer> {
         public final int slot;
 
         @Override
-        public void renderButton(@Nonnull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+        public void renderWidget(@Nonnull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
             Font fontRenderer = Minecraft.getInstance().font;
 
             boolean hovered = mouseX >= this.getX() && mouseX < this.getX() + this.width && mouseY >= this.getY() && mouseY < this.getY() + this.height;
 
             if (menu.filterHandler != null && !menu.filterHandler.getStackInSlot(this.slot).isEmpty()) {
                 ItemStack tmp = menu.filterHandler.getStackInSlot(this.slot);
-                itemRenderer.blitOffset = 100F;
+                //itemRenderer.blitOffset = 100F;
                 RenderSystem.enableDepthTest();
                 Lighting.setupForFlatItems();
-                itemRenderer.renderAndDecorateItem(tmp, this.getX(), this.getY());
-                itemRenderer.renderGuiItemDecorations(fontRenderer, tmp, this.getX(), this.getY(), "");
-                itemRenderer.blitOffset = 0F;
+                itemRenderer.renderAndDecorateItem(stack, tmp, this.getX(), this.getY());
+                itemRenderer.renderGuiItemDecorations(stack, fontRenderer, tmp, this.getX(), this.getY(), "");
+                //itemRenderer.blitOffset = 0F;
                 Lighting.setupFor3DItems();
                 RenderSystem.disableDepthTest();
             }
@@ -132,7 +132,7 @@ public class FilterGui extends AbstractContainerScreen<FilterContainer> {
         private final Font fontRenderer = Minecraft.getInstance().font;
 
         @Override
-        public void renderButton(@Nonnull PoseStack stack, int p_renderButton_1_, int p_renderButton_2_, float p_renderButton_3_) {
+        public void renderWidget(@Nonnull PoseStack stack, int p_renderButton_1_, int p_renderButton_2_, float p_renderButton_3_) {
             RenderSystem.setShaderTexture(0, this.state ? this.on : this.off);
             blit(stack, this.getX(), this.getY(), this.width, this.height,0,0,32,16, 32 ,16);
             this.fontRenderer.draw(stack, I18n.get(this.textKey), this.getX() + 34, this.getY() + 4, 0x404040);

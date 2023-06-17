@@ -3,6 +3,7 @@ package com.flanks255.simplybackpacks.crafting;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -21,13 +22,13 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
     }
 
     public CopyBackpackDataRecipe(ShapedRecipe shapedRecipe) {
-        super(shapedRecipe.getId(), shapedRecipe.getGroup(), shapedRecipe.category(), shapedRecipe.getRecipeWidth(), shapedRecipe.getRecipeHeight(), shapedRecipe.getIngredients(), shapedRecipe.getResultItem());
+        super(shapedRecipe.getId(), shapedRecipe.getGroup(), shapedRecipe.category(), shapedRecipe.getRecipeWidth(), shapedRecipe.getRecipeHeight(), shapedRecipe.getIngredients(), shapedRecipe.getResultItem(null));
     }
 
     @Override
     @Nonnull
-    public ItemStack assemble(@Nonnull CraftingContainer inv) {
-        final ItemStack craftingResult = super.assemble(inv);
+    public ItemStack assemble(@Nonnull CraftingContainer inv, RegistryAccess wat) {
+        final ItemStack craftingResult = super.assemble(inv, wat);
         TargetNBTIngredient donorIngredient = null;
         ItemStack dataSource = ItemStack.EMPTY;
         NonNullList<Ingredient> ingredients = getIngredients();
