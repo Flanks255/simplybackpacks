@@ -33,7 +33,7 @@ public class Delete {
                 if (player.getUUID().equals(confirmation.player())) {
                     backpacks.removeBackpack(confirmation.backpack());
                     BackpackUtils.removeConfirmation(stringUUID);
-                    ctx.getSource().sendSuccess(Component.translatable("simplybackpacks.delete.finished", confirmation.backpack()), false);
+                    ctx.getSource().sendSuccess(() -> Component.translatable("simplybackpacks.delete.finished", confirmation.backpack()), false);
                 }
             });
         }
@@ -48,9 +48,9 @@ public class Delete {
             Optional<BackpackData> data = backpacks.getBackpack(uuid);
 
             data.ifPresentOrElse(backpack -> {
-                String code = BackpackUtils.generateCode(player.level.random);
+                String code = BackpackUtils.generateCode(player.level().random);
                 BackpackUtils.addConfirmation(code, player.getUUID(), backpack.getUuid());
-                ctx.getSource().sendSuccess(Component.translatable("simplybackpacks.delete.confirmation", Component.literal(code).withStyle(ChatFormatting.GOLD)), false);
+                ctx.getSource().sendSuccess(() -> Component.translatable("simplybackpacks.delete.confirmation", Component.literal(code).withStyle(ChatFormatting.GOLD)), false);
             }, () -> ctx.getSource().sendFailure(Component.translatable("simplybackpacks.invaliduuid")));
 
             ;

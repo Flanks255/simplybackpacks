@@ -3,12 +3,10 @@ package com.flanks255.simplybackpacks.gui;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -57,32 +55,30 @@ public class FilterGui extends AbstractContainerScreen<FilterContainer> {
     private final ResourceLocation GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/filter_gui.png");
 
     @Override
-    public void render(@Nonnull PoseStack matrixStack, int p_render_1_, int p_render_2_, float p_render_3_) {
-        this.renderBackground(matrixStack);
-        super.render(matrixStack,p_render_1_, p_render_2_, p_render_3_);
-        this.renderTooltip(matrixStack, p_render_1_, p_render_2_);
+    public void render(@Nonnull GuiGraphics gg, int p_render_1_, int p_render_2_, float p_render_3_) {
+        this.renderBackground(gg);
+        super.render(gg,p_render_1_, p_render_2_, p_render_3_);
+        this.renderTooltip(gg, p_render_1_, p_render_2_);
     }
 
     @Override
-    protected void renderBg(@Nonnull PoseStack matrixStack, float partialTicks, int x, int y) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, this.GUI);
-        blit(matrixStack, this.leftPos, this.topPos, 0,0, 176,166, 176, 166);
+    protected void renderBg(@Nonnull GuiGraphics gui, float partialTicks, int x, int y) {
+        gui.blit(GUI, this.leftPos, this.topPos, 0,0, 176,166, 176, 166);
     }
 
     @Override
-    protected void renderLabels(@Nonnull PoseStack matrixStack, int x, int y) {
+    protected void renderLabels(@Nonnull GuiGraphics gg, int x, int y) {
         // nope...
     }
 
     @Override
-    protected void renderTooltip(@Nonnull PoseStack matrixStack, int x, int y) {
-        super.renderTooltip(matrixStack, x, y);
+    protected void renderTooltip(@Nonnull GuiGraphics gg, int x, int y) {
+        super.renderTooltip(gg, x, y);
 
         children().forEach((child) -> {
             if (child.isMouseOver(x,y) && child instanceof SlotButton button)
                 if (!this.menu.filterHandler.getStackInSlot(button.slot).isEmpty())
-                    renderTooltip(matrixStack, this.menu.filterHandler.getStackInSlot(button.slot), x, y);
+                    gg.renderTooltip(font, this.menu.filterHandler.getStackInSlot(button.slot), x, y);
         });
     }
 
@@ -95,25 +91,22 @@ public class FilterGui extends AbstractContainerScreen<FilterContainer> {
         public final int slot;
 
         @Override
-        public void renderWidget(@Nonnull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
-            Font fontRenderer = Minecraft.getInstance().font;
-
+        public void renderWidget(@Nonnull GuiGraphics gg, int mouseX, int mouseY, float partialTicks) {
             boolean hovered = mouseX >= this.getX() && mouseX < this.getX() + this.width && mouseY >= this.getY() && mouseY < this.getY() + this.height;
 
             if (menu.filterHandler != null && !menu.filterHandler.getStackInSlot(this.slot).isEmpty()) {
                 ItemStack tmp = menu.filterHandler.getStackInSlot(this.slot);
-                //itemRenderer.blitOffset = 100F;
                 RenderSystem.enableDepthTest();
                 Lighting.setupForFlatItems();
-                itemRenderer.renderAndDecorateItem(stack, tmp, this.getX(), this.getY());
-                itemRenderer.renderGuiItemDecorations(stack, fontRenderer, tmp, this.getX(), this.getY(), "");
-                //itemRenderer.blitOffset = 0F;
+
+                gg.renderItem(tmp, this.getX(), this.getY());
+
                 Lighting.setupFor3DItems();
                 RenderSystem.disableDepthTest();
             }
 
             if (hovered)
-                fill(stack, this.getX(), this.getY(), this.getX() + this.width-1, this.getY() + this.height-1, -2130706433);
+                gg.fill(this.getX(), this.getY(), this.getX() + this.width-1, this.getY() + this.height-1, -2130706433);
         }
     }
 
@@ -129,13 +122,11 @@ public class FilterGui extends AbstractContainerScreen<FilterContainer> {
         private final ResourceLocation on = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/switch_on.png");
         public boolean state;
         private final String textKey;
-        private final Font fontRenderer = Minecraft.getInstance().font;
 
         @Override
-        public void renderWidget(@Nonnull PoseStack stack, int p_renderButton_1_, int p_renderButton_2_, float p_renderButton_3_) {
-            RenderSystem.setShaderTexture(0, this.state ? this.on : this.off);
-            blit(stack, this.getX(), this.getY(), this.width, this.height,0,0,32,16, 32 ,16);
-            this.fontRenderer.draw(stack, I18n.get(this.textKey), this.getX() + 34, this.getY() + 4, 0x404040);
+        public void renderWidget(@Nonnull GuiGraphics gg, int p_renderButton_1_, int p_renderButton_2_, float p_renderButton_3_) {
+            gg.blit(this.state ? this.on : this.off, this.getX(), this.getY(), this.width, this.height,0,0,32,16, 32 ,16);
+            gg.drawString(font, I18n.get(this.textKey), this.getX() + 34, this.getY() + 4, 0x404040, false);
         }
     }
 }

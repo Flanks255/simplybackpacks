@@ -147,9 +147,9 @@ if (ENV.CURSEFORGE_KEY) {
         apiKey = ENV.CURSEFORGE_KEY
         project {
             id = project.curseforge_id
-            releaseType = "beta"
+            releaseType = "release"
             addGameVersion "Forge"
-            addGameVersion "1.19.4"
+            addGameVersion "1.20.1"
             mainArtifact(jar)
             changelog = getGitChangelog
             changelogType = 'markdown'

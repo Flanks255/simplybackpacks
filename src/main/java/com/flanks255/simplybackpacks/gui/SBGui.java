@@ -3,10 +3,8 @@ package com.flanks255.simplybackpacks.gui;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.items.Backpack;
 import com.flanks255.simplybackpacks.util.BackpackUtils;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -46,21 +44,19 @@ public class SBGui extends AbstractContainerScreen<SBContainer> {
     }
 
     @Override
-    protected void renderBg(@Nonnull PoseStack matrixStack, float partialTicks, int x, int y) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, this.GUI);
-        blit(matrixStack, this.leftPos, this.topPos, 0,0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
+    protected void renderBg(@Nonnull GuiGraphics gg, float partialTicks, int x, int y) {
+        gg.blit(GUI, this.leftPos, this.topPos, 0,0, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
     }
 
     @Override
-    protected void renderLabels(@Nonnull PoseStack matrixStack, int x, int y) {
-        this.font.draw(matrixStack, this.title.getString(), 7,6,0x404040);
+    protected void renderLabels(@Nonnull GuiGraphics gg, int x, int y) {
+        gg.drawString(font, this.title.getString(), 7,6,0x404040, false);
     }
 
     @Override
-    public void render(@Nonnull PoseStack matrixStack, int pMouseX, int pMouseY, float pPartialTicks) {
-        this.renderBackground(matrixStack);
-        super.render(matrixStack,pMouseX, pMouseY, pPartialTicks);
-        this.renderTooltip(matrixStack, pMouseX, pMouseY);
+    public void render(@Nonnull GuiGraphics gg, int pMouseX, int pMouseY, float pPartialTicks) {
+        this.renderBackground(gg);
+        super.render(gg,pMouseX, pMouseY, pPartialTicks);
+        this.renderTooltip(gg, pMouseX, pMouseY);
     }
 }

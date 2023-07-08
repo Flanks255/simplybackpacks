@@ -186,9 +186,9 @@ public class BackpackItem extends Item {
             for (int i = 0; i < 16; i++) {
                 ItemStack fStack = filterHandler.getStackInSlot(i);
                 if (!fStack.isEmpty()) {
-                    if (fStack.sameItem(item)) {
+                    if (ItemStack.isSameItem(fStack, item)) {
                         if (nbtMatch)
-                            return ItemStack.tagMatches(fStack, item) == whitelist;
+                            return ItemStack.isSameItemSameTags(fStack, item) == whitelist;
                         else
                             return whitelist;
                     }

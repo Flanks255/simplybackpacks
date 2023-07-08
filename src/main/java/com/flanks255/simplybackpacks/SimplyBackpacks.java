@@ -39,7 +39,7 @@ import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -77,8 +77,6 @@ public class SimplyBackpacks {
     //forge:soulbound
     public static final TagKey<Enchantment> SOULBOUND = TagKey.create(Registries.ENCHANTMENT, new ResourceLocation("forge", "soulbound"));
     public static final TagLookup<Enchantment> SOULBOUND_LOOKUP = new TagLookup<>(ForgeRegistries.ENCHANTMENTS, SOULBOUND);
-
-
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     private static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MODID);
     private static final DeferredRegister<RecipeSerializer<?>> RECIPES = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
@@ -92,7 +90,6 @@ public class SimplyBackpacks {
     public static final RegistryObject<Item> RAREBACKPACK = ITEMS.register("rarebackpack", () -> new BackpackItem("rarebackpack", Backpack.RARE));
     public static final RegistryObject<Item> EPICBACKPACK = ITEMS.register("epicbackpack", () -> new BackpackItem("epicbackpack", Backpack.EPIC));
     public static final RegistryObject<Item> ULTIMATEBACKPACK = ITEMS.register("ultimatebackpack", () -> new BackpackItem("ultimatebackpack", Backpack.ULTIMATE));
-
     private final NonNullList<KeyMapping> keyBinds = NonNullList.create();
 
     public SimplyBackpacks() {
@@ -175,8 +172,8 @@ public class SimplyBackpacks {
         event.register(this.keyBinds.get(1));
     }
 
-    private void creativeTabEvent(final CreativeModeTabEvent.BuildContents event) {
-        if (event.getTab() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+    private void creativeTabEvent(final BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey().compareTo(CreativeModeTabs.TOOLS_AND_UTILITIES) == 0) {
             event.accept(COMMONBACKPACK.get());
             event.accept(UNCOMMONBACKPACK.get());
             event.accept(RAREBACKPACK.get());

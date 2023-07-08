@@ -79,7 +79,7 @@ public class List {
         ServerPlayer player = ctx.getSource().getPlayerOrException();
 
         if (backpacks.getMap().size() == 0) {
-            ctx.getSource().sendSuccess(Component.literal("[ ]"), false);
+            ctx.getSource().sendSuccess(() -> Component.literal("[ ]"), false);
             return 0;
         }
 
@@ -93,7 +93,7 @@ public class List {
         ServerPlayer player = ctx.getSource().getPlayerOrException();
 
         if (backpacks.getMap().size() == 0) {
-            ctx.getSource().sendSuccess(Component.literal("[ ]"), false);
+            ctx.getSource().sendSuccess(() -> Component.literal("[ ]"), false);
             return 0;
         }
 
@@ -111,7 +111,7 @@ public class List {
         ServerPlayer player = ctx.getSource().getPlayerOrException();
 
         if (backpacks.getMap().size() == 0) {
-            ctx.getSource().sendSuccess(Component.literal("[ ]"), false);
+            ctx.getSource().sendSuccess(() -> Component.literal("[ ]"), false);
             return 0;
         }
 
