@@ -1,14 +1,16 @@
 package com.flanks255.simplybackpacks.crafting;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
+import com.flanks255.simplybackpacks.items.BackpackItem;
 import com.mojang.serialization.Codec;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -22,17 +24,13 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
         super(shapedRecipe.getGroup(), shapedRecipe.category(), shapedRecipe.pattern, shapedRecipe.getResultItem(RegistryAccess.EMPTY));
     }
 
-    public CopyBackpackDataRecipe(String s, CraftingBookCategory craftingBookCategory, ShapedRecipePattern pattern, ItemStack itemStack, Boolean aBoolean) {
-        super(s, craftingBookCategory, pattern, itemStack, aBoolean);
-    }
-
     @Override
     @Nonnull
     public ItemStack assemble(@Nonnull CraftingContainer inv, RegistryAccess wat) {
         final ItemStack craftingResult = super.assemble(inv, wat);
-        TargetNBTIngredient donorIngredient = null;
+        //TargetNBTIngredient donorIngredient = null;
         ItemStack dataSource = ItemStack.EMPTY;
-        NonNullList<? extends Ingredient> ingredients = getIngredients();
+/*        NonNullList<? extends Ingredient> ingredients = getIngredients();
         for (Ingredient ingredient : ingredients) {
             if (ingredient instanceof TargetNBTIngredient target) {
                 donorIngredient = target;
@@ -42,11 +40,11 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
         if (donorIngredient == null) {
             SimplyBackpacks.LOGGER.info("Copy Data Recipe missing donor ingredient");
             return new ItemStack(Items.AIR);
-        }
+        }*/
         if (!craftingResult.isEmpty()) {
             for (int i = 0; i < inv.getContainerSize(); i++) {
                 final ItemStack item = inv.getItem(i);
-                if (!item.isEmpty() && donorIngredient.test(item)) {
+                if (!item.isEmpty() && item.getItem() instanceof BackpackItem) {
                     dataSource = item;
                     break;
                 }

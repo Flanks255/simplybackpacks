@@ -7,10 +7,7 @@
         "tag": "forge:dyes/magenta"
       },
       "B": {
-        "type": "simplybackpacks:nbt_target",
-        "value": {
-          "item": "simplybackpacks:rarebackpack"
-        }
+        "item": "simplybackpacks:rarebackpack"
       },
       "C": {
         "tag": "forge:chests"

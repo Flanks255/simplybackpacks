@@ -115,7 +115,7 @@ jar {
         file = jar.archiveFile
         changelog = file("./CHANGELOG.md").text
         modLoaders.add("NeoForge")
-        type = STABLE
+        type = BETA
         curseforge {
             accessToken = providers.environmentVariable("CURSEFORGE_KEY")
             projectId = project.curseforge_id

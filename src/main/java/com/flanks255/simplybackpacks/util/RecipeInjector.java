@@ -10,7 +10,7 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Function;
-
+@SuppressWarnings("unchecked")
 public class RecipeInjector<T extends Recipe<?>> implements RecipeOutput {
     private final RecipeOutput inner;
     private final Function<T, ? extends T> constructor;

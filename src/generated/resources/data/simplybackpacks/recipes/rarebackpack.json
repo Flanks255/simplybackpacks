@@ -7,10 +7,7 @@
         "tag": "forge:gems/diamond"
       },
       "B": {
-        "type": "simplybackpacks:nbt_target",
-        "value": {
-          "item": "simplybackpacks:uncommonbackpack"
-        }
+        "item": "simplybackpacks:uncommonbackpack"
       },
       "C": {
         "tag": "forge:chests"

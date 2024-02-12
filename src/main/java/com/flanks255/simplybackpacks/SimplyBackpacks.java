@@ -18,7 +18,6 @@ import com.flanks255.simplybackpacks.network.HotkeyPacket;
 import com.flanks255.simplybackpacks.network.SBNetwork;
 import com.flanks255.simplybackpacks.util.BackpackUtils;
 import com.flanks255.simplybackpacks.util.RecipeUnlocker;
-import com.flanks255.simplybackpacks.util.TagLookup;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -73,7 +72,7 @@ public class SimplyBackpacks {
     public static final TagKey<Item> CURIOS_BACK = TagKey.create(Registries.ITEM, new ResourceLocation("curios", "back"));
     //forge:soulbound
     public static final TagKey<Enchantment> SOULBOUND = TagKey.create(Registries.ENCHANTMENT, new ResourceLocation("forge", "soulbound"));
-    public static final TagLookup<Enchantment> SOULBOUND_LOOKUP = new TagLookup<>(BuiltInRegistries.ENCHANTMENT, SOULBOUND);
+    //public static final TagLookup<Enchantment> SOULBOUND_LOOKUP = new TagLookup<>(BuiltInRegistries.ENCHANTMENT, SOULBOUND);
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     private static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(BuiltInRegistries.MENU, MODID);
     private static final DeferredRegister<RecipeSerializer<?>> RECIPES = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, MODID);

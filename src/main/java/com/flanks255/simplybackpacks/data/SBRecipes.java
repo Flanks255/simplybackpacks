@@ -2,7 +2,6 @@ package com.flanks255.simplybackpacks.data;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.crafting.CopyBackpackDataRecipe;
-import com.flanks255.simplybackpacks.crafting.TargetNBTIngredient;
 import com.flanks255.simplybackpacks.util.NoAdvRecipeOutput;
 import com.flanks255.simplybackpacks.util.RecipeInjector;
 import net.minecraft.data.DataGenerator;
@@ -40,7 +39,8 @@ public class SBRecipes extends RecipeProvider {
             .pattern("EBE")
             .pattern("CDC")
             .define('A', Tags.Items.INGOTS_GOLD)
-            .define('B', TargetNBTIngredient.of(SimplyBackpacks.COMMONBACKPACK.get()))
+            //.define('B', TargetNBTIngredient.of(SimplyBackpacks.COMMONBACKPACK.get()))
+            .define('B', SimplyBackpacks.COMMONBACKPACK.get())
             .define('C', Tags.Items.CHESTS)
             .define('D', Tags.Items.STORAGE_BLOCKS_GOLD)
             .define('E', Tags.Items.DYES_YELLOW)
@@ -53,7 +53,8 @@ public class SBRecipes extends RecipeProvider {
             .pattern("DBD")
             .pattern("CEC")
             .define('A', Tags.Items.GEMS_DIAMOND)
-            .define('B', TargetNBTIngredient.of(SimplyBackpacks.UNCOMMONBACKPACK.get()))
+            //.define('B', TargetNBTIngredient.of(SimplyBackpacks.UNCOMMONBACKPACK.get()))
+            .define('B', SimplyBackpacks.UNCOMMONBACKPACK.get())
             .define('C', Tags.Items.CHESTS)
             .define('D', Tags.Items.DYES_BLUE)
             .define('E', Tags.Items.STORAGE_BLOCKS_DIAMOND)
@@ -66,7 +67,8 @@ public class SBRecipes extends RecipeProvider {
             .pattern("EBE")
             .pattern("CDC")
             .define('A', Tags.Items.DYES_MAGENTA)
-            .define('B', TargetNBTIngredient.of(SimplyBackpacks.RAREBACKPACK.get()))
+            //.define('B', TargetNBTIngredient.of(SimplyBackpacks.RAREBACKPACK.get()))
+            .define('B', SimplyBackpacks.RAREBACKPACK.get())
             .define('C', Tags.Items.CHESTS)
             .define('D', Tags.Items.NETHER_STARS)
             .define('E', Items.IRON_BARS)
@@ -79,7 +81,8 @@ public class SBRecipes extends RecipeProvider {
             .pattern("EBE")
             .pattern("CDC")
             .define('A', Tags.Items.INGOTS_NETHERITE)
-            .define('B', TargetNBTIngredient.of(SimplyBackpacks.EPICBACKPACK.get()))
+            //.define('B', TargetNBTIngredient.of(SimplyBackpacks.EPICBACKPACK.get()))
+            .define('B', SimplyBackpacks.EPICBACKPACK.get())
             .define('C', Tags.Items.CHESTS)
             .define('D', Tags.Items.STORAGE_BLOCKS_NETHERITE)
             .define('E', Tags.Items.NETHER_STARS)

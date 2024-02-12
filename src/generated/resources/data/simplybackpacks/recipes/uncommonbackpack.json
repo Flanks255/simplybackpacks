@@ -7,10 +7,7 @@
         "tag": "forge:ingots/gold"
       },
       "B": {
-        "type": "simplybackpacks:nbt_target",
-        "value": {
-          "item": "simplybackpacks:commonbackpack"
-        }
+        "item": "simplybackpacks:commonbackpack"
       },
       "C": {
         "tag": "forge:chests"
