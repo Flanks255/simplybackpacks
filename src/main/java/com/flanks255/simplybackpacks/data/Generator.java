@@ -1,7 +1,7 @@
 package com.flanks255.simplybackpacks.data;
 
 import net.minecraft.data.DataGenerator;
-import net.minecraftforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 public class Generator {
     public static void gatherData(GatherDataEvent event) {
@@ -13,5 +13,6 @@ public class Generator {
         generator.addProvider(true, new SBItemTags(generator, event.getLookupProvider(), blockTags, event.getExistingFileHelper()));
         generator.addProvider(true, new SBEnchantmentGen(generator, event.getLookupProvider(), event.getExistingFileHelper()));
         generator.addProvider(true, new SBRecipes(generator));
+        generator.addProvider(true, new SBCurios(generator.getPackOutput(), event.getExistingFileHelper(), event.getLookupProvider()));
     }
 }

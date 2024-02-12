@@ -2,7 +2,7 @@ package com.flanks255.simplybackpacks.configuration;
 
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.neoforged.fml.event.config.ModConfigEvent;
 
 import java.util.List;
 import java.util.stream.Collectors;

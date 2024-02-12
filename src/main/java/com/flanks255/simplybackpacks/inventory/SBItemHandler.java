@@ -3,7 +3,7 @@ package com.flanks255.simplybackpacks.inventory;
 import com.flanks255.simplybackpacks.util.BackpackUtils;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 

@@ -2,9 +2,8 @@ package com.flanks255.simplybackpacks.inventory;
 
 import com.flanks255.simplybackpacks.items.Backpack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -13,12 +12,12 @@ public class BackpackData {
     private final UUID uuid;
     private Backpack tier;
     private final SBItemHandler inventory;
-    private final LazyOptional<IItemHandler> optional;
+    private final Optional<IItemHandler> optional;
     public final Metadata meta = new Metadata();
 
     private FilterItemHandler filter = new FilterItemHandler();
 
-    public LazyOptional<IItemHandler> getOptional() {
+    public Optional<IItemHandler> getOptional() {
         return this.optional;
     }
 
@@ -50,7 +49,7 @@ public class BackpackData {
         this.tier = tier;
 
         this.inventory = new SBItemHandler(tier.slots);
-        this.optional = LazyOptional.of(() -> this.inventory);
+        this.optional = Optional.of(this.inventory);
     }
 
     public BackpackData(UUID uuid, CompoundTag incomingNBT) {
@@ -67,7 +66,7 @@ public class BackpackData {
         this.inventory.deserializeNBT(incomingNBT.getCompound("Inventory"));
         this.filter = new FilterItemHandler();
         this.filter.deserializeNBT(incomingNBT.getCompound("Filter"));
-        this.optional = LazyOptional.of(() -> this.inventory);
+        this.optional = Optional.of(this.inventory);
 
         if (incomingNBT.contains("Metadata"))
             this.meta.deserializeNBT(incomingNBT.getCompound("Metadata"));

@@ -4,7 +4,7 @@ import com.flanks255.simplybackpacks.SimplyBackpacks;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredItem;
 
 /**
  * Represents a singleton instance of a backpack. Sets up each backpack in its own way
@@ -29,9 +29,9 @@ public enum Backpack {
     public final int slotRows;
     public final int slotCols;
     public final String name;
-    public final RegistryObject<Item> item;
+    public final DeferredItem<Item> item;
 
-    Backpack(String name, Rarity rarity, int slots, int rows, int cols, String location, int xSize, int ySize, int slotXOffset, int slotYOffset, RegistryObject<Item> itemIn) {
+    Backpack(String name, Rarity rarity, int slots, int rows, int cols, String location, int xSize, int ySize, int slotXOffset, int slotYOffset, DeferredItem<Item> itemIn) {
         this.name = name;
         this.rarity = rarity;
         this.slots = slots;

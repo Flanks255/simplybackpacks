@@ -1,31 +1,34 @@
 {
   "type": "simplybackpacks:backpack_upgrade",
-  "category": "misc",
-  "key": {
-    "A": {
-      "tag": "forge:ingots/gold"
+  "value": {
+    "category": "misc",
+    "key": {
+      "A": {
+        "tag": "forge:ingots/gold"
+      },
+      "B": {
+        "type": "simplybackpacks:nbt_target",
+        "value": {
+          "item": "simplybackpacks:commonbackpack"
+        }
+      },
+      "C": {
+        "tag": "forge:chests"
+      },
+      "D": {
+        "tag": "forge:storage_blocks/gold"
+      },
+      "E": {
+        "tag": "forge:dyes/yellow"
+      }
     },
-    "B": {
-      "type": "simplybackpacks:nbt_target",
-      "item": "simplybackpacks:commonbackpack"
-    },
-    "C": {
-      "tag": "forge:chests"
-    },
-    "D": {
-      "tag": "forge:storage_blocks/gold"
-    },
-    "E": {
-      "tag": "forge:dyes/yellow"
+    "pattern": [
+      "A A",
+      "EBE",
+      "CDC"
+    ],
+    "result": {
+      "item": "simplybackpacks:uncommonbackpack"
     }
-  },
-  "pattern": [
-    "A A",
-    "EBE",
-    "CDC"
-  ],
-  "result": {
-    "item": "simplybackpacks:uncommonbackpack"
-  },
-  "show_notification": false
+  }
 }

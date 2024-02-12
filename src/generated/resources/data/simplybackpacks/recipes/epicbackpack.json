@@ -1,31 +1,34 @@
 {
   "type": "simplybackpacks:backpack_upgrade",
-  "category": "misc",
-  "key": {
-    "A": {
-      "tag": "forge:dyes/magenta"
+  "value": {
+    "category": "misc",
+    "key": {
+      "A": {
+        "tag": "forge:dyes/magenta"
+      },
+      "B": {
+        "type": "simplybackpacks:nbt_target",
+        "value": {
+          "item": "simplybackpacks:rarebackpack"
+        }
+      },
+      "C": {
+        "tag": "forge:chests"
+      },
+      "D": {
+        "tag": "forge:nether_stars"
+      },
+      "E": {
+        "item": "minecraft:iron_bars"
+      }
     },
-    "B": {
-      "type": "simplybackpacks:nbt_target",
-      "item": "simplybackpacks:rarebackpack"
-    },
-    "C": {
-      "tag": "forge:chests"
-    },
-    "D": {
-      "tag": "forge:nether_stars"
-    },
-    "E": {
-      "item": "minecraft:iron_bars"
+    "pattern": [
+      "A A",
+      "EBE",
+      "CDC"
+    ],
+    "result": {
+      "item": "simplybackpacks:epicbackpack"
     }
-  },
-  "pattern": [
-    "A A",
-    "EBE",
-    "CDC"
-  ],
-  "result": {
-    "item": "simplybackpacks:epicbackpack"
-  },
-  "show_notification": false
+  }
 }

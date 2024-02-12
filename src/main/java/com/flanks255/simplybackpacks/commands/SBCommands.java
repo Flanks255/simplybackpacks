@@ -4,7 +4,7 @@ package com.flanks255.simplybackpacks.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraftforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 public class SBCommands {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {

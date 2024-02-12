@@ -1,31 +1,34 @@
 {
   "type": "simplybackpacks:backpack_upgrade",
-  "category": "misc",
-  "key": {
-    "A": {
-      "tag": "forge:ingots/netherite"
+  "value": {
+    "category": "misc",
+    "key": {
+      "A": {
+        "tag": "forge:ingots/netherite"
+      },
+      "B": {
+        "type": "simplybackpacks:nbt_target",
+        "value": {
+          "item": "simplybackpacks:epicbackpack"
+        }
+      },
+      "C": {
+        "tag": "forge:chests"
+      },
+      "D": {
+        "tag": "forge:storage_blocks/netherite"
+      },
+      "E": {
+        "tag": "forge:nether_stars"
+      }
     },
-    "B": {
-      "type": "simplybackpacks:nbt_target",
-      "item": "simplybackpacks:epicbackpack"
-    },
-    "C": {
-      "tag": "forge:chests"
-    },
-    "D": {
-      "tag": "forge:storage_blocks/netherite"
-    },
-    "E": {
-      "tag": "forge:nether_stars"
+    "pattern": [
+      "A A",
+      "EBE",
+      "CDC"
+    ],
+    "result": {
+      "item": "simplybackpacks:ultimatebackpack"
     }
-  },
-  "pattern": [
-    "A A",
-    "EBE",
-    "CDC"
-  ],
-  "result": {
-    "item": "simplybackpacks:ultimatebackpack"
-  },
-  "show_notification": false
+  }
 }

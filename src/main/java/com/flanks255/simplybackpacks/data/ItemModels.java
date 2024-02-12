@@ -1,11 +1,11 @@
 package com.flanks255.simplybackpacks.data;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class ItemModels extends ItemModelProvider {
 
@@ -27,7 +27,7 @@ public class ItemModels extends ItemModelProvider {
     }
 
     private void simpleItem(Item item) {
-        String name = ForgeRegistries.ITEMS.getKey(item).getPath();
+        String name = BuiltInRegistries.ITEM.getKey(item).getPath();
         singleTexture(name, mcLoc("item/handheld"), "layer0", modLoc("item/" + name));
     }
 }

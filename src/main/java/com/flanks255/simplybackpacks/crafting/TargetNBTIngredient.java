@@ -1,28 +1,32 @@
 package com.flanks255.simplybackpacks.crafting;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import com.mojang.serialization.Codec;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 public class TargetNBTIngredient extends Ingredient {
+    public static final Codec<TargetNBTIngredient> CODEC = Ingredient.VANILLA_CODEC.xmap(TargetNBTIngredient::new, TargetNBTIngredient::new); //Wrapped in value sub-object
+/*    public static final Codec<TargetNBTIngredient> CODEC =
+            RecordCodecBuilder.create(builder -> builder.group(
+                BuiltInRegistries.ITEM.byNameCodec().fieldOf( "item").forGetter(TargetNBTIngredient::getItem)
+            ).apply(builder, TargetNBTIngredient::new));*/
     public TargetNBTIngredient(Stream<? extends Value> itemLists) {
-        super(itemLists);
+        super(itemLists, SimplyBackpacks.TARGET_INGREDIENT);
+    }
+    public TargetNBTIngredient(Ingredient ingredient) {
+        super(Arrays.stream(ingredient.values), SimplyBackpacks.TARGET_INGREDIENT);
     }
 
     @Override
-    @Nonnull
-    public IIngredientSerializer<? extends Ingredient> getSerializer() {
-        return SERIALIZER;
+    public boolean test(@Nullable ItemStack pStack) {
+        return super.test(pStack);
     }
 
     public static TargetNBTIngredient of(ItemLike itemProvider) {
@@ -33,42 +37,5 @@ public class TargetNBTIngredient extends Ingredient {
     }
     public static TargetNBTIngredient of(TagKey tag) {
         return new TargetNBTIngredient(Stream.of(new TagValue(tag)));
-    }
-
-
-
-    @Override
-    @Nonnull
-    public JsonElement toJson() {
-        JsonObject tmp = super.toJson().getAsJsonObject();
-        tmp.addProperty("type", Serializer.NAME.toString());
-        return tmp;
-    }
-
-
-    public static final Serializer SERIALIZER = new Serializer();
-    public static class Serializer implements IIngredientSerializer<TargetNBTIngredient> {
-        public static final ResourceLocation NAME = new ResourceLocation(SimplyBackpacks.MODID, "nbt_target");
-
-        @Override
-        @Nonnull
-        public TargetNBTIngredient parse(FriendlyByteBuf buffer) {
-            return new TargetNBTIngredient(Stream.generate(() -> new ItemValue(buffer.readItem())).limit(buffer.readVarInt()));
-        }
-
-        @Override
-        @Nonnull
-        public TargetNBTIngredient parse(@Nonnull JsonObject json) {
-            return new TargetNBTIngredient(Stream.of(Ingredient.valueFromJson(json)));
-        }
-
-        @Override
-        public void write(FriendlyByteBuf buffer, TargetNBTIngredient ingredient) {
-            ItemStack[] items = ingredient.getItems();
-            buffer.writeVarInt(items.length);
-
-            for (ItemStack stack : items)
-                buffer.writeItem(stack);
-        }
     }
 }

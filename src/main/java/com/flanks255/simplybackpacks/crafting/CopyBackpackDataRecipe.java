@@ -1,28 +1,29 @@
 package com.flanks255.simplybackpacks.crafting;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.*;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class CopyBackpackDataRecipe extends ShapedRecipe {
-    public CopyBackpackDataRecipe(final ResourceLocation id, final String group, CraftingBookCategory category, final int recipeWidth, final int recipeHeight, final NonNullList<Ingredient> ingredients, final ItemStack recipeOutput) {
-        super(id, group, category, recipeWidth, recipeHeight, ingredients, recipeOutput);
+    public CopyBackpackDataRecipe(final String group, CraftingBookCategory category, ShapedRecipePattern pattern, final ItemStack recipeOutput) {
+        super(group, category, pattern, recipeOutput);
     }
 
     public CopyBackpackDataRecipe(ShapedRecipe shapedRecipe) {
-        super(shapedRecipe.getId(), shapedRecipe.getGroup(), shapedRecipe.category(), shapedRecipe.getRecipeWidth(), shapedRecipe.getRecipeHeight(), shapedRecipe.getIngredients(), shapedRecipe.getResultItem(RegistryAccess.EMPTY));
+        super(shapedRecipe.getGroup(), shapedRecipe.category(), shapedRecipe.pattern, shapedRecipe.getResultItem(RegistryAccess.EMPTY));
+    }
+
+    public CopyBackpackDataRecipe(String s, CraftingBookCategory craftingBookCategory, ShapedRecipePattern pattern, ItemStack itemStack, Boolean aBoolean) {
+        super(s, craftingBookCategory, pattern, itemStack, aBoolean);
     }
 
     @Override
@@ -31,12 +32,16 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
         final ItemStack craftingResult = super.assemble(inv, wat);
         TargetNBTIngredient donorIngredient = null;
         ItemStack dataSource = ItemStack.EMPTY;
-        NonNullList<Ingredient> ingredients = getIngredients();
+        NonNullList<? extends Ingredient> ingredients = getIngredients();
         for (Ingredient ingredient : ingredients) {
-            if (ingredient instanceof TargetNBTIngredient) {
-                donorIngredient = (TargetNBTIngredient) ingredient;
+            if (ingredient instanceof TargetNBTIngredient target) {
+                donorIngredient = target;
                 break;
             }
+        }
+        if (donorIngredient == null) {
+            SimplyBackpacks.LOGGER.info("Copy Data Recipe missing donor ingredient");
+            return new ItemStack(Items.AIR);
         }
         if (!craftingResult.isEmpty()) {
             for (int i = 0; i < inv.getContainerSize(); i++) {
@@ -62,22 +67,22 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<CopyBackpackDataRecipe> {
-        @Nullable
+/*        private static final Codec<CopyBackpackDataRecipe> CODEC = RecordCodecBuilder.create($ -> $.group( // :(
+                ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(ShapedRecipe::getGroup),
+                CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(ShapedRecipe::category),
+                ShapedRecipePattern.MAP_CODEC.forGetter(a -> a.pattern),
+                ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(c -> c.getResultItem(RegistryAccess.EMPTY)),
+                ExtraCodecs.strictOptionalField(Codec.BOOL, "show_notification", false).forGetter(ShapedRecipe::showNotification)
+        ).apply($, CopyBackpackDataRecipe::new));*/
+        private static final Codec<CopyBackpackDataRecipe> CODEC = ShapedRecipe.Serializer.CODEC.xmap(CopyBackpackDataRecipe::new, $ -> $);
         @Override
-        public CopyBackpackDataRecipe fromNetwork(@Nonnull ResourceLocation recipeId, @Nonnull FriendlyByteBuf buffer) {
-            return new CopyBackpackDataRecipe(RecipeSerializer.SHAPED_RECIPE.fromNetwork(recipeId, buffer));
+        public @NotNull Codec<CopyBackpackDataRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        @Nonnull
-        public CopyBackpackDataRecipe fromJson(@Nonnull ResourceLocation recipeId, @Nonnull JsonObject json) {
-            try {
-                return new CopyBackpackDataRecipe(RecipeSerializer.SHAPED_RECIPE.fromJson(recipeId, json));
-            }
-            catch (Exception exception) {
-                SimplyBackpacks.LOGGER.info("Error reading CopyBackpack Recipe from packet: ", exception);
-                throw exception;
-            }
+        public @NotNull CopyBackpackDataRecipe fromNetwork(@NotNull FriendlyByteBuf pBuffer) {
+            return new CopyBackpackDataRecipe(RecipeSerializer.SHAPED_RECIPE.fromNetwork(pBuffer));
         }
 
         @Override

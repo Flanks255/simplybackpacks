@@ -1,31 +1,34 @@
 {
   "type": "simplybackpacks:backpack_upgrade",
-  "category": "misc",
-  "key": {
-    "A": {
-      "tag": "forge:gems/diamond"
+  "value": {
+    "category": "misc",
+    "key": {
+      "A": {
+        "tag": "forge:gems/diamond"
+      },
+      "B": {
+        "type": "simplybackpacks:nbt_target",
+        "value": {
+          "item": "simplybackpacks:uncommonbackpack"
+        }
+      },
+      "C": {
+        "tag": "forge:chests"
+      },
+      "D": {
+        "tag": "forge:dyes/blue"
+      },
+      "E": {
+        "tag": "forge:storage_blocks/diamond"
+      }
     },
-    "B": {
-      "type": "simplybackpacks:nbt_target",
-      "item": "simplybackpacks:uncommonbackpack"
-    },
-    "C": {
-      "tag": "forge:chests"
-    },
-    "D": {
-      "tag": "forge:dyes/blue"
-    },
-    "E": {
-      "tag": "forge:storage_blocks/diamond"
+    "pattern": [
+      "A A",
+      "DBD",
+      "CEC"
+    ],
+    "result": {
+      "item": "simplybackpacks:rarebackpack"
     }
-  },
-  "pattern": [
-    "A A",
-    "DBD",
-    "CEC"
-  ],
-  "result": {
-    "item": "simplybackpacks:rarebackpack"
-  },
-  "show_notification": false
+  }
 }

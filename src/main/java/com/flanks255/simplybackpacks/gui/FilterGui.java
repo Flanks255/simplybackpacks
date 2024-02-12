@@ -56,7 +56,7 @@ public class FilterGui extends AbstractContainerScreen<FilterContainer> {
 
     @Override
     public void render(@Nonnull GuiGraphics gg, int p_render_1_, int p_render_2_, float p_render_3_) {
-        this.renderBackground(gg);
+        this.renderBackground(gg, p_render_1_, p_render_2_, p_render_3_);
         super.render(gg,p_render_1_, p_render_2_, p_render_3_);
         this.renderTooltip(gg, p_render_1_, p_render_2_);
     }

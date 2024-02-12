@@ -7,11 +7,10 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
 public class SBEnchantmentGen extends TagsProvider<Enchantment> {
@@ -26,12 +25,6 @@ public class SBEnchantmentGen extends TagsProvider<Enchantment> {
     protected void addTags(@Nonnull HolderLookup.Provider something) {
         this.tag(SimplyBackpacks.SOULBOUND).addOptional(new ResourceLocation("ensorcellation","soulbound"));
         this.tag(SimplyBackpacks.SOULBOUND).addOptional(new ResourceLocation("tombstone","soulbound"));
-    }
-
-    @Override
-    @Nonnull
-    protected Path getPath(ResourceLocation id) {
-        return this.generator.getPackOutput().getOutputFolder().resolve("data/" + id.getNamespace() + "/tags/enchantments/" + id.getPath() + ".json");
     }
 
     @Override

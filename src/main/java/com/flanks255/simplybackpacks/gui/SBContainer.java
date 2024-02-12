@@ -8,10 +8,14 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.network.IContainerFactory;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
@@ -23,7 +27,7 @@ public class SBContainer extends AbstractContainerMenu {
     private final UUID uuid;
 
 
-    public static SBContainer fromNetwork(final int windowId, final Inventory playerInventory, FriendlyByteBuf data) {
+    public static SBContainer fromNetwork(int windowId, final Inventory playerInventory, FriendlyByteBuf data) {
         UUID uuidIn = data.readUUID();
         Backpack tier = Backpack.values()[data.readInt()];
         return new SBContainer(windowId, playerInventory, uuidIn, tier, new ItemStackHandler(tier.slots));

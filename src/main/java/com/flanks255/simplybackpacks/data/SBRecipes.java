@@ -1,36 +1,29 @@
 package com.flanks255.simplybackpacks.data;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
+import com.flanks255.simplybackpacks.crafting.CopyBackpackDataRecipe;
 import com.flanks255.simplybackpacks.crafting.TargetNBTIngredient;
-import com.flanks255.simplybackpacks.crafting.WrappedRecipe;
-import com.google.gson.JsonObject;
-import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.data.CachedOutput;
+import com.flanks255.simplybackpacks.util.NoAdvRecipeOutput;
+import com.flanks255.simplybackpacks.util.RecipeInjector;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.common.Tags;
-
-import javax.annotation.Nonnull;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.neoforged.neoforge.common.Tags;
+import org.jetbrains.annotations.NotNull;
 
 public class SBRecipes extends RecipeProvider {
     public SBRecipes(DataGenerator generatorIn) {
         super(generatorIn.getPackOutput());
     }
-    @Override
-    protected CompletableFuture<?> saveAdvancement(@Nonnull CachedOutput output, @Nonnull FinishedRecipe finishedRecipe, @Nonnull JsonObject advancementJson) {
-        // Nope, don't want none of this...
-        return null;
-    }
 
     @Override
-    protected void buildRecipes(@Nonnull Consumer<FinishedRecipe> consumer) {
-        InventoryChangeTrigger.TriggerInstance lul = has(Items.AIR);
+    protected void buildRecipes(@NotNull RecipeOutput output) {
+        var lul = has(Items.AIR);
+        var consumer = new NoAdvRecipeOutput(output);
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, SimplyBackpacks.COMMONBACKPACK.get())
             .pattern("A A")
             .pattern("DBD")
@@ -53,7 +46,7 @@ public class SBRecipes extends RecipeProvider {
             .define('E', Tags.Items.DYES_YELLOW)
             .showNotification(false)
             .unlockedBy("", lul)
-            .save(WrappedRecipe.Inject(consumer, SimplyBackpacks.COPYRECIPE.get()));
+            .save(backpackUpgrade(consumer));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, SimplyBackpacks.RAREBACKPACK.get())
             .pattern("A A")
@@ -66,7 +59,7 @@ public class SBRecipes extends RecipeProvider {
             .define('E', Tags.Items.STORAGE_BLOCKS_DIAMOND)
             .showNotification(false)
             .unlockedBy("", lul)
-            .save(WrappedRecipe.Inject(consumer, SimplyBackpacks.COPYRECIPE.get()));
+            .save(backpackUpgrade(consumer));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, SimplyBackpacks.EPICBACKPACK.get())
             .pattern("A A")
@@ -79,7 +72,7 @@ public class SBRecipes extends RecipeProvider {
             .define('E', Items.IRON_BARS)
             .showNotification(false)
             .unlockedBy("", lul)
-            .save(WrappedRecipe.Inject(consumer, SimplyBackpacks.COPYRECIPE.get()));
+            .save(backpackUpgrade(consumer));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, SimplyBackpacks.ULTIMATEBACKPACK.get())
             .pattern("A A")
@@ -92,6 +85,11 @@ public class SBRecipes extends RecipeProvider {
             .define('E', Tags.Items.NETHER_STARS)
             .showNotification(false)
             .unlockedBy("", lul)
-            .save(WrappedRecipe.Inject(consumer, SimplyBackpacks.COPYRECIPE.get()));
+            .save(backpackUpgrade(consumer));
+    }
+
+    @NotNull
+    private static RecipeInjector<ShapedRecipe> backpackUpgrade(NoAdvRecipeOutput consumer) {
+        return new RecipeInjector<>(consumer, CopyBackpackDataRecipe::new);
     }
 }

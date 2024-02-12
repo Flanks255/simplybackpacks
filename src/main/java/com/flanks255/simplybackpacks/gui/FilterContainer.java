@@ -3,8 +3,8 @@ package com.flanks255.simplybackpacks.gui;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.inventory.FilterItemHandler;
 import com.flanks255.simplybackpacks.items.BackpackItem;
-import com.flanks255.simplybackpacks.network.FilterMessage;
-import com.flanks255.simplybackpacks.network.ToggleMessage;
+import com.flanks255.simplybackpacks.network.FilterPacket;
+import com.flanks255.simplybackpacks.network.HotkeyPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -13,6 +13,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 
@@ -23,7 +24,7 @@ public class FilterContainer extends AbstractContainerMenu {
     private final Player playerEntity;
     private final ItemStack stack;
     public static FilterContainer fromNetwork(final int windowId, final Inventory playerInventory, FriendlyByteBuf extra) {
-        CompoundTag nbt = extra.readAnySizeNbt();
+        CompoundTag nbt = extra.readNbt();
 
         FilterItemHandler handler = new FilterItemHandler();
         handler.deserializeNBT(nbt);
@@ -104,7 +105,7 @@ public class FilterContainer extends AbstractContainerMenu {
         nbt.putBoolean("Pickup",Pickup);
 
         if (this.playerEntity.getCommandSenderWorld().isClientSide)
-            SimplyBackpacks.NETWORK.sendToServer(new ToggleMessage());
+            PacketDistributor.SERVER.noArg().send(new HotkeyPacket(HotkeyPacket.HotKey.TOGGLE));
         return Pickup;
     }
 
@@ -113,7 +114,7 @@ public class FilterContainer extends AbstractContainerMenu {
         nbt.putInt("Filter-OPT", newOpts);
         this.stack.setTag(nbt);
         if (this.playerEntity.getCommandSenderWorld().isClientSide)
-            SimplyBackpacks.NETWORK.sendToServer(new FilterMessage(newOpts));
+            PacketDistributor.SERVER.noArg().send(new FilterPacket(newOpts));
         return newOpts;
     }
 

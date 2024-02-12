@@ -8,10 +8,9 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.util.thread.SidedThreadGroups;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.fml.util.thread.SidedThreadGroups;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -29,7 +28,7 @@ public class BackpackManager extends SavedData {
 
     public static BackpackManager get() {
         if (Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER)
-            return ServerLifecycleHooks.getCurrentServer().getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(BackpackManager::load, BackpackManager::new, NAME);
+            return ServerLifecycleHooks.getCurrentServer().getLevel(Level.OVERWORLD).getDataStorage().computeIfAbsent(new Factory<>(BackpackManager::new, BackpackManager::load), NAME);
         else
             return blankClient;
     }
@@ -49,27 +48,26 @@ public class BackpackManager extends SavedData {
 
     public void removeBackpack(UUID uuid) {
         getBackpack(uuid).ifPresent(backpack -> {
-            backpack.getOptional().invalidate();
             data.remove(uuid);
             setDirty();
         });
     }
 
-    public LazyOptional<IItemHandler> getCapability(UUID uuid) {
+    public IItemHandler getCapability(UUID uuid) {
         if (data.containsKey(uuid))
-            return data.get(uuid).getOptional();
+            return data.get(uuid).getHandler();
 
-        return LazyOptional.empty();
+        return null;
     }
 
-    public LazyOptional<IItemHandler> getCapability(ItemStack stack) {
+    public IItemHandler getCapability(ItemStack stack) {
         if (stack.getOrCreateTag().contains("UUID")) {
             UUID uuid = stack.getTag().getUUID("UUID");
             if (data.containsKey(uuid))
-                return data.get(uuid).getOptional();
+                return data.get(uuid).getHandler();
         }
 
-        return LazyOptional.empty();
+        return null;
     }
 
     public static BackpackManager load(CompoundTag nbt) {

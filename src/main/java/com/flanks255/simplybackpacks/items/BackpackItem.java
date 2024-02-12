@@ -7,11 +7,9 @@ import com.flanks255.simplybackpacks.inventory.BackpackData;
 import com.flanks255.simplybackpacks.inventory.BackpackManager;
 import com.flanks255.simplybackpacks.inventory.FilterItemHandler;
 import com.flanks255.simplybackpacks.inventory.SBItemHandler;
-import com.flanks255.simplybackpacks.network.ToggleMessageMessage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,21 +23,17 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.event.entity.player.EntityItemPickupEvent;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class BackpackItem extends Item {
@@ -96,7 +90,7 @@ public class BackpackItem extends Item {
 
     @Override
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        return SimplyBackpacks.SOULBOUND_LOOKUP.contains(enchantment);
+        return enchantment.builtInRegistryHolder().is(SimplyBackpacks.SOULBOUND);
     }
 
     @Override
@@ -118,22 +112,22 @@ public class BackpackItem extends Item {
 
             if (playerIn.isShiftKeyDown()) {
                 //filter
-                NetworkHooks.openScreen(((ServerPlayer) playerIn), new SimpleMenuProvider( (windowId, playerInventory, playerEntity) -> new FilterContainer(windowId, playerInventory, data.getFilter()), backpack.getHoverName()), (buffer -> buffer.writeNbt(data.getFilter().serializeNBT())));
+                playerIn.openMenu(new SimpleMenuProvider( (windowId, playerInventory, playerEntity) -> new FilterContainer(windowId, playerInventory, data.getFilter()), backpack.getHoverName()), (buffer -> buffer.writeNbt(data.getFilter().serializeNBT())));
             } else {
                 //open
-                NetworkHooks.openScreen(((ServerPlayer) playerIn), new SimpleMenuProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, uuid, data.getTier(), data.getHandler()), backpack.getHoverName()), (buffer -> buffer.writeUUID(uuid).writeInt(data.getTier().ordinal())));
+                playerIn.openMenu(new SimpleMenuProvider( (windowId, playerInventory, playerEntity) -> new SBContainer(windowId, playerInventory, uuid, data.getTier(), data.getHandler()), backpack.getHoverName()), (buffer -> buffer.writeUUID(uuid).writeInt(data.getTier().ordinal())));
             }
         }
         return InteractionResultHolder.success(playerIn.getItemInHand(handIn));
     }
 
-    @Nullable
+/*    @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
         return new BackpackCaps(stack);
-    }
+    }*/
 
-    static class BackpackCaps implements ICapabilityProvider {
+/*    static class BackpackCaps implements ICapabilityProvider {
         private final ItemStack stack;
 
         public BackpackCaps(ItemStack stack) {
@@ -153,7 +147,7 @@ public class BackpackItem extends Item {
             else
                 return LazyOptional.empty();
         }
-    }
+    }*/
 
     public static void togglePickup(Player playerEntity, ItemStack stack) {
         CompoundTag nbt = stack.getOrCreateTag();
@@ -161,8 +155,8 @@ public class BackpackItem extends Item {
         boolean Pickup = !nbt.getBoolean("Pickup");
 
         nbt.putBoolean("Pickup", Pickup);
-        if (playerEntity instanceof ServerPlayer)
-            SimplyBackpacks.NETWORK.send(PacketDistributor.PLAYER.with(()-> (ServerPlayer) playerEntity), new ToggleMessageMessage(Pickup));
+        if (playerEntity instanceof ServerPlayer serverPlayer)
+            serverPlayer.displayClientMessage(Component.translatable(Pickup?"simplybackpacks.autopickupenabled":"simplybackpacks.autopickupdisabled"), true);
         else
             playerEntity.displayClientMessage(Component.translatable(Pickup?"simplybackpacks.autopickupenabled":"simplybackpacks.autopickupdisabled"), true);
 
@@ -170,9 +164,9 @@ public class BackpackItem extends Item {
 
 
     public static boolean applyFilter(ItemStack item, ItemStack packItem) {
-        LazyOptional<IItemHandler> handlerOptional = packItem.getCapability(ForgeCapabilities.ITEM_HANDLER);
+        Optional<IItemHandler> handler = Optional.ofNullable(packItem.getCapability(Capabilities.ItemHandler.ITEM));
 
-        if (handlerOptional.isPresent() && handlerOptional.resolve().get() instanceof SBItemHandler) {
+        if (handler.isPresent() && handler.get() instanceof SBItemHandler) {
             BackpackData data = BackpackItem.getData(packItem);
             if (data == null)
                 return false;
@@ -208,9 +202,9 @@ public class BackpackItem extends Item {
         if (!nbt.getBoolean("Pickup"))
             return false;
 
-        LazyOptional<IItemHandler> optional = stack.getCapability(ForgeCapabilities.ITEM_HANDLER);
+        Optional<IItemHandler> optional = Optional.ofNullable(stack.getCapability(Capabilities.ItemHandler.ITEM));
         if (optional.isPresent()) {
-            IItemHandler handler = optional.resolve().get();
+            IItemHandler handler = optional.get();
 
             if (!(handler instanceof SBItemHandler))
                 return false;

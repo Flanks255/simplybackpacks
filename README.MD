@@ -8,6 +8,7 @@ A simple tiered backpack mod, for your item storage needs.
 
 Current Features:
  - 4 Tiers of Backpacks(Common: 18 Slots, Uncommon: 33 Slots, Rare: 66 Slots, Epic: 99 Slots)
+ - 5th Ultimate tier, 158 slots in 1.16.5+
  - Curios support. (1.16+)
  - Baubles support. (1.12.2)
  - Openable via hotkey

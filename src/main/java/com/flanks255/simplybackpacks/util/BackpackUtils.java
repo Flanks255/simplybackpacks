@@ -6,6 +6,7 @@ import com.flanks255.simplybackpacks.inventory.BackpackManager;
 import com.flanks255.simplybackpacks.items.BackpackItem;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -13,7 +14,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import javax.annotation.Nonnull;
@@ -24,7 +24,7 @@ public class BackpackUtils {
     public static boolean curiosLoaded = false;
 
     public static ResourceLocation getRegistryName(Item item) {
-        return ForgeRegistries.ITEMS.getKey(item);
+        return BuiltInRegistries.ITEM.getKey(item);
     }
 
     public static boolean filterItem(ItemStack stack) {
@@ -51,14 +51,17 @@ public class BackpackUtils {
             return player.getOffhandItem();
 
         if (curiosLoaded) {
-            ItemStack stack = CuriosApi.getCuriosHelper().findFirstCurio(player, BackpackItem::isBackpack).map( slot -> {
-                if (slot.stack().getItem() instanceof BackpackItem) {
-                    return slot.stack();
-                }
-                return ItemStack.EMPTY;
-            }).orElse(ItemStack.EMPTY);
-            if (!stack.isEmpty())
-                return stack;
+            var curiosInv = CuriosApi.getCuriosInventory(player);
+            if (curiosInv.isPresent()) {
+                ItemStack stack = curiosInv.get().findFirstCurio(BackpackItem::isBackpack).map(slot -> {
+                    if (slot.stack().getItem() instanceof BackpackItem) {
+                        return slot.stack();
+                    }
+                    return ItemStack.EMPTY;
+                }).orElse(ItemStack.EMPTY);
+                if (!stack.isEmpty())
+                    return stack;
+            }
         }
 
         Inventory inventory = player.getInventory();

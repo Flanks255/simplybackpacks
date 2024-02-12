@@ -1,102 +1,76 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.creeperhost.net/' }
-        maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = 'https://maven.parchmentmc.org' }
-        maven { url = "https://plugins.gradle.org/m2/" }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath 'org.parchmentmc:librarian:1.+'
-        classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
-    }
+plugins {
+    id 'java-library'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.neoforged.gradle.userdev' version '7.0.84'
+    id "me.modmuss50.mod-publish-plugin" version "0.4.5"
 }
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
-apply plugin: "com.matthewprenger.cursegradle"
-apply from: 'https://files.saps.dev/ci/git-md-changelog.gradle'
-apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
 
 repositories {
     maven { url = 'https://maven.creeperhost.net/' }
-    maven { url "https://www.cursemaven.com" }
-    maven { url = "https://maven.theillusivec4.top/" }
-    maven { url = "https://maven.saps.dev/releases" }
+    maven { url = 'https://www.cursemaven.com' }
+    maven { url = 'https://maven.theillusivec4.top/' }
+    maven { url = 'https://maven.saps.dev/releases' }
 }
 
 def ENV = System.getenv()
 version = "${minecraft_version}-${mod_version}-build.${ENV.GITHUB_RUN_NUMBER ?: 9999}"
 group = 'com.flanks255'
-archivesBaseName = 'simplybackpacks'
+base {
+    archivesName = "simplybackpacks"
+}
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-minecraft {
-    if (mappings_channel == "parchment_overlay") {
-        mappings channel: 'parchment', version: "$mappings_overlay-$mappings_version"
-    } else {
-        mappings channel: "$mappings_channel", version: "$mappings_version"
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
+
+runs {
+    // applies to all the run configs below
+    configureEach {
+        //Limit ram usage for the dev environment to 4GB
+        jvmArgument '-Xmx8G'
+
+        modSource project.sourceSets.main
     }
 
-    runs {
-        client {
-            workingDirectory project.file('run')
-
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            mods {
-                simplybackpacks {
-                    source sourceSets.main
-                }
-            }
+    client {
+        systemProperty 'neoforge.enabledGameTestNamespaces', "simplybackpacks"
+        programArguments.addAll('--width', '1280', '--height', '720')
+        if  (ENV.MCDEVUSER) {
+            programArguments.addAll('--username', ENV.MCDEVUSER)
         }
-
-        server {
-            workingDirectory project.file('run')
-
-            args 'nogui'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            mods {
-                simplybackpacks {
-                    source sourceSets.main
-                }
-            }
+        if (ENV.MCDEVUUID) {
+            programArguments.addAll('--uuid', ENV.MCDEVUUID)
         }
+    }
 
-        data {
-            workingDirectory project.file('run')
+    server {
+        systemProperty 'neoforge.enabledGameTestNamespaces', "simplybackpacks"
+        programArgument '--nogui'
+    }
 
-            args '--mod', 'simplybackpacks', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            mods {
-                simplybackpacks {
-                    source sourceSets.main
-                }
-            }
-        }
+    gameTestServer {
+        systemProperty 'forge.enabledGameTestNamespaces', "simplybackpacks"
+    }
+
+    data {
+        programArguments.addAll '--mod', "simplybackpacks", '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
     }
 }
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-
 dependencies {
-    minecraft "net.minecraftforge:forge:$minecraft_version-$forge_version"
-
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}") //new
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
-    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+    implementation "net.neoforged:neoforge:${neo_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
     //runtimeOnly fg.deobf("com.flanks255:simplylight:1.19.3-1.4.+")
 
     //runtimeOnly fg.deobf("curse.maven:TOP-245211:3671753")
 
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
-    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
+    runtimeOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+    compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
 }
 
 jar {
@@ -113,46 +87,42 @@ jar {
     }
 }
 
-def reobfFile = file("$buildDir/reobfJar/output.jar")
-def reobfArtifact = artifacts.add('default', reobfFile) {
-    type 'jar'
-    builtBy 'reobfJar'
-}
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact(reobfArtifact) {
-                builtBy reobfArtifact
-                artifactId = archivesBaseName
-                classifier null
+    publishing {
+        publications {
+            register('mavenJava', MavenPublication) {
+                groupId project.group
+                artifactId base.archivesName.get()
+                version project.version
+                from components.java
             }
         }
-    }
 
-    repositories {
-        if (ENV.SAPS_TOKEN) {
-            maven {
-                url "https://maven.saps.dev/releases"
-                credentials {
-                    username = "flanks"
-                    password = "${ENV.SAPS_TOKEN}"
+        repositories {
+            if (ENV.SAPS_TOKEN) {
+                maven {
+                    url "https://maven.saps.dev/minecraft"
+                    credentials {
+                        username = "flanks"
+                        password = "${ENV.SAPS_TOKEN}"
+                    }
                 }
             }
         }
     }
-}
-
-if (ENV.CURSEFORGE_KEY) {
-    curseforge {
-        apiKey = ENV.CURSEFORGE_KEY
-        project {
-            id = project.curseforge_id
-            releaseType = "release"
-            addGameVersion "Forge"
-            addGameVersion "1.20.1"
-            mainArtifact(jar)
-            changelog = getGitChangelog
-            changelogType = 'markdown'
+//https://modmuss50.github.io/mod-publish-plugin/
+    publishMods {
+        dryRun = !providers.environmentVariable("CURSEFORGE_KEY").isPresent()
+        file = jar.archiveFile
+        changelog = file("./CHANGELOG.md").text
+        modLoaders.add("NeoForge")
+        type = STABLE
+        curseforge {
+            accessToken = providers.environmentVariable("CURSEFORGE_KEY")
+            projectId = project.curseforge_id
+            minecraftVersions.add(project.minecraft_version)
         }
     }
-}
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+    }

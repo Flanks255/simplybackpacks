@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[47,)"
+loaderVersion="[2,)"
 license="MIT"
 issueTrackerURL="https://github.com/Flanks255/simplylight/issues"
 [[mods]]
@@ -12,8 +12,8 @@ authors="Flanks255"
 description='''
 '''
 [[dependencies.simplybackpacks]]
-modId="forge"
-mandatory=true
-versionRange="[47.0.0,)"
+modId="neoforge"
+required=true
+versionRange="[20.4,)"
 ordering="NONE"
 side="BOTH"
