@@ -3,6 +3,7 @@ package com.flanks255.simplybackpacks.data;
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
+import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import top.theillusivec4.curios.api.CuriosDataProvider;
 
@@ -15,6 +16,7 @@ public class SBCurios extends CuriosDataProvider {
 
     @Override
     public void generate(HolderLookup.Provider provider, ExistingFileHelper existingFileHelper) {
-        createSlot("back");
+        //createSlot("back");
+        createEntities("player").addEntities(EntityType.PLAYER).addSlots("back");
     }
 }

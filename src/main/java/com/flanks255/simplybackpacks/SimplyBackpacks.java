@@ -20,7 +20,6 @@ import com.flanks255.simplybackpacks.util.BackpackUtils;
 import com.flanks255.simplybackpacks.util.RecipeUnlocker;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -40,12 +39,12 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.crafting.IngredientType;
@@ -105,7 +104,7 @@ public class SimplyBackpacks {
 
         bus.addListener(this::setup);
         if (FMLEnvironment.dist == Dist.CLIENT) {
-            bus.addListener(this::clientStuff);
+            bus.addListener(this::menuScreenEvent);
             bus.addListener(this::registerKeyBinding);
             neoBus.addListener(this::onClientTick);
             bus.addListener(this::creativeTabEvent);
@@ -173,9 +172,9 @@ public class SimplyBackpacks {
         }
     }
 
-    private void clientStuff(final FMLClientSetupEvent event) {
-        MenuScreens.register(SBCONTAINER.get(), SBGui::new);
-        MenuScreens.register(FILTERCONTAINER.get(), FilterGui::new);
+    private void menuScreenEvent(final RegisterMenuScreensEvent event) {
+        event.register(SBCONTAINER.get(), SBGui::new);
+        event.register(FILTERCONTAINER.get(), FilterGui::new);
     }
 
     private void registerCaps(final RegisterCapabilitiesEvent event) {
