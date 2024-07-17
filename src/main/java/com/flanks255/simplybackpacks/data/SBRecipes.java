@@ -4,6 +4,7 @@ import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.crafting.CopyBackpackDataRecipe;
 import com.flanks255.simplybackpacks.util.NoAdvRecipeOutput;
 import com.flanks255.simplybackpacks.util.RecipeInjector;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -14,9 +15,11 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.CompletableFuture;
+
 public class SBRecipes extends RecipeProvider {
-    public SBRecipes(DataGenerator generatorIn) {
-        super(generatorIn.getPackOutput());
+    public SBRecipes(DataGenerator generatorIn, CompletableFuture<HolderLookup.Provider> pRegistries) {
+        super(generatorIn.getPackOutput(), pRegistries);
     }
 
     @Override
@@ -27,8 +30,8 @@ public class SBRecipes extends RecipeProvider {
             .pattern("A A")
             .pattern("DBD")
             .pattern("BCB")
-            .define('A', Tags.Items.STRING)
-            .define('B', Tags.Items.LEATHER)
+            .define('A', Tags.Items.STRINGS)
+            .define('B', Tags.Items.LEATHERS)
             .define('C', Tags.Items.CHESTS)
             .define('D', Tags.Items.DYES_WHITE)
             .showNotification(false)

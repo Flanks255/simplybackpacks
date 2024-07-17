@@ -1,6 +1,6 @@
-// 1.20.4	2024-02-12T14:21:40.6893605	Recipes
-e6789bb753ca821791eb7d58e0cee09c18ee2a3f data/simplybackpacks/recipes/commonbackpack.json
-da49fa4df1a7efbbcfe94e3ccd5d974aa8215078 data/simplybackpacks/recipes/epicbackpack.json
-b564593f2c6857052ba7e7715fd655d41ed111e9 data/simplybackpacks/recipes/rarebackpack.json
-5f576dd6258380ccc44c2561e1b9f55bba6fe050 data/simplybackpacks/recipes/ultimatebackpack.json
-75db65972c11bc168d361158ec207c41fa8070aa data/simplybackpacks/recipes/uncommonbackpack.json
+// 1.21	2024-07-16T20:09:31.7657628	Recipes
+f7f480c74b2f7e5339e770d3498225c83622b344 data/simplybackpacks/recipe/commonbackpack.json
+77ea5151d192921df0bc385eeb70e90ae3c12ccd data/simplybackpacks/recipe/epicbackpack.json
+b211c29ba7563eb5aaa28d33625604fc35f9a98b data/simplybackpacks/recipe/rarebackpack.json
+c704fdea1df15ad1b380f96434b309c8eb340c23 data/simplybackpacks/recipe/ultimatebackpack.json
+3ad5fe5bbdffec3834509ac9d898a9164ec4c1cd data/simplybackpacks/recipe/uncommonbackpack.json

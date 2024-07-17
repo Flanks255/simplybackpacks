@@ -2,7 +2,7 @@ plugins {
     id 'java-library'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.84'
+    id 'net.neoforged.gradle.userdev' version '7.0.142'
     id "me.modmuss50.mod-publish-plugin" version "0.4.5"
 }
 
@@ -14,13 +14,13 @@ repositories {
 }
 
 def ENV = System.getenv()
-version = "${minecraft_version}-${mod_version}-build.${ENV.GITHUB_RUN_NUMBER ?: 9999}"
+version = "${mod_version}+mc${minecraft_version}-b${ENV.GITHUB_RUN_NUMBER ?: 9999}"
 group = 'com.flanks255'
 base {
     archivesName = "simplybackpacks"
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -65,12 +65,13 @@ dependencies {
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
+    runtimeOnly "curse.maven:JADE-324717:5493270"
     //runtimeOnly fg.deobf("com.flanks255:simplylight:1.19.3-1.4.+")
 
     //runtimeOnly fg.deobf("curse.maven:TOP-245211:3671753")
 
-    runtimeOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"
-    compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
+/*    runtimeOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}" // Rip
+    compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"*/
 }
 
 jar {

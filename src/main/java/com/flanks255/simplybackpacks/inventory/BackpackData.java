@@ -1,6 +1,8 @@
 package com.flanks255.simplybackpacks.inventory;
 
 import com.flanks255.simplybackpacks.items.Backpack;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -52,7 +54,7 @@ public class BackpackData {
         this.optional = Optional.of(this.inventory);
     }
 
-    public BackpackData(UUID uuid, CompoundTag incomingNBT) {
+    public BackpackData(UUID uuid, CompoundTag incomingNBT, HolderLookup.Provider pRegistries) {
         this.uuid = uuid;
         this.tier = Backpack.values()[Math.min(incomingNBT.getInt("Tier"), Backpack.ULTIMATE.ordinal())];
 
@@ -63,23 +65,23 @@ public class BackpackData {
             if (incomingNBT.getCompound("Inventory").getInt("Size") != tier.slots)
                 incomingNBT.getCompound("Inventory").putInt("Size", tier.slots);
         }
-        this.inventory.deserializeNBT(incomingNBT.getCompound("Inventory"));
+        this.inventory.deserializeNBT(pRegistries, incomingNBT.getCompound("Inventory"));
         this.filter = new FilterItemHandler();
-        this.filter.deserializeNBT(incomingNBT.getCompound("Filter"));
+        this.filter.deserializeNBT(pRegistries, incomingNBT.getCompound("Filter"));
         this.optional = Optional.of(this.inventory);
 
         if (incomingNBT.contains("Metadata"))
-            this.meta.deserializeNBT(incomingNBT.getCompound("Metadata"));
+            this.meta.deserializeNBT(RegistryAccess.EMPTY, incomingNBT.getCompound("Metadata"));
     }
 
     public UUID getUuid() {
         return this.uuid;
     }
 
-    public static Optional<BackpackData> fromNBT(CompoundTag nbt) {
+    public static Optional<BackpackData> fromNBT(CompoundTag nbt, HolderLookup.Provider pRegistries) {
         if (nbt.contains("UUID")) {
             UUID uuid = nbt.getUUID("UUID");
-            return Optional.of(new BackpackData(uuid, nbt));
+            return Optional.of(new BackpackData(uuid, nbt, pRegistries));
         }
         return Optional.empty();
     }
@@ -91,16 +93,16 @@ public class BackpackData {
         }
     }
 
-    public CompoundTag toNBT() {
+    public CompoundTag toNBT(HolderLookup.Provider pRegistries) {
         CompoundTag nbt = new CompoundTag();
 
         nbt.putUUID("UUID", this.uuid);
         nbt.putInt("Tier", this.tier.ordinal());
 
-        nbt.put("Inventory", this.inventory.serializeNBT());
-        nbt.put("Filter", this.filter.serializeNBT());
+        nbt.put("Inventory", this.inventory.serializeNBT(pRegistries));
+        nbt.put("Filter", this.filter.serializeNBT(pRegistries));
 
-        nbt.put("Metadata", this.meta.serializeNBT());
+        nbt.put("Metadata", this.meta.serializeNBT(RegistryAccess.EMPTY));
 
         return nbt;
     }
@@ -138,7 +140,7 @@ public class BackpackData {
         }
 
         @Override
-        public CompoundTag serializeNBT() {
+        public CompoundTag serializeNBT(HolderLookup.Provider pRegistries) {
             CompoundTag nbt = new CompoundTag();
 
             nbt.putString("firstPlayer", this.firstAccessedPlayer);
@@ -150,7 +152,7 @@ public class BackpackData {
         }
 
         @Override
-        public void deserializeNBT(CompoundTag nbt) {
+        public void deserializeNBT(HolderLookup.Provider pRegistries, CompoundTag nbt) {
             this.firstAccessedPlayer = nbt.getString("firstPlayer");
             this.firstAccessedTime = nbt.getLong("firstTime");
             this.lastAccessedPlayer = nbt.getString("lastPlayer");

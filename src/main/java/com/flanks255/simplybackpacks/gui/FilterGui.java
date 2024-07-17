@@ -46,13 +46,13 @@ public class FilterGui extends AbstractContainerScreen<FilterContainer> {
             }
         }
 
-        addRenderableWidget(new SwitchButton(this.leftPos + 80, this.topPos + 8, "simplybackpacks.whitelist", ((this.menu.getFilterOpts() & 1) > 0) , (button)-> ((SwitchButton)button).state = (this.menu.setFilterOpts(this.menu.getFilterOpts() ^ 1) & 1) > 0));
-        addRenderableWidget(new SwitchButton(this.leftPos + 80, this.topPos + 8 + 18, "simplybackpacks.nbtdata", ((this.menu.getFilterOpts() & 2) > 0) , (button)-> ((SwitchButton)button).state = (this.menu.setFilterOpts(this.menu.getFilterOpts() ^ 2) & 2) > 0));
+        addRenderableWidget(new SwitchButton(this.leftPos + 80, this.topPos + 8, "simplybackpacks.whitelist", ((this.menu.getFilterOpts() & 1) > 0) , (button)-> ((SwitchButton)button).state = (this.menu.saveFilterClient(this.menu.getFilterOpts() ^ 1) & 1) > 0));
+        addRenderableWidget(new SwitchButton(this.leftPos + 80, this.topPos + 8 + 18, "simplybackpacks.nbtdata", ((this.menu.getFilterOpts() & 2) > 0) , (button)-> ((SwitchButton)button).state = (this.menu.saveFilterClient(this.menu.getFilterOpts() ^ 2) & 2) > 0));
         addRenderableWidget(new SwitchButton(this.leftPos + 80, this.topPos + 8 + 54, "simplybackpacks.autopickup", this.menu.getPickup() , (button)-> ((SwitchButton)button).state = this.menu.togglePickup()));
 
     }
 
-    private final ResourceLocation GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/filter_gui.png");
+    private final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(SimplyBackpacks.MODID, "textures/gui/filter_gui.png");
 
     @Override
     public void render(@Nonnull GuiGraphics gg, int p_render_1_, int p_render_2_, float p_render_3_) {
@@ -118,8 +118,8 @@ public class FilterGui extends AbstractContainerScreen<FilterContainer> {
             this.state = initial;
         }
 
-        private final ResourceLocation off = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/switch_off.png");
-        private final ResourceLocation on = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/switch_on.png");
+        private final ResourceLocation off = ResourceLocation.fromNamespaceAndPath(SimplyBackpacks.MODID, "textures/gui/switch_off.png");
+        private final ResourceLocation on = ResourceLocation.fromNamespaceAndPath(SimplyBackpacks.MODID, "textures/gui/switch_on.png");
         public boolean state;
         private final String textKey;
 

@@ -55,7 +55,7 @@ public class SBItemTags extends ItemTagsProvider {
     }
 
     private void TagOtherModsItem(String modid, String item) {
-        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(new ResourceLocation(modid, item));
+        this.tag(SimplyBackpacks.HOLDS_ITEMS).addOptional(ResourceLocation.fromNamespaceAndPath(modid, item));
     }
 
     private void tagShulkers() {

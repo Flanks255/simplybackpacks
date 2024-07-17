@@ -24,9 +24,9 @@ public class SBGui extends AbstractContainerScreen<SBContainer> {
         if (tier == Backpack.ULTIMATE && Math.random() < chance) {
             playerInventory.player.playSound(SoundEvents.COW_HURT, 0.5f, 1f);
             if (Math.random() < 0.5)
-                this.GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/ultimate_alt.png");
+                this.GUI = ResourceLocation.fromNamespaceAndPath(SimplyBackpacks.MODID, "textures/gui/ultimate_alt.png");
             else
-                this.GUI = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/ultimate_alt2.png");
+                this.GUI = ResourceLocation.fromNamespaceAndPath(SimplyBackpacks.MODID, "textures/gui/ultimate_alt2.png");
         }
         else
             this.GUI = tier.texture;

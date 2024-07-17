@@ -1,0 +1,30 @@
+{
+  "type": "simplybackpacks:backpack_upgrade",
+  "category": "misc",
+  "key": {
+    "A": {
+      "tag": "c:gems/diamond"
+    },
+    "B": {
+      "item": "simplybackpacks:uncommonbackpack"
+    },
+    "C": {
+      "tag": "c:chests"
+    },
+    "D": {
+      "tag": "c:dyes/blue"
+    },
+    "E": {
+      "tag": "c:storage_blocks/diamond"
+    }
+  },
+  "pattern": [
+    "A A",
+    "DBD",
+    "CEC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "simplybackpacks:rarebackpack"
+  }
+}

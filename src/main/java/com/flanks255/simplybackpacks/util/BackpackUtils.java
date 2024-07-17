@@ -6,19 +6,17 @@ import com.flanks255.simplybackpacks.inventory.BackpackManager;
 import com.flanks255.simplybackpacks.items.BackpackItem;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import top.theillusivec4.curios.api.CuriosApi;
 
 import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.function.Consumer;
 
 public class BackpackUtils {
     public static boolean curiosLoaded = false;
@@ -50,7 +48,7 @@ public class BackpackUtils {
         if (includeHands && player.getOffhandItem().getItem() instanceof BackpackItem)
             return player.getOffhandItem();
 
-        if (curiosLoaded) {
+/*        if (curiosLoaded) { //TODO curios
             var curiosInv = CuriosApi.getCuriosInventory(player);
             if (curiosInv.isPresent()) {
                 ItemStack stack = curiosInv.get().findFirstCurio(BackpackItem::isBackpack).map(slot -> {
@@ -62,7 +60,7 @@ public class BackpackUtils {
                 if (!stack.isEmpty())
                     return stack;
             }
-        }
+        }*/
 
         Inventory inventory = player.getInventory();
         for (int i = 0; i <= 35; i++) {
@@ -76,8 +74,11 @@ public class BackpackUtils {
     @SuppressWarnings("ConstantConditions")
     @Nonnull
     public static Optional<UUID> getUUID(@Nonnull ItemStack stack) {
-        if (stack.getItem() instanceof BackpackItem && stack.hasTag() && stack.getTag().contains("UUID"))
-            return Optional.of(stack.getTag().getUUID("UUID"));
+        if (stack.has(SimplyBackpacks.BACKPACK_UUID)) {
+            return Optional.ofNullable(stack.get(SimplyBackpacks.BACKPACK_UUID));
+        }
+        else if (stack.getItem() instanceof BackpackItem && stack.has(DataComponents.CUSTOM_DATA) && stack.get(DataComponents.CUSTOM_DATA).contains("UUID"))
+            return Optional.of(stack.get(DataComponents.CUSTOM_DATA).getUnsafe().getUUID("UUID"));
         else
             return Optional.empty();
     }
@@ -101,25 +102,6 @@ public class BackpackUtils {
         return uuidIn.compareTo(People.LONEZTAR) == 0;
     }
 
-    public static void ifTag(ItemStack stack, Consumer<CompoundTag> consumer) {
-        if (stack.hasTag())
-            consumer.accept(stack.getTag());
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    public static void ifTagContains(ItemStack stack, String child, Consumer<CompoundTag> consumer) {
-        if (stack.hasTag())
-            if (stack.getTag().contains(child))
-                consumer.accept(stack.getTag());
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    public static Optional<CompoundTag> getTag(ItemStack stack) {
-        if (stack.hasTag())
-            return Optional.of(stack.getTag());
-        return Optional.empty();
-    }
-
     public record Confirmation(String code, UUID player, UUID backpack){}
 
     public static String generateCode(RandomSource random) {
@@ -138,5 +120,9 @@ public class BackpackUtils {
 
     public static Optional<Confirmation> getConfirmation(String code) {
         return Optional.ofNullable(confirmationMap.get(code));
+    }
+
+    public static boolean isValidResourceLocation(String string) {
+        return ResourceLocation.tryParse(string) != null;
     }
 }

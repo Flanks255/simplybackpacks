@@ -1,0 +1,30 @@
+{
+  "type": "simplybackpacks:backpack_upgrade",
+  "category": "misc",
+  "key": {
+    "A": {
+      "tag": "c:ingots/gold"
+    },
+    "B": {
+      "item": "simplybackpacks:commonbackpack"
+    },
+    "C": {
+      "tag": "c:chests"
+    },
+    "D": {
+      "tag": "c:storage_blocks/gold"
+    },
+    "E": {
+      "tag": "c:dyes/yellow"
+    }
+  },
+  "pattern": [
+    "A A",
+    "EBE",
+    "CDC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "simplybackpacks:uncommonbackpack"
+  }
+}

@@ -2,6 +2,7 @@ package com.flanks255.simplybackpacks.inventory;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.items.Backpack;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -61,8 +62,8 @@ public class BackpackManager extends SavedData {
     }
 
     public IItemHandler getCapability(ItemStack stack) {
-        if (stack.getOrCreateTag().contains("UUID")) {
-            UUID uuid = stack.getTag().getUUID("UUID");
+        if (stack.has(SimplyBackpacks.BACKPACK_UUID)) {
+            UUID uuid = stack.get(SimplyBackpacks.BACKPACK_UUID);
             if (data.containsKey(uuid))
                 return data.get(uuid).getHandler();
         }
@@ -70,19 +71,19 @@ public class BackpackManager extends SavedData {
         return null;
     }
 
-    public static BackpackManager load(CompoundTag nbt) {
+    public static BackpackManager load(CompoundTag nbt, HolderLookup.Provider pRegistries) {
         if (nbt.contains("Backpacks")) {
             ListTag list = nbt.getList("Backpacks", Tag.TAG_COMPOUND);
-            list.forEach((backpackNBT) -> BackpackData.fromNBT((CompoundTag) backpackNBT).ifPresent((backpack) -> data.put(backpack.getUuid(), backpack)));
+            list.forEach((backpackNBT) -> BackpackData.fromNBT((CompoundTag) backpackNBT, pRegistries).ifPresent((backpack) -> data.put(backpack.getUuid(), backpack)));
         }
         return new BackpackManager();
     }
 
     @Override
     @Nonnull
-    public CompoundTag save(CompoundTag compound) {
+    public CompoundTag save(CompoundTag compound, HolderLookup.Provider pRegistries) {
         ListTag backpacks = new ListTag();
-        data.forEach(((uuid, backpackData) -> backpacks.add(backpackData.toNBT())));
+        data.forEach(((uuid, backpackData) -> backpacks.add(backpackData.toNBT(pRegistries))));
         compound.put("Backpacks", backpacks);
         return compound;
     }

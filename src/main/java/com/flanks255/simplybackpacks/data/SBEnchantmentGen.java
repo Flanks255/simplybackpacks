@@ -23,8 +23,8 @@ public class SBEnchantmentGen extends TagsProvider<Enchantment> {
 
     @Override
     protected void addTags(@Nonnull HolderLookup.Provider something) {
-        this.tag(SimplyBackpacks.SOULBOUND).addOptional(new ResourceLocation("ensorcellation","soulbound"));
-        this.tag(SimplyBackpacks.SOULBOUND).addOptional(new ResourceLocation("tombstone","soulbound"));
+//        this.tag(SimplyBackpacks.SOULBOUND).addOptional(new ResourceLocation("ensorcellation","soulbound")); //TODO someday
+//        this.tag(SimplyBackpacks.SOULBOUND).addOptional(new ResourceLocation("tombstone","soulbound"));
     }
 
     @Override

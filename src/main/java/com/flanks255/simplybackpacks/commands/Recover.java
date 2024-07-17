@@ -1,5 +1,6 @@
 package com.flanks255.simplybackpacks.commands;
 
+import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.inventory.BackpackData;
 import com.flanks255.simplybackpacks.inventory.BackpackManager;
 import com.flanks255.simplybackpacks.util.BackpackUtils;
@@ -42,7 +43,7 @@ public class Recover {
 
             data.ifPresent(backpack -> {
                 ItemStack stack = new ItemStack(backpack.getTier().item.get());
-                stack.getOrCreateTag().putUUID("UUID", backpack.getUuid());
+                stack.set(SimplyBackpacks.BACKPACK_UUID, backpack.getUuid());
 
                 ItemHandlerHelper.giveItemToPlayer(player, stack);
             });

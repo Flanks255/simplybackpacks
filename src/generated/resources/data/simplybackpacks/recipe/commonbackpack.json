@@ -3,16 +3,16 @@
   "category": "misc",
   "key": {
     "A": {
-      "tag": "forge:string"
+      "tag": "c:strings"
     },
     "B": {
-      "tag": "forge:leather"
+      "tag": "c:leathers"
     },
     "C": {
-      "tag": "forge:chests"
+      "tag": "c:chests"
     },
     "D": {
-      "tag": "forge:dyes/white"
+      "tag": "c:dyes/white"
     }
   },
   "pattern": [
@@ -21,7 +21,8 @@
     "BCB"
   ],
   "result": {
-    "item": "simplybackpacks:commonbackpack"
+    "count": 1,
+    "id": "simplybackpacks:commonbackpack"
   },
   "show_notification": false
 }

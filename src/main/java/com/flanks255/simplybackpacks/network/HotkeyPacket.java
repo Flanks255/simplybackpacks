@@ -9,17 +9,33 @@ import com.flanks255.simplybackpacks.items.BackpackItem;
 import com.flanks255.simplybackpacks.util.BackpackUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.Optional;
 
 public record HotkeyPacket(HotKey hotKey) implements CustomPacketPayload {
-    public static final ResourceLocation ID = new ResourceLocation(SimplyBackpacks.MODID, "hotkey");
+    public static final Type<HotkeyPacket> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(SimplyBackpacks.MODID, "hotkey"));
+
+    public HotkeyPacket(byte type) {
+        this(HotKey.values()[type]);
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
+    public static final StreamCodec<FriendlyByteBuf, HotkeyPacket> CODEC = StreamCodec.composite(
+            ByteBufCodecs.BYTE, packet -> ((byte) packet.hotKey.ordinal()),
+            HotkeyPacket::new
+    );
 
     public enum HotKey {
         OPEN,
@@ -30,30 +46,17 @@ public record HotkeyPacket(HotKey hotKey) implements CustomPacketPayload {
         this(HotKey.values()[buffer.readByte()]);
     }
 
-    @Override
-    public void write(FriendlyByteBuf pBuffer) {
-        pBuffer.writeByte(hotKey.ordinal());
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
-    }
-
-    public static void handle(final HotkeyPacket packet, PlayPayloadContext ctx) {
+    public static void handle(final HotkeyPacket packet, IPayloadContext ctx) {
         switch (packet.hotKey) {
-            case OPEN -> ctx.workHandler().submitAsync(() -> open(ctx));
-            case TOGGLE -> ctx.workHandler().submitAsync(() -> toggle(ctx));
+            case OPEN -> ctx.enqueueWork(() -> open(ctx));
+            case TOGGLE -> ctx.enqueueWork(() -> toggle(ctx));
         }
     }
-    private static void open(PlayPayloadContext ctx) {
-        if (ctx.player().isEmpty())
-            return;
-
-        Player player = ctx.player().get();
+    private static void open(IPayloadContext ctx) {
+        Player player = ctx.player();
         ItemStack backpack = BackpackUtils.findBackpackForHotkeys(player, false);
-        if (backpack.getOrCreateTag().contains("UUID")) {
-            Optional<BackpackData> data = BackpackManager.get().getBackpack(backpack.getTag().getUUID("UUID"));
+        if (backpack.has(SimplyBackpacks.BACKPACK_UUID)) {
+            Optional<BackpackData> data = BackpackManager.get().getBackpack(backpack.get(SimplyBackpacks.BACKPACK_UUID));
             if (!backpack.isEmpty() && data.isPresent()) {
                 Backpack itemTier = BackpackItem.getTier(backpack);
                 if (data.get().getTier().ordinal() < itemTier.ordinal()) {
@@ -65,10 +68,8 @@ public record HotkeyPacket(HotKey hotKey) implements CustomPacketPayload {
             }
         }
     }
-    private static void toggle(PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> {
-            ItemStack backpack = BackpackUtils.findBackpackForHotkeys(player, true);
-            BackpackItem.togglePickup(player, backpack);
-        });
+    private static void toggle(IPayloadContext ctx) {
+        ItemStack backpack = BackpackUtils.findBackpackForHotkeys(ctx.player(), true);
+        BackpackItem.togglePickup(ctx.player(), backpack);
     }
 }

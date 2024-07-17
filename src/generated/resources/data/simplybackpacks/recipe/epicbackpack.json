@@ -1,0 +1,30 @@
+{
+  "type": "simplybackpacks:backpack_upgrade",
+  "category": "misc",
+  "key": {
+    "A": {
+      "tag": "c:dyes/magenta"
+    },
+    "B": {
+      "item": "simplybackpacks:rarebackpack"
+    },
+    "C": {
+      "tag": "c:chests"
+    },
+    "D": {
+      "tag": "c:nether_stars"
+    },
+    "E": {
+      "item": "minecraft:iron_bars"
+    }
+  },
+  "pattern": [
+    "A A",
+    "EBE",
+    "CDC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "simplybackpacks:epicbackpack"
+  }
+}

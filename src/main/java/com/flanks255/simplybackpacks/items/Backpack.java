@@ -37,7 +37,7 @@ public enum Backpack {
         this.slots = slots;
         this.slotRows = rows;
         this.slotCols = cols;
-        this.texture = new ResourceLocation(SimplyBackpacks.MODID, "textures/gui/" + location);
+        this.texture = ResourceLocation.fromNamespaceAndPath(SimplyBackpacks.MODID, "textures/gui/" + location);
         this.xSize = xSize;
         this.ySize = ySize;
         this.slotXOffset = slotXOffset;

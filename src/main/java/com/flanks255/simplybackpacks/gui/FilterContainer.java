@@ -27,7 +27,7 @@ public class FilterContainer extends AbstractContainerMenu {
         CompoundTag nbt = extra.readNbt();
 
         FilterItemHandler handler = new FilterItemHandler();
-        handler.deserializeNBT(nbt);
+        handler.deserializeNBT(playerInventory.player.registryAccess(), nbt);
         return new FilterContainer(windowId, playerInventory, handler);
     }
 
@@ -91,37 +91,32 @@ public class FilterContainer extends AbstractContainerMenu {
     }
 
     public int getFilterOpts() {
-        return this.stack.getOrCreateTag().getInt("Filter-OPT");
+        return this.stack.getOrDefault(SimplyBackpacks.BACKPACK_FILTER, 0);
     }
 
     public boolean getPickup() {
-        return this.stack.getOrCreateTag().getBoolean("Pickup");
+        return this.stack.getOrDefault(SimplyBackpacks.BACKPACK_PICKUP, false);
     }
 
     public boolean togglePickup() {
-        CompoundTag nbt = this.stack.getOrCreateTag();
+        boolean Pickup = !stack.getOrDefault(SimplyBackpacks.BACKPACK_PICKUP, false);
 
-        boolean Pickup = !nbt.getBoolean("Pickup");
-        nbt.putBoolean("Pickup",Pickup);
+        stack.set(SimplyBackpacks.BACKPACK_PICKUP, Pickup);
 
         if (this.playerEntity.getCommandSenderWorld().isClientSide)
-            PacketDistributor.SERVER.noArg().send(new HotkeyPacket(HotkeyPacket.HotKey.TOGGLE));
+            PacketDistributor.sendToServer(new HotkeyPacket(HotkeyPacket.HotKey.TOGGLE));
         return Pickup;
     }
 
-    public int setFilterOpts(int newOpts) {
-        CompoundTag nbt = this.stack.getOrCreateTag();
-        nbt.putInt("Filter-OPT", newOpts);
-        this.stack.setTag(nbt);
+    public int saveFilterClient(int newOpts) {
+        stack.set(SimplyBackpacks.BACKPACK_FILTER, newOpts);
         if (this.playerEntity.getCommandSenderWorld().isClientSide)
-            PacketDistributor.SERVER.noArg().send(new FilterPacket(newOpts));
+            PacketDistributor.sendToServer(new FilterPacket(newOpts));
         return newOpts;
     }
 
-    public void saveFilter(int newOpts) {
-        CompoundTag nbt = this.stack.getOrCreateTag();
-        nbt.putInt("Filter-OPT", newOpts);
-        this.stack.setTag(nbt);
+    public void saveFilterServer(int newOpts) {
+        stack.set(SimplyBackpacks.BACKPACK_FILTER, newOpts);
     }
 
 

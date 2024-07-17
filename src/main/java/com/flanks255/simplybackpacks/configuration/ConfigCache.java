@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 
 public class ConfigCache {
     public static void RefreshCache() {
-        BLACKLIST = CommonConfiguration.ITEM_BLACKLIST.get().stream().map(ResourceLocation::new).collect(Collectors.toList());
-        WHITELIST = CommonConfiguration.ITEM_WHITELIST.get().stream().map(ResourceLocation::new).collect(Collectors.toList());
+        BLACKLIST = CommonConfiguration.ITEM_BLACKLIST.get().stream().map(ResourceLocation::tryParse).collect(Collectors.toList());
+        WHITELIST = CommonConfiguration.ITEM_WHITELIST.get().stream().map(ResourceLocation::tryParse).collect(Collectors.toList());
     }
 
     public static void listen(ModConfigEvent event) {
