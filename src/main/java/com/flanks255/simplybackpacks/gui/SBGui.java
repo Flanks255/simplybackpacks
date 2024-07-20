@@ -55,7 +55,6 @@ public class SBGui extends AbstractContainerScreen<SBContainer> {
 
     @Override
     public void render(@Nonnull GuiGraphics gg, int pMouseX, int pMouseY, float pPartialTicks) {
-        this.renderBackground(gg, pMouseX, pMouseY, pPartialTicks);
         super.render(gg,pMouseX, pMouseY, pPartialTicks);
         this.renderTooltip(gg, pMouseX, pMouseY);
     }
