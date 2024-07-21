@@ -1,3 +1,7 @@
+### [ 2.1.7+mc1.21 ]
+- Fixed extra dark UI background.
+- Fixed chonky backpack sprite hanging out in the texture atlas.
+
 ### [ 2.1.6+mc1.21 ]
 - Ported to 1.21
 - Changed versioning.
