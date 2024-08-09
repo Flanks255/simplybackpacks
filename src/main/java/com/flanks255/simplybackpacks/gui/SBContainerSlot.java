@@ -25,7 +25,7 @@ public class SBContainerSlot extends SlotItemHandler {
 
     @Override
     public int getMaxStackSize(@Nonnull ItemStack stack) {
-        return super.getMaxStackSize();
+        return stack.getMaxStackSize();
     }
 
     @Override

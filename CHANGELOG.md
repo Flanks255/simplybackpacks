@@ -1,3 +1,6 @@
+### [ 2.1.8+mc1.21 ]
+- Fixed incorrect stack sizes in backpacks.
+
 ### [ 2.1.7+mc1.21 ]
 - Fixed extra dark UI background.
 - Fixed chonky backpack sprite hanging out in the texture atlas.
