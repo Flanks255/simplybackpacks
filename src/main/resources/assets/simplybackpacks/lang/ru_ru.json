@@ -1,0 +1,38 @@
+{
+  "simplybackpacks.shift": "Удерживайте <§6§oShift§r>, чтобы узнать больше.",
+  "key.simplybackpacks.category": "Simply Backpacks",
+  "key.simplybackpacks.backpackpickup.desc": "Переключить автоподбор",
+  "key.simplybackpacks.backpackopen.desc": "Открыть рюкзак",
+
+  "simplybackpacks.autopickup": "Автоподбор",
+  "simplybackpacks.autopickupenabled": "Автоподбор: §aВключен§r",
+  "simplybackpacks.autopickupdisabled": "Автоподбор: §cВыключен§r",
+
+  "simplybackpacks.whitelist": "Белый список",
+  "simplybackpacks.nbtdata": "Теги NBT",
+
+  "simplybackpacks.invaliduuid": "Неизвестный UUID",
+  "simplybackpacks.delete.confirmation": "Вы уверены, что хотите удалить этот рюкзак?\nЭто действие нельзя отменить.\nПодтвердите командой /sb delete %s",
+  "simplybackpacks.delete.finished": "Рюкзак %s удален",
+  "simplybackpacks.notsetup": "Откройте в руках, чтобы настроить.",
+
+  "item.simplybackpacks.commonbackpack": "Обычный рюкзак",
+  "item.simplybackpacks.commonbackpack.info": "Самый простой рюкзак.",
+  "item.simplybackpacks.commonbackpack.info2": "§fВмещает 18 стаков§r",
+
+  "item.simplybackpacks.uncommonbackpack": "Необычный рюкзак",
+  "item.simplybackpacks.uncommonbackpack.info": "Немного лучше, чем обычный рюкзак.",
+  "item.simplybackpacks.uncommonbackpack.info2": "§eВмещает 33 стака§r",
+
+  "item.simplybackpacks.rarebackpack": "Редкий рюкзак",
+  "item.simplybackpacks.rarebackpack.info": "Очень хороший рюкзак.",
+  "item.simplybackpacks.rarebackpack.info2": "§bВмещает 66 стаков§r",
+
+  "item.simplybackpacks.epicbackpack": "Эпический рюкзак",
+  "item.simplybackpacks.epicbackpack.info": "Действительно эпический рюкзак.",
+  "item.simplybackpacks.epicbackpack.info2": "§dВмещает 99 стаков§r",
+
+  "item.simplybackpacks.ultimatebackpack": "Совершенный рюкзак",
+  "item.simplybackpacks.ultimatebackpack.info": "Самый лучший рюкзак.",
+  "item.simplybackpacks.ultimatebackpack.info2": "§dВмещает 158 стаков§r"
+}
