@@ -13,6 +13,6 @@ public class Generator {
         generator.addProvider(true, new SBItemTags(generator, event.getLookupProvider(), blockTags, event.getExistingFileHelper()));
         generator.addProvider(true, new SBEnchantmentGen(generator, event.getLookupProvider(), event.getExistingFileHelper()));
         generator.addProvider(true, new SBRecipes(generator, event.getLookupProvider()));
-//        generator.addProvider(true, new SBCurios(generator.getPackOutput(), event.getExistingFileHelper(), event.getLookupProvider()));
+        generator.addProvider(true, new SBCurios(generator.getPackOutput(), event.getExistingFileHelper(), event.getLookupProvider()));
     }
 }

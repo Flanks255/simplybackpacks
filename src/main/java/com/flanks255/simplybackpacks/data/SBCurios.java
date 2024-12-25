@@ -1,4 +1,3 @@
-/*
 package com.flanks255.simplybackpacks.data;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
@@ -21,4 +20,3 @@ public class SBCurios extends CuriosDataProvider {
         createEntities("player").addEntities(EntityType.PLAYER).addSlots("back");
     }
 }
-*/ //TODO curios

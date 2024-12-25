@@ -2,15 +2,12 @@ plugins {
     id 'java-library'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.155'
-    id "me.modmuss50.mod-publish-plugin" version "0.4.5"
+    id 'net.neoforged.moddev' version '1.0.23'
+    id "me.modmuss50.mod-publish-plugin" version "0.7.4"
 }
 
-repositories {
-    maven { url = 'https://maven.creeperhost.net/' }
-    maven { url = 'https://www.cursemaven.com' }
-    maven { url = 'https://maven.theillusivec4.top/' }
-    maven { url = 'https://maven.saps.dev/releases' }
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.BIN
 }
 
 def ENV = System.getenv()
@@ -22,56 +19,79 @@ base {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
-
-runs {
-    // applies to all the run configs below
-    configureEach {
-        //Limit ram usage for the dev environment to 4GB
-        jvmArgument '-Xmx8G'
-
-        modSource project.sourceSets.main
+neoForge {
+    version = project.neo_version
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.hasProperty("parchment_minecraft_version") ? project.parchment_minecraft_version : project.minecraft_version
     }
 
-    client {
-        systemProperty 'neoforge.enabledGameTestNamespaces', "simplybackpacks"
-        programArguments.addAll('--width', '1280', '--height', '720')
-        if  (ENV.MCDEVUSER) {
-            programArguments.addAll('--username', ENV.MCDEVUSER)
+    runs {
+        client {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', "simplybackpacks"
+            programArguments.addAll('--width', '1280', '--height', '720')
+            if (ENV.MCDEVUSER) {
+                programArguments.addAll('--username', ENV.MCDEVUSER)
+            }
+            if (ENV.MCDEVUUID) {
+                programArguments.addAll('--uuid', ENV.MCDEVUUID)
+            }
         }
-        if (ENV.MCDEVUUID) {
-            programArguments.addAll('--uuid', ENV.MCDEVUUID)
+
+        server {
+            server()
+            systemProperty 'neoforge.enabledGameTestNamespaces', "simplybackpacks"
+            programArgument '--nogui'
+        }
+
+        gameTestServer {
+            type = "gameTestServer"
+            systemProperty 'forge.enabledGameTestNamespaces', "simplybackpacks"
+        }
+
+        data {
+            data()
+            programArguments.addAll '--mod', "simplybackpacks", '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+
+        configureEach { run ->
+            jvmArgument '-Xmx8G'
+            if (run.project.javaToolchains.launcherFor(java.toolchain).map { it.metadata.vendor }.getOrElse("").contains("JetBrains")) {
+                run.jvmArgument("-XX:+AllowEnhancedClassRedefinition")
+            }
         }
     }
 
-    server {
-        systemProperty 'neoforge.enabledGameTestNamespaces', "simplybackpacks"
-        programArgument '--nogui'
-    }
-
-    gameTestServer {
-        systemProperty 'forge.enabledGameTestNamespaces', "simplybackpacks"
-    }
-
-    data {
-        programArguments.addAll '--mod', "simplybackpacks", '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+    mods {
+        "simplylight" {
+            sourceSet(sourceSets.main)
+        }
     }
 }
 
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    maven { url = 'https://maven.creeperhost.net/' }
+    maven { url = 'https://www.cursemaven.com' }
+    maven { url = 'https://maven.theillusivec4.top/' }
+    maven { url = 'https://maven.saps.dev/releases' }
+    maven { url = 'https://maven.octo-studios.com/releases' }
+}
+
 dependencies {
-    implementation "net.neoforged:neoforge:${neo_version}"
-    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
-    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
-    runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+    compileOnly "mezz.jei:jei-${jei_mc_version}-common-api:${jei_version}"//new
+    compileOnly "mezz.jei:jei-${jei_mc_version}-neoforge-api:${jei_version}"
+    runtimeOnly "mezz.jei:jei-${jei_mc_version}-neoforge:${jei_version}"
 
+//    compileOnly fg.deobf("curse.maven:TOP-245211:4159743")
     runtimeOnly "curse.maven:JADE-324717:5493270"
-    //runtimeOnly fg.deobf("com.flanks255:simplylight:1.19.3-1.4.+")
+    runtimeOnly "curse.maven:ATLAS-633577:5490697"
+    runtimeOnly "curse.maven:CTM-267602:5587515"
+    //compileOnly fg.deobf("curse.maven:BUILDINGGADGETS-298187:4423592")
 
-    //runtimeOnly fg.deobf("curse.maven:TOP-245211:3671753")
-
-/*    runtimeOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}" // Rip
-    compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"*/
+    implementation "top.theillusivec4.curios:curios-neoforge:${curios_version}"
 }
 
 jar {
@@ -86,44 +106,122 @@ jar {
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
+    from sourceSets.main.output
 }
 
-    publishing {
-        publications {
-            register('mavenJava', MavenPublication) {
-                groupId project.group
-                artifactId base.archivesName.get()
-                version project.version
-                from components.java
-            }
-        }
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [
+            loader_version:loader_version,
+            mod_version:mod_version
+    ]
 
-        repositories {
-            if (ENV.SAPS_TOKEN) {
-                maven {
-                    url "https://maven.saps.dev/minecraft"
-                    credentials {
-                        username = "flanks"
-                        password = "${ENV.SAPS_TOKEN}"
-                    }
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+tasks.register('sourcesJar', Jar) {
+    from sourceSets.main.java
+    archiveClassifier.set('sources')
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+
+            artifact sourcesJar
+        }
+    }
+
+    repositories {
+        def saps_token = providers.environmentVariable("SAPS_TOKEN")
+        if (saps_token.isPresent()) {
+            maven {
+                url "https://maven.saps.dev/releases"
+                credentials {
+                    username = "flanks"
+                    password = saps_token.get()
                 }
             }
         }
     }
-//https://modmuss50.github.io/mod-publish-plugin/
-    publishMods {
-        dryRun = !providers.environmentVariable("CURSEFORGE_KEY").isPresent()
-        file = jar.archiveFile
-        changelog = file("./CHANGELOG.md").text
-        modLoaders.add("NeoForge")
-        type = BETA
-        curseforge {
-            accessToken = providers.environmentVariable("CURSEFORGE_KEY")
-            projectId = project.curseforge_id
-            minecraftVersions.add(project.minecraft_version)
+}
+
+// From Mikey
+/**
+ * Seek out the changelog for the current version and return it as a string.
+ */
+def createChangelog = () -> {
+    def changelogText = new File("CHANGELOG.md").text
+    def changelog = ""
+
+    def lines = changelogText.split("\n")
+    def inChangelog = false
+    for (int i = 0; i < lines.size(); i++) {
+        def line = lines[i]
+        if (line.startsWith("# ")) {
+            if (inChangelog) {
+                break
+            } else {
+                if (line.contains(mod_version)) {
+                    inChangelog = true
+                }
+            }
+        }
+
+        if (inChangelog) {
+            changelog += line + "\n"
         }
     }
 
-    tasks.withType(JavaCompile).configureEach {
-        options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+    def output = changelog.trim()
+    return output.empty ? "No changelog found" : output
+}
+
+def cfToken = providers.environmentVariable("CURSEFORGE_KEY")
+def ghToken = providers.environmentVariable("GITHUB_TOKEN")
+
+
+//https://modmuss50.github.io/mod-publish-plugin/
+publishMods {
+    dryRun = !cfToken.isPresent() || !ghToken.isPresent()
+    file = jar.archiveFile
+    changelog = createChangelog().trim()
+    modLoaders.add("NeoForge")
+    type = BETA
+    additionalFiles.from sourcesJar.archiveFile
+
+    curseforge {
+        accessToken = cfToken
+        projectId = curseforge_id
+        minecraftVersions.add(minecraft_version)
+        javaVersions.add(JavaVersion.VERSION_21)
     }
+
+    github {
+        repository = "Flanks255/simplylight"
+        accessToken = ghToken
+        commitish = providers.environmentVariable("GITHUB_SHA").orElse("dryRun")
+        tagName = providers.environmentVariable("GITHUB_REF_NAME").orElse("dryRun")
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}

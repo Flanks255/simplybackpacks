@@ -39,6 +39,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -61,6 +62,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.UUID;
 
@@ -91,7 +93,7 @@ public class SimplyBackpacks {
     public static final DeferredItem<Item> ULTIMATEBACKPACK = ITEMS.register("ultimatebackpack", () -> new BackpackItem("ultimatebackpack", Backpack.ULTIMATE));
     private final NonNullList<KeyMapping> keyBinds = NonNullList.create();
 
-    public static final DeferredRegister.DataComponents COMPONENTS = DeferredRegister.createDataComponents(MODID);
+    public static final DeferredRegister<DataComponentType<?>> COMPONENTS = DeferredRegister.create(BuiltInRegistries.DATA_COMPONENT_TYPE, MODID);
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<UUID>> BACKPACK_UUID = COMPONENTS.register("backpack_uuid", () -> DataComponentType.<UUID>builder().persistent(UUIDUtil.CODEC).networkSynchronized(UUIDUtil.STREAM_CODEC).build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> BACKPACK_PICKUP = COMPONENTS.register("backpack_pickup", () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> BACKPACK_FILTER = COMPONENTS.register("backpack_filter", () -> DataComponentType.<Integer>builder().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.INT).build());
@@ -122,7 +124,7 @@ public class SimplyBackpacks {
 
         neoBus.addListener(this::pickupEvent);
 
-        BackpackUtils.curiosLoaded = false; //ModList.get().isLoaded("curios"); //TODO redo once the meta emerges.
+        BackpackUtils.curiosLoaded = ModList.get().isLoaded("curios");
         RecipeUnlocker.register(MODID, neoBus, 2);
     }
 
@@ -135,7 +137,7 @@ public class SimplyBackpacks {
         if (event.getItemEntity().hasPickUpDelay())
             return;
 
-/*        if (BackpackUtils.curiosLoaded) { //TODO curios
+        if (BackpackUtils.curiosLoaded) {
             var curiosInventory = CuriosApi.getCuriosInventory(event.getPlayer());
             if (curiosInventory.isPresent()) {
                 var slotResult = curiosInventory.get().findFirstCurio(BackpackItem::isBackpack);
@@ -146,7 +148,7 @@ public class SimplyBackpacks {
                     }
                 }
             }
-        }*/
+        }
 
         Inventory playerInv = event.getPlayer().getInventory();
         for (int i = 0; i <= 8; i++) {

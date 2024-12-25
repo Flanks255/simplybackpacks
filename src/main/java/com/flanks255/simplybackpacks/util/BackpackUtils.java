@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import top.theillusivec4.curios.api.CuriosApi;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -48,7 +49,7 @@ public class BackpackUtils {
         if (includeHands && player.getOffhandItem().getItem() instanceof BackpackItem)
             return player.getOffhandItem();
 
-/*        if (curiosLoaded) { //TODO curios
+        if (curiosLoaded) {
             var curiosInv = CuriosApi.getCuriosInventory(player);
             if (curiosInv.isPresent()) {
                 ItemStack stack = curiosInv.get().findFirstCurio(BackpackItem::isBackpack).map(slot -> {
@@ -60,7 +61,7 @@ public class BackpackUtils {
                 if (!stack.isEmpty())
                     return stack;
             }
-        }*/
+        }
 
         Inventory inventory = player.getInventory();
         for (int i = 0; i <= 35; i++) {
