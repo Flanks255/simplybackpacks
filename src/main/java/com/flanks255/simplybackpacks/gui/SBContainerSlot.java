@@ -6,6 +6,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.SlotItemHandler;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.function.Predicate;
@@ -37,7 +38,7 @@ public class SBContainerSlot extends SlotItemHandler {
 
     //bandage till forge PR fixes this
     @Override
-    public void initialize(ItemStack itemStack) {
+    public void initialize(@NotNull ItemStack itemStack) {
         ((IItemHandlerModifiable) this.getItemHandler()).setStackInSlot(index, itemStack);
     }
 }

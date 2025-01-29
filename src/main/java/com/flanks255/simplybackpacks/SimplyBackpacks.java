@@ -5,7 +5,6 @@ import com.flanks255.simplybackpacks.commands.SBCommands;
 import com.flanks255.simplybackpacks.configuration.CommonConfiguration;
 import com.flanks255.simplybackpacks.configuration.ConfigCache;
 import com.flanks255.simplybackpacks.crafting.CopyBackpackDataRecipe;
-import com.flanks255.simplybackpacks.crafting.TargetNBTIngredient;
 import com.flanks255.simplybackpacks.data.Generator;
 import com.flanks255.simplybackpacks.gui.FilterContainer;
 import com.flanks255.simplybackpacks.gui.FilterGui;
@@ -48,9 +47,9 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -59,7 +58,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import top.theillusivec4.curios.api.CuriosApi;
@@ -80,8 +78,6 @@ public class SimplyBackpacks {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     private static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(BuiltInRegistries.MENU, MODID);
     private static final DeferredRegister<RecipeSerializer<?>> RECIPES = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, MODID);
-    public static final DeferredRegister<IngredientType<?>> INGREDIENTS = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, SimplyBackpacks.MODID);
-    public static final DeferredHolder<IngredientType<?>, IngredientType<TargetNBTIngredient>> TARGET_INGREDIENT = INGREDIENTS.register("nbt_target", () -> new IngredientType<>(TargetNBTIngredient.CODEC));
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> COPYRECIPE = RECIPES.register("backpack_upgrade", CopyBackpackDataRecipe.Serializer::new);
     public static final DeferredHolder<MenuType<?>, MenuType<SBContainer>> SBCONTAINER = CONTAINERS.register("sb_container", () -> IMenuTypeExtension.create(SBContainer::fromNetwork));
     public static final DeferredHolder<MenuType<?>, MenuType<FilterContainer>> FILTERCONTAINER = CONTAINERS.register("filter_container", () -> IMenuTypeExtension.create(FilterContainer::fromNetwork));
@@ -103,7 +99,6 @@ public class SimplyBackpacks {
         ITEMS.register(bus);
         CONTAINERS.register(bus);
         RECIPES.register(bus);
-        INGREDIENTS.register(bus);
         COMPONENTS.register(bus);
 
         //Configs
@@ -119,6 +114,7 @@ public class SimplyBackpacks {
             bus.addListener(this::registerKeyBinding);
             neoBus.addListener(this::onClientTick);
             bus.addListener(this::creativeTabEvent);
+            //neoBus.addListener(SimplyBackpacks::renderPlayer);
         }
         bus.addListener(Generator::gatherData);
 
@@ -192,5 +188,9 @@ public class SimplyBackpacks {
     private void registerCaps(final RegisterCapabilitiesEvent event) {
         event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> BackpackManager.get().getCapability(stack)
                 , COMMONBACKPACK, UNCOMMONBACKPACK, RAREBACKPACK, EPICBACKPACK, ULTIMATEBACKPACK);
+    }
+
+    private static void renderPlayer(RenderPlayerEvent.Post event) {
+        //event.getRenderer().getModel().body.translateAndRotate();
     }
 }

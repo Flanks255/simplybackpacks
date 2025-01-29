@@ -2,15 +2,12 @@ package com.flanks255.simplybackpacks.crafting;
 
 import com.flanks255.simplybackpacks.SimplyBackpacks;
 import com.flanks255.simplybackpacks.items.BackpackItem;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import org.jetbrains.annotations.NotNull;
@@ -30,19 +27,7 @@ public class CopyBackpackDataRecipe extends ShapedRecipe {
     @Nonnull
     public ItemStack assemble(@Nonnull CraftingInput inv, @Nonnull HolderLookup.Provider provider) {
         final ItemStack craftingResult = super.assemble(inv, provider);
-        //TargetNBTIngredient donorIngredient = null;
         ItemStack dataSource = ItemStack.EMPTY;
-/*        NonNullList<? extends Ingredient> ingredients = getIngredients();
-        for (Ingredient ingredient : ingredients) {
-            if (ingredient instanceof TargetNBTIngredient target) {
-                donorIngredient = target;
-                break;
-            }
-        }
-        if (donorIngredient == null) {
-            SimplyBackpacks.LOGGER.info("Copy Data Recipe missing donor ingredient");
-            return new ItemStack(Items.AIR);
-        }*/
         if (!craftingResult.isEmpty()) {
             for (int i = 0; i < inv.size(); i++) {
                 final ItemStack item = inv.getItem(i);

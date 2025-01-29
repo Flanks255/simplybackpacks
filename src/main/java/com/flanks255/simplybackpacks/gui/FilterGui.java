@@ -118,14 +118,14 @@ public class FilterGui extends AbstractContainerScreen<FilterContainer> {
             this.state = initial;
         }
 
-        private final ResourceLocation off = ResourceLocation.fromNamespaceAndPath(SimplyBackpacks.MODID, "textures/gui/switch_off.png");
-        private final ResourceLocation on = ResourceLocation.fromNamespaceAndPath(SimplyBackpacks.MODID, "textures/gui/switch_on.png");
+        private static final ResourceLocation off = ResourceLocation.fromNamespaceAndPath(SimplyBackpacks.MODID, "textures/gui/switch_off.png");
+        private static final ResourceLocation on = ResourceLocation.fromNamespaceAndPath(SimplyBackpacks.MODID, "textures/gui/switch_on.png");
         public boolean state;
         private final String textKey;
 
         @Override
         public void renderWidget(@Nonnull GuiGraphics gg, int p_renderButton_1_, int p_renderButton_2_, float p_renderButton_3_) {
-            gg.blit(this.state ? this.on : this.off, this.getX(), this.getY(), this.width, this.height,0,0,32,16, 32 ,16);
+            gg.blit(this.state ? on:off, this.getX(), this.getY(), this.width, this.height,0,0,32,16, 32 ,16);
             gg.drawString(font, I18n.get(this.textKey), this.getX() + 34, this.getY() + 4, 0x404040, false);
         }
     }
