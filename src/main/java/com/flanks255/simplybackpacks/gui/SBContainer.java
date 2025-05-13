@@ -56,8 +56,23 @@ public class SBContainer extends AbstractContainerMenu {
     @Override
     @Nonnull
     public void clicked(int slot, int dragType, @Nonnull ClickType clickTypeIn, @Nonnull Player player) {
-        if (clickTypeIn == ClickType.SWAP)
+        if (clickTypeIn == ClickType.SWAP) { // Handle swap with hotbar
+            Slot hotbarSlot = this.slots.get(dragType);
+            Slot hoveredSlot = this.slots.get(slot);
+            ItemStack hotbarStack = hotbarSlot.getItem();
+            ItemStack hoveredStack = hoveredSlot.getItem();
+            boolean from_hotbar = hotbarStack.isEmpty()
+                || (hotbarSlot.mayPickup(player) && hoveredSlot.mayPlace(hotbarStack));
+            boolean from_hovered = hoveredStack.isEmpty()
+                || (hoveredSlot.mayPickup(player) && hotbarSlot.mayPlace(hoveredStack));
+            if (from_hotbar && from_hovered) {
+                hotbarSlot.set(hoveredStack);
+                hoveredSlot.set(hotbarStack);
+                hotbarSlot.setChanged();
+                hoveredSlot.setChanged();
+            }
             return;
+        }
         if (slot >= 0) getSlot(slot).container.setChanged();
         super.clicked(slot, dragType, clickTypeIn, player);
     }
