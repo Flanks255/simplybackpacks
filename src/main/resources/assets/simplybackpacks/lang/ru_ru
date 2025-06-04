@@ -18,21 +18,21 @@
 
   "item.simplybackpacks.commonbackpack": "Обычный рюкзак",
   "item.simplybackpacks.commonbackpack.info":"Самый обычный рюкзак.",
-  "item.simplybackpacks.commonbackpack.info2":"§fХранит 18 стэков§r",
+  "item.simplybackpacks.commonbackpack.info2":"§fХранит 18 стаков§r",
 
   "item.simplybackpacks.uncommonbackpack":"Необычный рюкзак",
   "item.simplybackpacks.uncommonbackpack.info":"Немного улучешнный рюкзак.",
-  "item.simplybackpacks.uncommonbackpack.info2":"§eХранит 33 стэков§r",
+  "item.simplybackpacks.uncommonbackpack.info2":"§eХранит 33 стаков§r",
 
   "item.simplybackpacks.rarebackpack":"Редкий рюкзак",
   "item.simplybackpacks.rarebackpack.info":"Достаточно хороший рюкзак.",
-  "item.simplybackpacks.rarebackpack.info2":"§bХранит 66 стэков§r",
+  "item.simplybackpacks.rarebackpack.info2":"§bХранит 66 стаков§r",
 
   "item.simplybackpacks.epicbackpack":"Эпический рюкзак",
   "item.simplybackpacks.epicbackpack.info":"Достаточно эпичный рюкзак.",
-  "item.simplybackpacks.epicbackpack.info2":"§dХранит 99 стэков§r",
+  "item.simplybackpacks.epicbackpack.info2":"§dХранит 99 стаков§r",
 
   "item.simplybackpacks.ultimatebackpack":"Идеальный рюкзак",
   "item.simplybackpacks.ultimatebackpack.info":"Идеальный рюкзак.",
-  "item.simplybackpacks.ultimatebackpack.info2":"§dХранит 158 стэков§r"
+  "item.simplybackpacks.ultimatebackpack.info2":"§dХранит 158 стаков§r"
 }
