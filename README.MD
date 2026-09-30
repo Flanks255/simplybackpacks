@@ -21,5 +21,9 @@ Mod Integrations:
  - Curios: Equippable into and openable from back slot (1.16+)
  - Inventory Tweaks(1.12.2)
 
+### Pull Requests
+- Please do not submit large AI generated pull requests, including version ports.
+
 Requires:  
-  [Shadowfacts' Forgelin - Kotlin language adapter(1.12.2 Version only)](https://www.curseforge.com/minecraft/mc-mods/shadowfacts-forgelin)
+  Every version beyond 1.12.2: Nothing
+  1.12.2: [Shadowfacts' Forgelin - Kotlin language adapter(1.12.2 Version only)](https://www.curseforge.com/minecraft/mc-mods/shadowfacts-forgelin)
